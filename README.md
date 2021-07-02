@@ -1,4 +1,4 @@
-# Aurora
+# Portfolio Analysis
 <p>
     <em>Understanding financial markets</em>
 </p>
