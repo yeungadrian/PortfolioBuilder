@@ -85,7 +85,7 @@ def display_backtest():
 
         st.write(chartoutput)
 
-        with st.beta_expander(label="Metrics"):
+        with st.expander(label="Metrics"):
             cagr = round(backtest_response["metrics"]["cagr"], 2) * 100
             monthly_std = round(backtest_response["metrics"]["monthly_std"], 2) * 100
             downside_std = round(backtest_response["metrics"]["downside_std"], 2) * 100
@@ -106,7 +106,7 @@ def display_backtest():
                 """
             )
 
-        with st.beta_expander(label="Monthly returns"):
+        with st.expander(label="Monthly returns"):
             monthly_return_chart = (
                 alt.Chart(backtest_monthly_returns)
                 .mark_bar()
@@ -116,7 +116,7 @@ def display_backtest():
 
             st.write(monthly_return_chart)
 
-        with st.beta_expander(label="Daily drawdown"):
+        with st.expander(label="Daily drawdown"):
             monthly_return_chart = (
                 alt.Chart(pd.DataFrame(backtest_portfolio))
                 .mark_line()
