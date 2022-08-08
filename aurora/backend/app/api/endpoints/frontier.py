@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from app import schemas
-from app.data.dataLoader import load_historical_returns
-from app.calculations.frontierCalculator import efficient_frontier_metrics
+from app.modules.dataLoader import load_historical_returns
+from app.modules.frontierCalculator import efficient_frontier_metrics
 import pandas as pd
 import numpy as np
 

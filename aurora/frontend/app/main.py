@@ -1,8 +1,8 @@
 import streamlit as st
-from pages.home import display_home
-from pages.backtest import display_backtest
-from pages.factorRegression import display_factorRegression
-from pages.portfolioOptimisation import display_portfolioOptimsiation
+from modules.home import display_home
+from modules.backtest import display_backtest
+from modules.factor import display_factorRegression
+from modules.optimisation import display_portfolioOptimsiation
 
 st.sidebar.title("Aurora")
 

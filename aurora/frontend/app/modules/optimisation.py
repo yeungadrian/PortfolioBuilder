@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 import altair as alt
 
-from api.funds import get_funds, efficientFrontier
+from modules.funds import get_funds, efficientFrontier
 
 
 def display_portfolioOptimsiation():

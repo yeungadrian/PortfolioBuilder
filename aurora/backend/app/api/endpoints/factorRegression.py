@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from app import schemas
-from app.data.dataLoader import load_historical_returns, load_ffFactors
-from app.calculations.factorRegressionCalculator import calculate_factor_regression
+from app.modules.dataLoader import load_historical_returns, load_ffFactors
+from app.modules.factorRegressionCalculator import calculate_factor_regression
 import pandas as pd
 
 router = APIRouter()

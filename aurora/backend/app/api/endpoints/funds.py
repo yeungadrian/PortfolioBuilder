@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.data.dataLoader import load_available_funds
+from app.modules.dataLoader import load_available_funds
 
 router = APIRouter()
 

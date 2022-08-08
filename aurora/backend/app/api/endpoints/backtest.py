@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 from app import schemas
-from app.data.dataLoader import load_normalised_historical_index
-from app.calculations.backtestCalculator import backtest_strategy
-from app.calculations.metricCalculator import calculate_metrics
+from app.modules.dataLoader import load_normalised_historical_index
+from app.modules.backtestCalculator import backtest_strategy
+from app.modules.metricCalculator import calculate_metrics
 
 router = APIRouter()
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import numpy as np
 
-from app.calculations.metricCalculator import calculate_historical_max
+from app.modules.metricCalculator import calculate_historical_max
 
 
 def backtest_funds(
