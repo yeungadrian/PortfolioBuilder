@@ -1,12 +1,12 @@
-import streamlit as st
-import pandas as pd
 from datetime import datetime
+
 import altair as alt
+import pandas as pd
+import streamlit as st
+from modules.funds import factorRegression, get_funds
 
-from modules.funds import get_funds, factorRegression
 
-
-def display_factorRegression():
+def display_factor():
 
     # Portfolio Backtesting
 
@@ -139,7 +139,7 @@ def display_factorRegression():
             st.write(residual_chart)
 
             st.markdown(
-                f"""
+                """
                 ---
                 """
             )

@@ -1,15 +1,12 @@
-import streamlit as st
-import pandas as pd
 from datetime import datetime
+
 import altair as alt
+import pandas as pd
+import streamlit as st
+from modules.funds import backtest, get_funds
 
-from modules.funds import get_funds, backtest
 
-
-def display_backtest():
-
-    # Portfolio Backtesting
-
+def sidebar():
     st.title("Portfolio Backtesting")
     fund_list = pd.DataFrame(get_funds())
 
@@ -54,6 +51,15 @@ def display_backtest():
                 "amount": amount_list[f"fund{i}"],
             }
         )
+
+    return start_date, end_date, frequency, portfolio, rebalance
+
+
+def display_backtest():
+
+    # Portfolio Backtesting
+
+    start_date, end_date, frequency, portfolio, rebalance = sidebar()
 
     # Portfolio Historical Projection
 

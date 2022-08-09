@@ -1,12 +1,12 @@
-import streamlit as st
-import pandas as pd
 from datetime import datetime
+
 import altair as alt
+import pandas as pd
+import streamlit as st
+from modules.funds import efficientFrontier, get_funds
 
-from modules.funds import get_funds, efficientFrontier
 
-
-def display_portfolioOptimsiation():
+def display_optimisation():
 
     st.title("Portfolio Optimisation")
     fund_list = pd.DataFrame(get_funds())
@@ -56,11 +56,11 @@ def display_portfolioOptimsiation():
             alt.Chart(efficient_portfolios)
             .mark_circle(size=20, color="green", opacity=0.6)
             .encode(
-                x="std", y="returns", tooltip=["portfolioWeights","returns", "std" ]
+                x="std", y="returns", tooltip=["portfolioWeights", "returns", "std"]
             )
             .properties(width=700, height=400)
             .add_selection(alt.selection_interval(bind="scales"))
         )
-        
-        st.write('Efficient Frontier')
+
+        st.write("Efficient Frontier")
         st.write(frontier_chart)
