@@ -2,8 +2,9 @@ from datetime import datetime
 
 import altair as alt
 import pandas as pd
+import requests
 import streamlit as st
-from modules.funds import backtest, get_funds
+from modules.funds import get_funds
 
 
 def sidebar():
@@ -65,22 +66,17 @@ def display_backtest():
 
     if len(portfolio):
         backtest_input = {
-            "startDate": start_date,
-            "endDate": end_date,
+            "start_date": start_date,
+            "end_date": end_date,
             "portfolio": portfolio,
-            "strategy": {"rebalance": rebalance, "rebalanceFrequency": frequency},
+            "strategy": {"rebalance": rebalance, "rebalance_frequency": frequency},
         }
 
-        backtest_response = backtest(backtest_input)
+        url_backtest = "http://localhost:8000/backtest/"
+        backtest_response = requests.post(url=url_backtest, json=backtest_input).json()
 
         backtest_portfolio = pd.DataFrame(backtest_response["projection"])
         backtest_portfolio["date"] = pd.to_datetime(backtest_portfolio["date"])
-        backtest_monthly_returns = pd.DataFrame(
-            backtest_response["metrics"]["monthlyReturns"]
-        )
-        backtest_monthly_returns["date"] = pd.to_datetime(
-            backtest_monthly_returns["date"]
-        )
 
         chartoutput = (
             alt.Chart(backtest_portfolio)
@@ -93,8 +89,10 @@ def display_backtest():
 
         with st.expander(label="Metrics"):
             cagr = round(backtest_response["metrics"]["cagr"], 2) * 100
-            monthly_std = round(backtest_response["metrics"]["monthly_std"], 2) * 100
-            downside_std = round(backtest_response["metrics"]["downside_std"], 2) * 100
+            monthly_std = round(backtest_response["metrics"]["std_m"], 2) * 100
+            downside_std = (
+                round(backtest_response["metrics"]["std_downside_m"], 2) * 100
+            )
             sharpe_ratio = round(backtest_response["metrics"]["sharpe_ratio"], 2)
             sortino_ratio = round(backtest_response["metrics"]["sortino_ratio"], 2)
             max_drawdown = round(backtest_response["metrics"]["max_drawdown"], 2) * 100
@@ -111,23 +109,3 @@ def display_backtest():
                 |Max Drawdown:| {max_drawdown}% |
                 """
             )
-
-        with st.expander(label="Monthly returns"):
-            monthly_return_chart = (
-                alt.Chart(backtest_monthly_returns)
-                .mark_bar()
-                .encode(x="date", y="monthlyReturn")
-                .properties(width=700)
-            )
-
-            st.write(monthly_return_chart)
-
-        with st.expander(label="Daily drawdown"):
-            monthly_return_chart = (
-                alt.Chart(pd.DataFrame(backtest_portfolio))
-                .mark_line()
-                .encode(x="date", y="drawdown")
-                .properties(width=700)
-            )
-
-            st.write(monthly_return_chart)

@@ -11,7 +11,6 @@ options = {
     "Portfolio optimisation": display_optimisation,
 }
 
-
 page = st.sidebar.selectbox("Page Navigation", options)
 
 options[page]()
