@@ -15,6 +15,33 @@ summary_map = {
     "market_correlation": "Market correlation",
 }
 
+metric_map = {
+    "cagr": "CAGR",
+    "std_m": "Monthly standard deviation",
+    "max_drawdown": "Maximum drawdown",
+    "sharpe_ratio": "Sharpe ratio",
+    "sortino_ratio": "Sortino ratio",
+    "market_correlation": "Market correlation",
+    "arithmetic_mean_m": "Monthly Arithmetic mean",
+    "arithmetic_mean_y": "Monthly Arithmetic mean",
+    "geometric_mean_m": "Monthly Arithmetic mean",
+    "geometric_mean_y": "Monthly Arithmetic mean",
+    "std_m": "Monthly standard deviation",
+    "std_downside_m": "Monthly downside standard deviation",
+    "alpha": "Alpha",
+    "beta": "Beta",
+    "r_squared": "R squared",
+    "cagr": "CAGR",
+    "treynor_ratio": "Treynor ratio",
+    "calmar_ratio": "Calmar ratio",
+    "active_return": "Active return",
+    "tracking_error": "Tracking error",
+    "information_ratio": "Information ratio",
+    "upside_capture_ratio": "Upside capture ratio",
+    "downside_capture_ratio": "Downside capture ratio",
+    "capture_ratio": "Capture ratio",
+}
+
 format_dict = {
     "Maximum drawdown": "{:.2%}",
     "Monthly standard deviation": "{:.2%}",
@@ -26,11 +53,19 @@ format_dict = {
     "Market correlation": "{:.2f}",
 }
 
+colors = {
+    "first": "#ED254E",
+    "second": "#1E2019",
+    "third": "#361D2E",
+    "fourth": "#3C6997",
+    "fifth": "#EEE2DF",
+}
+
 
 class Backtest:
     def sidebar(self):
 
-        funds = pd.DataFrame(get_funds())
+        available_funds = pd.DataFrame(get_funds())
 
         st.sidebar.subheader("Portfolio inputs")
 
@@ -54,7 +89,7 @@ class Backtest:
 
         selected_funds = st.sidebar.multiselect(
             label="Fund selection",
-            options=list(funds["Company"]),
+            options=list(available_funds["Company"]),
             default=["Apple Inc."],
         )
         portfolio = []
@@ -66,9 +101,9 @@ class Backtest:
 
             portfolio.append(
                 {
-                    "fund": funds.loc[funds["Company"] == selected_funds[i]][
-                        "Code"
-                    ].reset_index(drop=True)[0],
+                    "fund": available_funds.loc[
+                        available_funds["Company"] == selected_funds[i]
+                    ]["Code"].reset_index(drop=True)[0],
                     "amount": amounts[f"fund{i}"],
                 }
             )
@@ -99,7 +134,7 @@ class Backtest:
                 x="Date",
                 y="Portfolio Value ($)",
                 tooltip=["Date", "Portfolio Value ($)"],
-                color=alt.value("#ED254E"),
+                color=alt.value(colors["first"]),
             )
         )
 
@@ -119,12 +154,68 @@ class Backtest:
 
         st.subheader("Summary metrics")
 
+        st.markdown("")
         st.write(
             summary_metrics.style.format(format_dict).hide_index().to_html(),
             unsafe_allow_html=True,
         )
+        st.markdown("")
 
-    def display_backtest(self):
+    def annual_return(self, backtest_response):
+        st.subheader("Annual returns")
+
+        annual_returns = pd.DataFrame(backtest_response["metrics"]["annual"]["return"])
+
+        return_chart = (
+            alt.Chart(annual_returns)
+            .mark_bar()
+            .encode(
+                x="date:T",
+                y=alt.Y("portfolio_returns", axis=alt.Axis(format="%")),
+                tooltip=["date:T", alt.Tooltip("portfolio_returns", format=".2%")],
+                color=alt.value(colors["second"]),
+            )
+        )
+
+        st.altair_chart(return_chart, use_container_width=True)
+
+    def drawdowns(self, backtest_response):
+        with st.expander("Drawdowns"):
+
+            daily_drawdown = pd.DataFrame(
+                backtest_response["metrics"]["daily"]["drawdown"]
+            )
+
+            drawdown_chart = (
+                alt.Chart(daily_drawdown)
+                .mark_line()
+                .encode(
+                    x="date:T",
+                    y=alt.Y("drawdown", axis=alt.Axis(format="%")),
+                    tooltip=["date:T", alt.Tooltip("drawdown", format=".2%")],
+                    color=alt.value(colors["fourth"]),
+                )
+            )
+
+            st.altair_chart(drawdown_chart, use_container_width=True)
+
+    def metrics(self, backtest_response):
+        with st.expander("Metrics"):
+            st.markdown("")
+            st.write(
+                pd.DataFrame(backtest_response["metrics"]["metrics"], index=[0])
+                .rename(columns=metric_map)
+                .transpose()
+                .reset_index()
+                .style.format(format_dict)
+                .hide_index()
+                .hide_columns()
+                .to_html(),
+                unsafe_allow_html=True,
+            )
+            st.markdown("")
+
+    def display(self):
 
         start_date, end_date, frequency, portfolio, rebalance = self.sidebar()
 
@@ -144,38 +235,8 @@ class Backtest:
 
             self.summary_metrics_page(backtest_response)
 
-            st.subheader("Monthly returns")
+            self.annual_return(backtest_response)
 
-            monthly_returns = pd.DataFrame(
-                backtest_response["metrics"]["monthly"]["return"]
-            )
+            self.metrics(backtest_response)
 
-            return_chart = (
-                alt.Chart(monthly_returns)
-                .mark_bar()
-                .encode(
-                    x="date:T",
-                    y=alt.Y("portfolio_returns", axis=alt.Axis(format="%")),
-                    tooltip=["date:T", alt.Tooltip("portfolio_returns", format=".2%")],
-                )
-            )
-
-            st.altair_chart(return_chart, use_container_width=True)
-
-            st.subheader("Daily drawdowns")
-
-            daily_drawdown = pd.DataFrame(
-                backtest_response["metrics"]["daily"]["drawdown"]
-            )
-
-            drawdown_chart = (
-                alt.Chart(daily_drawdown)
-                .mark_line()
-                .encode(
-                    x="date:T",
-                    y=alt.Y("drawdown", axis=alt.Axis(format="%")),
-                    tooltip=["date:T", alt.Tooltip("drawdown", format=".2%")],
-                )
-            )
-
-            st.altair_chart(drawdown_chart, use_container_width=True)
+            self.drawdowns(backtest_response)
