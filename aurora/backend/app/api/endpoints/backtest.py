@@ -46,7 +46,7 @@ def backtest_portfolio(item: schemas.portfolio):
     projection["date"] = projection["date"].dt.strftime("%Y-%m-%d")
 
     result = {}
-    result["metrics"] = metrics
     result["projection"] = json.loads(projection.to_json(orient="records"))
+    result["metrics"] = metrics
 
     return result

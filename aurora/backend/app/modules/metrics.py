@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
@@ -38,9 +40,9 @@ class Metrics(BaseModel):
 
     def drawdown(self, portfolio):
         rolling_max = portfolio["portfolio"].cummax()
-        drawdown = portfolio["portfolio"] / rolling_max - 1.0
+        portfolio["drawdown"] = portfolio["portfolio"] / rolling_max - 1.0
 
-        return drawdown
+        return portfolio[["date", "drawdown"]]
 
     def market_correlation(self, portfolio, market):
         return np.corrcoef(portfolio, market)[0, 1]
@@ -64,17 +66,18 @@ class Metrics(BaseModel):
             drop=True
         )
 
+        # TO DO: Fix not starting / ending at year end
         portfolio_y = portfolio.loc[portfolio["date"].dt.is_year_end].reset_index(
             drop=True
         )
 
         portfolio_m["portfolio_returns"] = self.returns(portfolio_m["portfolio"])
         portfolio_m["market_returns"] = self.returns(portfolio_m["market"])
-        portfolio_m = portfolio_m.dropna().reset_index()
+        portfolio_m = portfolio_m.dropna().reset_index(drop=True)
 
         portfolio_y["portfolio_returns"] = self.returns(portfolio_y["portfolio"])
         portfolio_y["market_returns"] = self.returns(portfolio_y["market"])
-        portfolio_y = portfolio_y.dropna().reset_index()
+        portfolio_y = portfolio_y.dropna().reset_index(drop=True)
 
         arithmetic_mean_m = portfolio_m["portfolio_returns"].mean()
         geometric_mean_m = self.geometric_mean(portfolio_m["portfolio_returns"].values)
@@ -92,7 +95,8 @@ class Metrics(BaseModel):
         negative_std = self.std(negative_returns["portfolio_returns"])
 
         daily_drawdowns = self.drawdown(portfolio)
-        max_drawdown = daily_drawdowns.min() * -1.0
+        max_drawdown = daily_drawdowns["drawdown"].values.min() * -1.0
+        daily_drawdowns
 
         market_correlation = self.market_correlation(
             portfolio_m["portfolio_returns"].values,
@@ -113,11 +117,11 @@ class Metrics(BaseModel):
 
         calmar_ratio = cagr / max_drawdown
 
-        active_error = cagr - market_cagr
+        active_return = cagr - market_cagr
         tracking_error = self.std(
             portfolio_m["portfolio_returns"] - portfolio_m["market_returns"]
         )
-        information_ratio = active_error / tracking_error
+        information_ratio = active_return / tracking_error
 
         positive_market_periods = portfolio_m.loc[portfolio_m["market_returns"] > 0]
         negative_market_periods = portfolio_m.loc[portfolio_m["market_returns"] < 0]
@@ -130,34 +134,49 @@ class Metrics(BaseModel):
         ) / self.geometric_mean(negative_market_periods["market_returns"])
         capture_ratio = upside_capture_ratio / downside_capture_ratio
 
+        portfolio_m["date"] = portfolio_m["date"].dt.strftime("%Y-%m-%d")
+        portfolio_y["date"] = portfolio_y["date"].dt.strftime("%Y-%m-%d")
+        daily_drawdowns["date"] = daily_drawdowns["date"].dt.strftime("%Y-%m-%d")
+
         """
         - Positive Periods
         - Annualize alpha
         """
 
         result = {
-            "arithmetic_mean_m": arithmetic_mean_m,
-            "arithmetic_mean_y": arithmetic_mean_y,
-            "geometric_mean_m": geometric_mean_m,
-            "geometric_mean_y": geometric_mean_y,
-            "std_m": monthly_std,
-            "std_downside_m": negative_std,
-            "market_correlation": market_correlation,
-            "alpha": alpha,
-            "beta": beta,
-            "r_squared": r_squared,
-            "cagr": cagr,
-            "sharpe_ratio": sharpe_ratio,
-            "sortino_ratio": sortino_ratio,
-            "treynor_ratio": treynor_ratio,
-            "calmar_ratio": calmar_ratio,
-            "max_drawdown": max_drawdown,
-            "active_error": active_error,
-            "tracking_error": tracking_error,
-            "information_ratio": information_ratio,
-            "upside_capture_ratio": upside_capture_ratio,
-            "downside_capture_ratio": downside_capture_ratio,
-            "capture_ratio": capture_ratio,
+            "metrics": {
+                "arithmetic_mean_m": arithmetic_mean_m,
+                "arithmetic_mean_y": arithmetic_mean_y,
+                "geometric_mean_m": geometric_mean_m,
+                "geometric_mean_y": geometric_mean_y,
+                "std_m": monthly_std,
+                "std_downside_m": negative_std,
+                "market_correlation": market_correlation,
+                "alpha": alpha,
+                "beta": beta,
+                "r_squared": r_squared,
+                "cagr": cagr,
+                "sharpe_ratio": sharpe_ratio,
+                "sortino_ratio": sortino_ratio,
+                "treynor_ratio": treynor_ratio,
+                "calmar_ratio": calmar_ratio,
+                "max_drawdown": max_drawdown,
+                "active_return": active_return,
+                "tracking_error": tracking_error,
+                "information_ratio": information_ratio,
+                "upside_capture_ratio": upside_capture_ratio,
+                "downside_capture_ratio": downside_capture_ratio,
+                "capture_ratio": capture_ratio,
+            },
+            "annual": {
+                "return": json.loads(portfolio_y.to_json(orient="records")),
+            },
+            "monthly": {
+                "return": json.loads(portfolio_m.to_json(orient="records")),
+            },
+            "daily": {
+                "drawdown": json.loads(daily_drawdowns.to_json(orient="records"))
+            },
         }
 
         return result
