@@ -1,9 +1,7 @@
 import json
 
 from app import schemas
-from app.modules.backtestCalculator import backtest_strategy
-from app.modules.dataLoader import DataLoader, load_normalised_historical_index
-from app.modules.metricCalculator import calculate_metrics
+from app.modules.dataLoader import DataLoader
 from app.modules.metrics import Metrics
 from app.modules.portfolio import Portfolio
 from fastapi import APIRouter

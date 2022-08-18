@@ -62,14 +62,19 @@ class Metrics(BaseModel):
         # Needs to be dynamically loaded eventually
         risk_free = 0.01
 
-        portfolio_m = portfolio.loc[portfolio["date"].dt.is_month_end].reset_index(
-            drop=True
-        )
+        portfolio_m = portfolio.loc[
+            (
+                (portfolio["date"].dt.is_month_end)
+                | (portfolio["date"] == max(portfolio["date"]))
+            )
+        ].reset_index(drop=True)
 
-        # TO DO: Fix not starting / ending at year end
-        portfolio_y = portfolio.loc[portfolio["date"].dt.is_year_end].reset_index(
-            drop=True
-        )
+        portfolio_y = portfolio.loc[
+            (
+                (portfolio["date"].dt.is_year_end)
+                | (portfolio["date"] == max(portfolio["date"]))
+            )
+        ].reset_index(drop=True)
 
         portfolio_m["portfolio_returns"] = self.returns(portfolio_m["portfolio"])
         portfolio_m["market_returns"] = self.returns(portfolio_m["market"])
