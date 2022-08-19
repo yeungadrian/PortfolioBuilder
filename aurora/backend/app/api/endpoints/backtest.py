@@ -1,7 +1,7 @@
 import json
 
 from app import schemas
-from app.modules.dataLoader import DataLoader
+from app.modules.data_loader import DataLoader
 from app.modules.metrics import Metrics
 from app.modules.portfolio import Portfolio
 from fastapi import APIRouter

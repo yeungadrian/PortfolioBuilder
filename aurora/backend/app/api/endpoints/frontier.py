@@ -1,10 +1,9 @@
-from fastapi import APIRouter
-
-from app import schemas
-from app.modules.dataLoader import load_historical_returns
-from app.modules.frontierCalculator import efficient_frontier_metrics
-import pandas as pd
 import numpy as np
+import pandas as pd
+from app import schemas
+from app.modules.data_loader import load_historical_returns
+from app.modules.frontierCalculator import efficient_frontier_metrics
+from fastapi import APIRouter
 
 router = APIRouter()
 
