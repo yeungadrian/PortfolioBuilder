@@ -8,24 +8,12 @@ from pydantic import BaseModel
 PandasDataFrame = TypeVar("pandas.core.frame.DataFrame")
 
 
-class Portfolio(BaseModel):
+class Factor(BaseModel):
     fund_codes: List[str]
     start_date: str
     end_date: str
     price_df: PandasDataFrame
     french_fama_df: PandasDataFrame
-
-    """
-    def prepare_data(self):
-        self.price_df["date"] = pd.to_datetime(self.price_df["date"])
-        self.price_df = self.price_df.sort_values(by="date").reset_index(drop=True)
-        self.price_df = self.price_df.loc[
-            (self.price_df.date >= self.start_date)
-            & (self.price_df.date <= self.end_date)
-        ].reset_index(drop=True)
-        self.french_fama_df.date = pd.to_datetime(ff_factors.date, format="%Y-%m-%d")
-        self.french_fama_df = self.french_fama_df.rename(columns={"MktRF": "Mkt"})
-    """
 
     def calculate_returns(self):
 

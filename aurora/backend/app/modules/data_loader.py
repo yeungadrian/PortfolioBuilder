@@ -8,7 +8,7 @@ from pydantic import BaseModel
 config = {
     "fund_codes": "app/data/fundCodes.parquet",
     "fund_prices": "app/data/fundPrices.parquet",
-    "ff_factors": "app/data/ffFactors.parquet",
+    "ff_factors": "app/data/ff_Factors.parquet",
     "sp500": "app/data/sp500.csv",
 }
 
@@ -75,11 +75,11 @@ class DataLoader(BaseModel):
 
         return subset_data
 
-    def load_ffFactors(
+    def load_ff_factors(
         self, regression_factors, start_date, end_date, frequency="daily"
     ):
         response_columns = ["date"] + regression_factors + ["RF"]
-        data_location = "app/data/ffFactors.parquet"
+        data_location = "app/data/ff_factors.parquet"
 
         if frequency == "monthly":
             data_location = "app/data/ffFactorsMonthly.parquet"
@@ -210,7 +210,7 @@ def load_historical_returns(fund_codes, start_date, end_date, frequency):
 
 def load_ffFactors(regression_factors, start_date, end_date, frequency="daily"):
     response_columns = ["date"] + regression_factors + ["RF"]
-    data_location = "app/data/ffFactors.parquet"
+    data_location = "app/data/ff_factors.parquet"
 
     if frequency == "monthly":
         data_location = "app/data/ffFactorsMonthly.parquet"

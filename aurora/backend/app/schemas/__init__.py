@@ -1,3 +1,3 @@
 from .backtest import backtest, portfolio
-from .factorRegression import factorRegression
+from .factor import factor
 from .frontier import frontier
