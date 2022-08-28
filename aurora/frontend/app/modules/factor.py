@@ -6,140 +6,142 @@ import streamlit as st
 from modules.funds import factorRegression, get_funds
 
 
-def display_factor():
+class FactorAnalysis:
+    def sidebar(self, fund_list):
 
-    # Portfolio Backtesting
-
-    st.title("Factor Regression")
-    fund_list = pd.DataFrame(get_funds())
-
-    st.sidebar.subheader("Regression inputs")
-
-    start_date = st.sidebar.date_input(
-        "Start Date", value=datetime(2017, 12, 31)
-    ).strftime("%Y-%m-%d")
-    end_date = st.sidebar.date_input("End Date", value=datetime(2020, 12, 31)).strftime(
-        "%Y-%m-%d"
-    )
-
-    selected_funds = st.sidebar.multiselect(
-        label="Fund selection",
-        options=list(fund_list["Company"]),
-        default=["Apple Inc."],
-    )
-
-    regression_factors = ["MktRF", "SMB", "HML", "RMW", "CMA"]
-
-    selected_factors = st.sidebar.multiselect(
-        label="Factor selection",
-        options=regression_factors,
-        default=["MktRF", "SMB", "HML"],
-    )
-
-    frequency = st.sidebar.selectbox(
-        label="Return frequency",
-        options=["daily", "monthly"],
-    )
-
-    selected_fund_list = []
-
-    for i in range(0, len(selected_funds)):
-        selected_fund_list.append(
-            fund_list[fund_list["Company"] == selected_funds[i]]["Code"].reset_index(
-                drop=True
-            )[0]
+        start_date = st.date_input("Start Date", value=datetime(2017, 12, 31)).strftime(
+            "%Y-%m-%d"
+        )
+        end_date = st.date_input("End Date", value=datetime(2020, 12, 31)).strftime(
+            "%Y-%m-%d"
         )
 
-    submit = st.sidebar.button(label="Run")
+        funds = st.multiselect(
+            label="Fund selection",
+            options=list(fund_list["Company"]),
+            default=["Apple Inc."],
+        )
 
-    if submit:
+        regression_factors = ["MktRF", "SMB", "HML", "RMW", "CMA"]
+
+        selected_factors = st.multiselect(
+            label="Factor selection",
+            options=regression_factors,
+            default=["MktRF", "SMB", "HML"],
+        )
+
+        frequency = st.selectbox(
+            label="Return frequency",
+            options=["Daily", "Monthly"],
+        ).lower()
+
+        fund_codes = []
+
+        for i in range(len(funds)):
+            fund_codes.append(
+                fund_list[fund_list["Company"] == funds[i]]["Code"].values[0]
+            )
 
         regression_input = {
             "start_date": start_date,
             "end_date": end_date,
-            "funds": selected_fund_list,
+            "funds": fund_codes,
             "factors": selected_factors,
             "frequency": frequency,
         }
 
-        regression_response = factorRegression(regression_input)
+        return regression_input
 
-        for i in regression_response:
+    def annual_alpha(self, regression_input, alpha):
+        if regression_input["frequency"] == "monthly":
+            annual_alpha = (1 + (alpha)) ** 12 - 1
+        else:
+            annual_alpha = (1 + (alpha)) ** 252 - 1
 
-            company = fund_list[fund_list["Code"] == i["fund_code"]][
-                "Company"
-            ].reset_index(drop=True)[0]
-            regression_residuals = (
-                pd.DataFrame(i["residuals"], index=[0]).transpose().reset_index()
-            )
+        return annual_alpha
 
-            metrics = [
-                "coefficient",
-                "standard_errors",
-                "pvals",
-                "conf_lower",
-                "conf_higher",
+    def summary_table(self, fund_list, regression_input, regression):
+
+        columns = (
+            ["Ticker", "Start Date", "End Date"]
+            + regression_input["factors"]
+            + ["Alpha (bps)", "Annual Alpha", "R squared"]
+        )
+
+        summary = {}
+
+        for i in regression:
+            fund_summary = [i["fund_code"]]
+            fund_summary = fund_summary + [
+                regression_input["start_date"],
+                regression_input["end_date"],
+            ]
+            for j in regression_input["factors"]:
+                fund_summary.append(i["coefficient"][j])
+
+            alpha = i["coefficient"]["Intercept"]
+            fund_summary.append(alpha / 0.0001)
+            fund_summary.append(self.annual_alpha(regression_input, alpha))
+
+            fund_summary.append(i["rsquared"])
+
+            company = fund_list[fund_list["Code"] == i["fund_code"]]["Company"].values[
+                0
             ]
 
-            metrics_json = {j: i[j] for j in metrics if j in i}
+            summary[company] = fund_summary
 
-            st.markdown(
-                f"""
-                ## {company}
-                """
+        summary = pd.DataFrame(summary).transpose()
+        summary.columns = columns
+
+        st.dataframe(summary)
+
+    def residuals(self, regression):
+        with st.expander("Residuals"):
+
+            residuals = pd.DataFrame()
+
+            for i in regression:
+                residual = pd.DataFrame(i["residuals"], index=[i["fund_code"]])
+                residuals = pd.concat([residuals, residual])
+
+            residuals = (
+                residuals.transpose().reset_index().rename(columns={"index": "Date"})
             )
 
-            st.table(
-                pd.DataFrame(
-                    {
-                        "observations": i["num_obs"],
-                        "R Squared": round(i["rsquared"], 4),
-                        "Adjusted R Squared": round(i["rsquared_adj"], 4),
-                    },
-                    index=[0],
+            residuals = pd.melt(
+                residuals, id_vars="Date", var_name="Ticker", value_name="Residual"
+            )
+
+            residual_chart = (
+                alt.Chart(residuals)
+                .mark_circle()
+                .encode(
+                    x="Date:T",
+                    y="Residual",
+                    color="Ticker",
+                    tooltip=["Date:T", "Residual"],
                 )
             )
 
-            alpha = round(i["coefficient"]["Intercept"] / 0.0001, 2)
+            st.altair_chart(residual_chart, use_container_width=True)
 
-            if frequency == "Monthly":
-                annual_alpha = alpha * 12
-            else:
-                annual_alpha = round(alpha / 100 * 255, 2)
+    def display(self):
 
-            st.markdown(
-                f"""
-            Alpha: {alpha}bps
+        fund_list = pd.DataFrame(get_funds())
 
-            Annualised Alpha:  {annual_alpha}%
-            """
-            )
+        st.title("Factor Analysis")
 
-            dynamic_metrics = pd.DataFrame(metrics_json)
-            dynamic_metrics.columns = [
-                "cofficient",
-                "standard error",
-                "p-value",
-                "95% lower",
-                "95% higher",
-            ]
+        with st.form("my_form"):
+            with st.sidebar:
+                regression_input = self.sidebar(fund_list)
 
-            st.table(dynamic_metrics)
+                submitted = st.form_submit_button("Submit")
 
-            regression_residuals.columns = ["date", "residual"]
-            regression_residuals["date"] = pd.to_datetime(regression_residuals["date"])
+        if submitted:
 
-            residual_chart = (
-                alt.Chart(regression_residuals)
-                .mark_circle()
-                .encode(x="date", y="residual")
-                .properties(width=700)
-            )
+            regression_response = factorRegression(regression_input)
 
-            st.write(residual_chart)
+            self.summary_table(fund_list, regression_input, regression_response)
 
-            st.markdown(
-                """
-                ---
-                """
-            )
+            self.residuals(regression_response)

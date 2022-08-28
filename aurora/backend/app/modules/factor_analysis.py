@@ -54,7 +54,6 @@ class FactorAnalysis(BaseModel):
         fund_returns = self.fund_returns.copy()
         ff_factors = self.ff_factors.copy()
 
-        print(fund_returns["date"])
         fund_returns["date"] = fund_returns["date"].dt.strftime("%Y-%m-%d")
         ff_factors["date"] = ff_factors["date"].dt.strftime("%Y-%m-%d")
 

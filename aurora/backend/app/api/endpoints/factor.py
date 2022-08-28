@@ -1,6 +1,6 @@
 from app import schemas
 from app.modules.data_loader import DataLoader
-from app.modules.factor import FactorAnalysis
+from app.modules.factor_analysis import FactorAnalysis
 from fastapi import APIRouter
 
 router = APIRouter()

@@ -99,7 +99,6 @@ class DataLoader(BaseModel):
         for i in fund_codes:
             subset_data[f"{i}index"] = (subset_data[i] / subset_data[i].shift()) - 1
 
-        print(subset_data)
         subset_data = subset_data.dropna()
         subset_data = subset_data.drop(fund_codes, axis=1)
         subset_data.columns = response_columns
