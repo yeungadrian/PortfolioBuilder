@@ -1,6 +1,6 @@
 import pandas as pd
 from app import schemas
-from app.modules.data_loader import load_ffFactors, load_historical_returns
+from app.modules.data_loader import DataLoader
 from app.modules.factor import Factor
 from app.modules.factorRegressionCalculator import calculate_factor_regression
 from fastapi import APIRouter
@@ -18,7 +18,7 @@ def factor_regression(item: schemas.factor):
     frequency = item.dict()["frequency"].lower()
 
     frenchfama_Factors = pd.DataFrame(
-        load_ffFactors(
+        DataLoader().load_ffFactors(
             regression_factors=regression_factors,
             start_date=start_date,
             end_date=end_date,
@@ -27,7 +27,7 @@ def factor_regression(item: schemas.factor):
     )
 
     historical_returns = pd.DataFrame(
-        load_historical_returns(
+        DataLoader().load_historical_returns(
             fund_codes=fund_codes,
             start_date=start_date,
             end_date=end_date,
