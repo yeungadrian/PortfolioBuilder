@@ -4,7 +4,7 @@ import streamlit as st
 urls = {
     "funds": "http://localhost:8000/funds/",
     "backtest": "http://localhost:8000/backtest/",
-    "factor": "http://localhost:8000/factorRegression/",
+    "factor": "http://localhost:8000/factor_analysis/",
     "optimisation": "http://localhost:8000/portfolioOptimisation/",
 }
 
@@ -27,7 +27,7 @@ def backtest(json_input):
 
 @st.cache()
 def factorRegression(json_input):
-    url_factor = "http://localhost:8000/factorRegression/"
+    url_factor = "http://localhost:8000/factor_analysis/"
     response = requests.post(url=url_factor, json=json_input).json()
 
     return response

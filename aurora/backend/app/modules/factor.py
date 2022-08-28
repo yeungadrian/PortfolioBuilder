@@ -8,23 +8,13 @@ from pydantic import BaseModel
 PandasDataFrame = TypeVar("pandas.core.frame.DataFrame")
 
 
-class Factor(BaseModel):
+class FactorAnalysis(BaseModel):
     fund_codes: List[str]
     start_date: str
     end_date: str
-    price_df: PandasDataFrame
-    french_fama_df: PandasDataFrame
-
-    def calculate_returns(self):
-
-        columns = ["date"] + self.fund_codes
-        subset_data = self.price_df[columns]
-        for i in self.fund_codes:
-            subset_data[i] = (subset_data[i] / subset_data[i].shift()) - 1
-
-        subset_data = subset_data.dropna()
-
-        return subset_data
+    factors: List[str]
+    fund_returns: PandasDataFrame
+    ff_factors: PandasDataFrame
 
     def get_summary_results(self, results, fund_code):
         """take the result of an statsmodel results table and transforms it into a dataframe
@@ -37,42 +27,44 @@ class Factor(BaseModel):
         residuals = results.resid
         num_obs = results.nobs
         rsquared = results.rsquared
-        rsquard_adj = results.rsquared_adj
+        rsquared_adj = results.rsquared_adj
         fvalue = results.fvalue
 
         output_result = {
-            "fundCode": fund_code,
-            "numberObservations": num_obs,
-            "rSquared": rsquared,
-            "rSquaredAdjusted": rsquard_adj,
-            "fValue": fvalue,
+            "fund_code": fund_code,
+            "num_obs": num_obs,
+            "rsquared": rsquared,
+            "rsquared_adj": rsquared_adj,
+            "fvalue": fvalue,
             "coefficient": coefficient,
-            "standardErrors": standard_errors,
-            "pValues": pvals,
-            "confidenceIntervalLower": conf_lower,
-            "confidenceIntervalHigher": conf_higher,
+            "standard_errors": standard_errors,
+            "pvals": pvals,
+            "conf_lower": conf_lower,
+            "conf_higher": conf_higher,
             "residuals": residuals,
         }
 
         return output_result
 
-    def calculate_factor_regression(
-        self, fund_code, regression_factors, frenchfama_Factors, historical_returns
-    ):
+    def calculate_factor_regression(self, fund_code, regression_factors):
 
         np.random.seed(1000)
 
         regression_equation = " + ".join(regression_factors)
+        fund_returns = self.fund_returns.copy()
+        ff_factors = self.ff_factors.copy()
 
-        historical_returns = historical_returns.set_index("date")
-        historical_returns.index.name = None
+        print(fund_returns["date"])
+        fund_returns["date"] = fund_returns["date"].dt.strftime("%Y-%m-%d")
+        ff_factors["date"] = ff_factors["date"].dt.strftime("%Y-%m-%d")
 
-        frenchfama_Factors = frenchfama_Factors.set_index("date")
-        frenchfama_Factors.index.name = None
+        fund_returns = fund_returns.set_index("date")
+        fund_returns.index.name = None
 
-        regression_data = pd.concat(
-            [historical_returns, frenchfama_Factors], axis=1, join="inner"
-        )
+        ff_factors = ff_factors.set_index("date")
+        ff_factors.index.name = None
+
+        regression_data = pd.concat([fund_returns, ff_factors], axis=1, join="inner")
 
         regression_data[fund_code] = regression_data[fund_code] - regression_data["RF"]
 
@@ -87,13 +79,8 @@ class Factor(BaseModel):
         return output
 
     def regress_funds(self):
-        fund_returns = self.calculate_returns()
         output = []
 
         for i in self.fund_codes:
-            output.append(
-                self.calculate_factor_regression(
-                    i, ["Mkt", "SMB", "HML", "RMW"], self.french_fama_df, fund_returns
-                )
-            )
+            output.append(self.calculate_factor_regression(i, self.factors))
         return output

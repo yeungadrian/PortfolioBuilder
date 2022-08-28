@@ -38,7 +38,7 @@ def display_factor():
 
     frequency = st.sidebar.selectbox(
         label="Return frequency",
-        options=["Daily", "Monthly"],
+        options=["daily", "monthly"],
     )
 
     selected_fund_list = []
@@ -55,10 +55,10 @@ def display_factor():
     if submit:
 
         regression_input = {
-            "startDate": start_date,
-            "endDate": end_date,
+            "start_date": start_date,
+            "end_date": end_date,
             "funds": selected_fund_list,
-            "regressionFactors": selected_factors,
+            "factors": selected_factors,
             "frequency": frequency,
         }
 
@@ -66,7 +66,7 @@ def display_factor():
 
         for i in regression_response:
 
-            company = fund_list[fund_list["Code"] == i["fundCode"]][
+            company = fund_list[fund_list["Code"] == i["fund_code"]][
                 "Company"
             ].reset_index(drop=True)[0]
             regression_residuals = (
@@ -75,10 +75,10 @@ def display_factor():
 
             metrics = [
                 "coefficient",
-                "standardErrors",
-                "pValues",
-                "confidenceIntervalLower",
-                "confidenceIntervalHigher",
+                "standard_errors",
+                "pvals",
+                "conf_lower",
+                "conf_higher",
             ]
 
             metrics_json = {j: i[j] for j in metrics if j in i}
@@ -92,9 +92,9 @@ def display_factor():
             st.table(
                 pd.DataFrame(
                     {
-                        "observations": i["numberObservations"],
-                        "R Squared": round(i["rSquared"], 4),
-                        "Adjusted R Squared": round(i["rSquaredAdjusted"], 4),
+                        "observations": i["num_obs"],
+                        "R Squared": round(i["rsquared"], 4),
+                        "Adjusted R Squared": round(i["rsquared_adj"], 4),
                     },
                     index=[0],
                 )

@@ -1,4 +1,4 @@
-from app.modules.data_loader import load_available_funds
+from app.modules.data_loader import DataLoader
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -6,6 +6,6 @@ router = APIRouter()
 
 @router.get("/")
 def get_funds():
-    result = load_available_funds()
+    result = DataLoader().load_available_funds()
 
     return result

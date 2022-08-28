@@ -35,7 +35,9 @@ def backtest_portfolio(item: schemas.portfolio):
         rebalance_frequency=item.dict()["strategy"]["rebalance_frequency"],
     ).backtest_strategy()
 
-    sp500 = DataLoader().load_sp500(item.dict()["start_date"], item.dict()["end_date"])
+    sp500 = DataLoader().load_benchmark(
+        item.dict()["start_date"], item.dict()["end_date"]
+    )
 
     projection = projection.merge(sp500[["date", "market"]], how="left", on="date")
 

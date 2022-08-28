@@ -17,13 +17,11 @@ def efficient_frontier(item: schemas.frontier):
     numberOfPortfolios = item.dict()["numberOfPortfolios"]
     frequency = "monthly"
 
-    historical_returns = pd.DataFrame(
-        DataLoader().load_historical_returns(
-            fund_codes=fund_codes,
-            start_date=start_date,
-            end_date=end_date,
-            frequency=frequency,
-        )
+    historical_returns = DataLoader().load_historical_returns(
+        fund_codes=fund_codes,
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
     )
 
     fund_returns = np.mean(historical_returns.drop(columns=["date"]))
