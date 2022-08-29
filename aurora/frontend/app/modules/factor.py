@@ -4,7 +4,7 @@ import altair as alt
 import pandas as pd
 import requests
 import streamlit as st
-from modules.funds import factorRegression, get_funds
+from modules.funds import factor_regression, get_funds
 
 config = {
     "Intercept": "Alpha (bps)",
@@ -254,7 +254,7 @@ class FactorAnalysis:
 
         if submitted:
 
-            regression_response = factorRegression(regression_input)
+            regression_response = factor_regression(regression_input)
 
             self.summary_table(fund_list, regression_input, regression_response)
 

@@ -1,81 +1,95 @@
 import json
+from typing import TypeVar
 
 import numpy as np
 import pandas as pd
+from pydantic import BaseModel
 from scipy.optimize import minimize
 
-
-def portfolio_return(weights, fund_returns):
-    annualised_return = np.sum(fund_returns * weights)
-
-    return annualised_return
+PandasDataFrame = TypeVar("pandas.core.frame.DataFrame")
 
 
-def portfolio_std(weights, fund_returns, fund_covariance):
+def portfolio_std(weights, fund_covariance):
     std = np.sqrt(np.dot(weights, np.dot(fund_covariance, weights)))
     return std
 
 
-def efficient_return(fund_returns, fund_covariance, target):
-    args = (fund_returns, fund_covariance)
-    num_funds = len(fund_returns)
-
-    def portfolio_return(weights):
+class PortfolioOptimisation(BaseModel):
+    def portfolio_return(self, weights, fund_returns):
         annualised_return = np.sum(fund_returns * weights)
 
         return annualised_return
 
-    constraints = (
-        {"type": "eq", "fun": lambda x: portfolio_return(x) - target},
-        {"type": "eq", "fun": lambda x: np.sum(x) - 1},
-    )
-    bounds = tuple((0, 1) for asset in range(num_funds))
-    initial_weights = num_funds * [
-        1.0 / num_funds,
-    ]
-    result = minimize(
-        portfolio_std,
-        initial_weights,
-        args=args,
-        method="SLSQP",
-        bounds=bounds,
-        constraints=constraints,
-    ).x
-    result = [round(elem, 6) for elem in result]
-    return result
+    def optimise_std(self, fund_returns, fund_covariance, target):
+        args = fund_covariance
+        num_funds = len(fund_returns)
 
+        def portfolio_return(weights):
+            annualised_return = np.sum(fund_returns * weights)
 
-def calculate_efficient_frontier(fund_returns, fund_covariance, portfolios):
-    return_range = (fund_returns.max() - fund_returns.min()) / (portfolios - 1)
-    efficient_range = []
-    for i in range(portfolios):
-        efficient_range.append(fund_returns.min() + return_range * i)
+            return annualised_return
 
-    efficient_portfolios = []
+        constraints = (
+            {"type": "eq", "fun": lambda x: portfolio_return(x) - target},
+            {"type": "eq", "fun": lambda x: np.sum(x) - 1},
+        )
+        bounds = tuple((0, 1) for i in range(num_funds))
+        initial_weights = num_funds * [
+            1.0 / num_funds,
+        ]
+        result = minimize(
+            portfolio_std,
+            initial_weights,
+            args=args,
+            method="SLSQP",
+            bounds=bounds,
+            constraints=constraints,
+        ).x
+        result = [round(elem, 6) for elem in result]
+        return result
 
-    for j in efficient_range:
-        efficient_portfolios.append(efficient_return(fund_returns, fund_covariance, j))
+    def efficient_frontier_portfolios(self, fund_returns, fund_covariance, portfolios):
+        return_range = (fund_returns.max() - fund_returns.min()) / (portfolios - 1)
+        efficient_range = []
+        for i in range(portfolios):
+            efficient_range.append(fund_returns.min() + return_range * i)
 
-    return efficient_portfolios
+        efficient_portfolios = []
 
+        for j in efficient_range:
+            efficient_portfolios.append(
+                self.optimise_std(fund_returns, fund_covariance, j)
+            )
 
-def efficient_frontier_metrics(fund_returns, fund_covariance, portfolios, fund_codes):
+        return efficient_portfolios
 
-    efficient_portfolios = calculate_efficient_frontier(
-        fund_returns, fund_covariance, portfolios
-    )
+    def efficient_frontier(self, fund_returns, fund_covariance, portfolios, fund_codes):
 
-    result = []
-    for i in efficient_portfolios:
-        portfolio_weights = {}
-        for j in range(len(fund_codes)):
-            portfolio_weights[fund_codes[j]] = i[j]
-        result.append(
-            {
-                "portfolioWeights": portfolio_weights,
-                "returns": round(portfolio_return(i, fund_returns), 6),
-                "std": round(portfolio_std(i, fund_returns, fund_covariance), 6),
-            }
+        efficient_portfolios = self.efficient_frontier_portfolios(
+            fund_returns, fund_covariance, portfolios
         )
 
-    return result
+        result = []
+        for i in efficient_portfolios:
+            portfolio_weights = {}
+            for j in range(len(fund_codes)):
+                portfolio_weights[fund_codes[j]] = i[j]
+            result.append(
+                {
+                    "portfolio_weights": portfolio_weights,
+                    "returns": round(self.portfolio_return(i, fund_returns), 6),
+                    "std": round(portfolio_std(i, fund_covariance), 6),
+                }
+            )
+
+        result = (
+            pd.DataFrame(result)
+            .sort_values(by="returns", ascending=False)
+            .reset_index(drop=True)
+        )
+
+        idx = result[["std"]].idxmin()[0]
+
+        result = result.iloc[0:idx]
+
+        return json.loads(result.to_json(orient="records"))

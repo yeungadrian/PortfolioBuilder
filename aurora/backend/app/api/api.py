@@ -1,7 +1,5 @@
-from app.api.endpoints import backtest, factor, frontier, funds
+from app.api.endpoints import backtest, factor, funds, optimisation
 from fastapi import APIRouter
-
-from aurora.backend.app.api.endpoints import optimisation
 
 api_router = APIRouter()
 

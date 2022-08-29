@@ -26,7 +26,7 @@ def backtest(json_input):
 
 
 @st.cache()
-def factorRegression(json_input):
+def factor_regression(json_input):
     url_factor = "http://localhost:8000/factor_analysis/"
     response = requests.post(url=url_factor, json=json_input).json()
 
@@ -34,7 +34,7 @@ def factorRegression(json_input):
 
 
 @st.cache()
-def efficientFrontier(json_input):
+def efficient_frontier(json_input):
     url_optimisation = "http://localhost:8000/optimisation/"
     response = requests.post(url=url_optimisation, json=json_input).json()
 

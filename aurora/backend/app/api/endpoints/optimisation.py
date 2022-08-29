@@ -1,7 +1,7 @@
 import numpy as np
 from app import schemas
 from app.modules.data_loader import DataLoader
-from app.modules.optimisation import efficient_frontier_metrics
+from app.modules.optimisation import PortfolioOptimisation
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -13,7 +13,7 @@ def efficient_frontier(item: schemas.optimisation):
     fund_codes = item.dict()["funds"]
     start_date = item.dict()["start_date"]
     end_date = item.dict()["end_date"]
-    numberOfPortfolios = item.dict()["num_portfolios"]
+    num_portfolios = item.dict()["num_portfolios"]
     frequency = "monthly"
 
     historical_returns = DataLoader().load_historical_returns(
@@ -26,8 +26,8 @@ def efficient_frontier(item: schemas.optimisation):
     fund_returns = np.mean(historical_returns.drop(columns=["date"]))
     fund_covariance = historical_returns.drop(columns=["date"]).cov()
 
-    result = efficient_frontier_metrics(
-        fund_returns, fund_covariance, numberOfPortfolios, fund_codes
+    result = PortfolioOptimisation().efficient_frontier(
+        fund_returns, fund_covariance, num_portfolios, fund_codes
     )
 
     return result
