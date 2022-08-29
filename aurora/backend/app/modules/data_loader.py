@@ -11,7 +11,7 @@ config = {
     "fund_prices": "app/data/fund_prices.parquet",
     "ff_daily": "app/data/ff_daily.parquet",
     "ff_monthly": "app/data/ff_monthly.parquet",
-    "benchmark": "app/data/benchmark.csv",
+    "sp500": "app/data/sp500.csv",
 }
 
 

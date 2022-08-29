@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 from pydantic import BaseModel
+from statsmodels.stats.diagnostic import het_breuschpagan
+from statsmodels.stats.stattools import durbin_watson
 
 PandasDataFrame = TypeVar("pandas.core.frame.DataFrame")
 
@@ -16,7 +18,7 @@ class FactorAnalysis(BaseModel):
     fund_returns: PandasDataFrame
     ff_factors: PandasDataFrame
 
-    def get_summary_results(self, results, fund_code):
+    def get_summary_results(self, results, fund_code, exog_het):
         """take the result of an statsmodel results table and transforms it into a dataframe
         https://www.statsmodels.org/stable/generated/statsmodels.regression.linear_model.RegressionResults.html"""
         pvals = results.pvalues
@@ -30,17 +32,24 @@ class FactorAnalysis(BaseModel):
         rsquared_adj = results.rsquared_adj
         fvalue = results.fvalue
 
+        # 0 - positive autocorrelation, 2- no autocorrelation, 4- negative autocorrelation
+        dw_test = durbin_watson(residuals)
+
+        bp_test = het_breuschpagan(residuals, exog_het)
+
         output_result = {
             "fund_code": fund_code,
-            "num_obs": num_obs,
+            "num_observations": num_obs,
             "rsquared": rsquared,
             "rsquared_adj": rsquared_adj,
             "fvalue": fvalue,
             "coefficient": coefficient,
             "standard_errors": standard_errors,
-            "pvals": pvals,
+            "pvalues": pvals,
             "conf_lower": conf_lower,
             "conf_higher": conf_higher,
+            "durbin_watson": dw_test,
+            "breusch_pagan": {"lm": bp_test[0], "lm_pvalue": bp_test[1]},
             "residuals": residuals,
         }
 
@@ -73,7 +82,9 @@ class FactorAnalysis(BaseModel):
 
         results = model.fit()
 
-        output = self.get_summary_results(results, fund_code)
+        exog_het = regression_data[regression_factors + ["RF"]]
+
+        output = self.get_summary_results(results, fund_code, exog_het)
 
         return output
 

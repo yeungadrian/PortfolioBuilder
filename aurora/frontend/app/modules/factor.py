@@ -5,6 +5,15 @@ import pandas as pd
 import streamlit as st
 from modules.funds import factorRegression, get_funds
 
+config = {
+    "Intercept": "Alpha (bps)",
+    "coefficient": "Coefficients",
+    "standard_errors": "Standard errors",
+    "pvalues": "P values",
+    "conf_lower": "Lower Confidence Level",
+    "conf_higher": "Higher Confidence Level",
+}
+
 
 class FactorAnalysis:
     def sidebar(self, fund_list):
@@ -59,6 +68,73 @@ class FactorAnalysis:
             annual_alpha = (1 + (alpha)) ** 252 - 1
 
         return annual_alpha
+
+    def ticker_details(self, regression, regression_input):
+
+        for ticker in regression:
+
+            start_date = regression_input["start_date"]
+            end_date = regression_input["end_date"]
+            time_period = f"{start_date} to {end_date}"
+            num_obs = round(ticker["num_observations"], 0)
+            r_squared = round(ticker["rsquared"] * 100.0, 2)
+            adj_r_squared = round(ticker["rsquared_adj"] * 100.0, 2)
+            f_value = round(ticker["fvalue"], 3)
+
+            dw_stats = round(ticker["durbin_watson"], 4)
+            autocorrelation = "No Auto correlation detected"
+            if (dw_stats < 1.5) or (dw_stats > 2.5):
+                autocorrelation = "Auto correlation detected"
+
+            bp_stats = round(ticker["breusch_pagan"]["lm_pvalue"], 4)
+            heteroscedasticity = "No heteroscedasticity detected"
+            if bp_stats > 0.05:
+                heteroscedasticity = "Heteroscedasticity detected"
+
+            regression_stats = pd.DataFrame(
+                {
+                    "Time Period": time_period,
+                    "Regression Basis": f"{num_obs} periods",
+                    "R squared": f"{r_squared} %",
+                    "Adjusted R squared": f"{adj_r_squared} %",
+                    "Regression F statistic": f_value,
+                    "Autocorrelation": f"{autocorrelation} , Durbin watson statistic of {dw_stats}",
+                    "Heteroscedasticity": f"{heteroscedasticity}, Breusch Pagan P value of {bp_stats}",
+                },
+                index=[ticker["fund_code"]],
+            ).transpose()
+
+            keys = [
+                "coefficient",
+                "standard_errors",
+                "pvalues",
+                "conf_lower",
+                "conf_higher",
+            ]
+            details = [ticker.get(key) for key in keys]
+
+            details = pd.DataFrame(details).rename(columns=config)
+
+            details = details.transpose()
+
+            details.columns = keys
+
+            details.loc[
+                details.index == "Alpha (bps)", ~details.columns.isin(["pvalues"])
+            ] = (
+                details.loc[
+                    details.index == "Alpha (bps)", ~details.columns.isin(["pvalues"])
+                ]
+                * 10000
+            )
+
+            details = details.rename(columns=config)
+
+            with st.expander(ticker["fund_code"]):
+
+                st.dataframe(regression_stats)
+
+                st.dataframe(details.style.format("{:.2f}"))
 
     def summary_table(self, fund_list, regression_input, regression):
 
@@ -143,5 +219,7 @@ class FactorAnalysis:
             regression_response = factorRegression(regression_input)
 
             self.summary_table(fund_list, regression_input, regression_response)
+
+            self.ticker_details(regression_response, regression_input)
 
             self.residuals(regression_response)
