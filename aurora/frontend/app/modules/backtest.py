@@ -148,11 +148,10 @@ class Backtest(BaseModel):
         st.subheader("Summary metrics")
 
         st.markdown("")
-        st.write(
-            summary_metrics.style.format({**format_pct, **format_dec})
-            .hide_index()
-            .to_html(),
-            unsafe_allow_html=True,
+        st.dataframe(
+            summary_metrics.style.format({**format_pct, **format_dec}).hide(
+                axis="index"
+            )
         )
         st.markdown("")
 
@@ -234,22 +233,14 @@ class Backtest(BaseModel):
 
             col1, col2 = st.columns(2)
             with col1:
-                st.write(
-                    pct_metrics.transpose()
-                    .style.format("{:.2%}")
-                    .hide(axis="columns")
-                    .to_html(),
-                    unsafe_allow_html=True,
+                st.dataframe(
+                    pct_metrics.transpose().style.format("{:.2%}").hide(axis="columns")
                 )
 
             with col2:
 
-                st.write(
-                    dec_metrics.transpose()
-                    .style.format("{:.2f}")
-                    .hide(axis="columns")
-                    .to_html(),
-                    unsafe_allow_html=True,
+                st.dataframe(
+                    dec_metrics.transpose().style.format("{:.2f}").hide(axis="columns")
                 )
                 st.markdown("")
 

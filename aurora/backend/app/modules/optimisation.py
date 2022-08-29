@@ -63,7 +63,9 @@ class PortfolioOptimisation(BaseModel):
 
         return efficient_portfolios
 
-    def efficient_frontier(self, fund_returns, fund_covariance, portfolios, fund_codes):
+    def efficient_frontier(
+        self, fund_returns, fund_covariance, portfolios, fund_codes, average_risk_free
+    ):
 
         efficient_portfolios = self.efficient_frontier_portfolios(
             fund_returns, fund_covariance, portfolios
@@ -74,13 +76,15 @@ class PortfolioOptimisation(BaseModel):
             portfolio_weights = {}
             for j in range(len(fund_codes)):
                 portfolio_weights[fund_codes[j]] = i[j]
-            result.append(
-                {
-                    "portfolio_weights": portfolio_weights,
-                    "returns": round(self.portfolio_return(i, fund_returns), 6),
-                    "std": round(portfolio_std(i, fund_covariance), 6),
-                }
-            )
+            portfolio_stats = {
+                "portfolio_weights": portfolio_weights,
+                "returns": round(self.portfolio_return(i, fund_returns), 6),
+                "std": round(portfolio_std(i, fund_covariance), 6),
+            }
+            portfolio_stats["sharpe_ratio"] = (
+                portfolio_stats["returns"] - average_risk_free
+            ) / portfolio_stats["std"]
+            result.append(portfolio_stats)
 
         result = (
             pd.DataFrame(result)

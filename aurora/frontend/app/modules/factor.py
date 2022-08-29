@@ -220,6 +220,7 @@ class FactorAnalysis:
                 rolling_results = rolling_results[
                     regression_inputs["factors"] + ["Date"]
                 ]
+                rolling_results = rolling_results.dropna()
                 rolling_results = pd.melt(
                     rolling_results,
                     id_vars="Date",
@@ -234,7 +235,7 @@ class FactorAnalysis:
                         x="Date:T",
                         y="Coefficients",
                         color="Factor",
-                        tooltip=["Date", "Coefficients", "Factor"],
+                        tooltip=["Date:T", "Coefficients", "Factor"],
                     )
                 )
                 st.subheader(ticker["fund_code"])

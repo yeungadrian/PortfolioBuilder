@@ -23,11 +23,20 @@ def efficient_frontier(item: schemas.optimisation):
         frequency=frequency,
     )
 
+    risk_free = DataLoader().load_ff_factors(
+        regression_factors=[],
+        start_date=start_date,
+        end_date=end_date,
+        frequency=frequency,
+    )["RF"]
+
+    average_risk_free = np.mean(risk_free)
+
     fund_returns = np.mean(historical_returns.drop(columns=["date"]))
     fund_covariance = historical_returns.drop(columns=["date"]).cov()
 
     result = PortfolioOptimisation().efficient_frontier(
-        fund_returns, fund_covariance, num_portfolios, fund_codes
+        fund_returns, fund_covariance, num_portfolios, fund_codes, average_risk_free
     )
 
     return result
