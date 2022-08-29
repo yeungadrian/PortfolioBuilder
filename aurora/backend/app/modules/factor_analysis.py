@@ -1,9 +1,11 @@
+import json
 from typing import List, TypeVar
 
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 from pydantic import BaseModel
+from statsmodels.regression.rolling import RollingOLS
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels.stats.stattools import durbin_watson
 
@@ -55,11 +57,7 @@ class FactorAnalysis(BaseModel):
 
         return output_result
 
-    def calculate_factor_regression(self, fund_code, regression_factors):
-
-        np.random.seed(1000)
-
-        regression_equation = " + ".join(regression_factors)
+    def generate_features(self, fund_code):
         fund_returns = self.fund_returns.copy()
         ff_factors = self.ff_factors.copy()
 
@@ -76,6 +74,16 @@ class FactorAnalysis(BaseModel):
 
         regression_data[fund_code] = regression_data[fund_code] - regression_data["RF"]
 
+        return regression_data
+
+    def calculate_factor_regression(self, fund_code, regression_factors):
+
+        np.random.seed(1000)
+
+        regression_equation = " + ".join(regression_factors)
+
+        regression_data = self.generate_features(fund_code)
+
         model = smf.ols(
             formula=f"{fund_code} ~ {regression_equation}", data=regression_data
         )
@@ -88,9 +96,44 @@ class FactorAnalysis(BaseModel):
 
         return output
 
+    def calculate_rolling_regression(self, fund_code, regression_factors, frequency):
+
+        np.random.seed(1000)
+
+        regression_equation = " + ".join(regression_factors)
+
+        regression_data = self.generate_features(fund_code)
+
+        window = 12
+        if frequency == "daily":
+            window = window * 30
+
+        model = RollingOLS.from_formula(
+            formula=f"{fund_code} ~ {regression_equation}",
+            data=regression_data,
+            window=window,
+        )
+
+        results = model.fit()
+
+        output = {
+            "fund_code": fund_code,
+            "params": json.loads(results.params.to_json()),
+            "rsquared": json.loads(results.rsquared.to_json()),
+        }
+
+        return output
+
     def regress_funds(self):
         output = []
 
         for i in self.fund_codes:
             output.append(self.calculate_factor_regression(i, self.factors))
+        return output
+
+    def rolling_regress_funds(self, frequency):
+        output = []
+
+        for i in self.fund_codes:
+            output.append(self.calculate_rolling_regression(i, self.factors, frequency))
         return output

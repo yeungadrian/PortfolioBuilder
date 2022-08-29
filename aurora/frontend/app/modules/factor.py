@@ -2,6 +2,7 @@ from datetime import datetime
 
 import altair as alt
 import pandas as pd
+import requests
 import streamlit as st
 from modules.funds import factorRegression, get_funds
 
@@ -202,6 +203,43 @@ class FactorAnalysis:
 
             st.altair_chart(residual_chart, use_container_width=True)
 
+    def rolling_regression(self, regression_inputs):
+
+        data = requests.post(
+            "http://localhost:8000/factor_analysis/rolling/", json=regression_inputs
+        ).json()
+
+        with st.expander("Rolling regression"):
+
+            for ticker in data:
+
+                rolling_results = pd.DataFrame(ticker["params"]).reset_index()
+                rolling_results = rolling_results.rename(
+                    columns={"index": "Date", "Intercept": "Alpha"}
+                )
+                rolling_results = rolling_results[
+                    regression_inputs["factors"] + ["Date"]
+                ]
+                rolling_results = pd.melt(
+                    rolling_results,
+                    id_vars="Date",
+                    value_name="Coefficients",
+                    var_name="Factor",
+                )
+
+                rolling_chart = (
+                    alt.Chart(rolling_results)
+                    .mark_line()
+                    .encode(
+                        x="Date:T",
+                        y="Coefficients",
+                        color="Factor",
+                        tooltip=["Date", "Coefficients", "Factor"],
+                    )
+                )
+                st.subheader(ticker["fund_code"])
+                st.altair_chart(rolling_chart, use_container_width=True)
+
     def display(self):
 
         fund_list = pd.DataFrame(get_funds())
@@ -223,3 +261,5 @@ class FactorAnalysis:
             self.ticker_details(regression_response, regression_input)
 
             self.residuals(regression_response)
+
+            self.rolling_regression(regression_input)

@@ -44,10 +44,10 @@ def display_optimisation():
     if submit:
 
         frontier_input = {
-            "startDate": start_date,
-            "endDate": end_date,
+            "start_date": start_date,
+            "end_date": end_date,
             "funds": selected_fund_list,
-            "numberOfPortfolios": number_portfolios,
+            "num_portfolios": number_portfolios,
         }
 
         efficient_portfolios = pd.DataFrame(efficientFrontier(frontier_input))

@@ -5,7 +5,7 @@ urls = {
     "funds": "http://localhost:8000/funds/",
     "backtest": "http://localhost:8000/backtest/",
     "factor": "http://localhost:8000/factor_analysis/",
-    "optimisation": "http://localhost:8000/portfolioOptimisation/",
+    "optimisation": "http://localhost:8000/optimisation/",
 }
 
 
@@ -35,7 +35,7 @@ def factorRegression(json_input):
 
 @st.cache()
 def efficientFrontier(json_input):
-    url_optimisation = "http://localhost:8000/portfolioOptimisation/"
+    url_optimisation = "http://localhost:8000/optimisation/"
     response = requests.post(url=url_optimisation, json=json_input).json()
 
     return response

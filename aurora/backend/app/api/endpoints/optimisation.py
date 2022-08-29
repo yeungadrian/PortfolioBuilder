@@ -1,20 +1,19 @@
 import numpy as np
-import pandas as pd
 from app import schemas
 from app.modules.data_loader import DataLoader
-from app.modules.frontierCalculator import efficient_frontier_metrics
+from app.modules.optimisation import efficient_frontier_metrics
 from fastapi import APIRouter
 
 router = APIRouter()
 
 
 @router.post("/")
-def efficient_frontier(item: schemas.frontier):
+def efficient_frontier(item: schemas.optimisation):
 
     fund_codes = item.dict()["funds"]
-    start_date = item.dict()["startDate"]
-    end_date = item.dict()["endDate"]
-    numberOfPortfolios = item.dict()["numberOfPortfolios"]
+    start_date = item.dict()["start_date"]
+    end_date = item.dict()["end_date"]
+    numberOfPortfolios = item.dict()["num_portfolios"]
     frequency = "monthly"
 
     historical_returns = DataLoader().load_historical_returns(
