@@ -2,18 +2,11 @@ from datetime import datetime
 
 import altair as alt
 import pandas as pd
-import requests
 import streamlit as st
-from modules.funds import factor_regression, get_funds
+from modules.config import Config
+from modules.data_loader import DataLoader
 
-config = {
-    "Intercept": "Alpha (bps)",
-    "coefficient": "Coefficients",
-    "standard_errors": "Standard errors",
-    "pvalues": "P values",
-    "conf_lower": "Lower Confidence Level",
-    "conf_higher": "Higher Confidence Level",
-}
+column_map = Config().column_map()
 
 
 class FactorAnalysis:
@@ -114,7 +107,7 @@ class FactorAnalysis:
             ]
             details = [ticker.get(key) for key in keys]
 
-            details = pd.DataFrame(details).rename(columns=config)
+            details = pd.DataFrame(details).rename(columns=column_map)
 
             details = details.transpose()
 
@@ -129,7 +122,7 @@ class FactorAnalysis:
                 * 10000
             )
 
-            details = details.rename(columns=config)
+            details = details.rename(columns=column_map)
 
             with st.expander(ticker["fund_code"]):
 
@@ -205,9 +198,7 @@ class FactorAnalysis:
 
     def rolling_regression(self, regression_inputs):
 
-        data = requests.post(
-            "http://localhost:8000/factor_analysis/rolling/", json=regression_inputs
-        ).json()
+        data = DataLoader().rolling_factor_regression(regression_inputs)
 
         with st.expander("Rolling regression"):
 
@@ -243,7 +234,7 @@ class FactorAnalysis:
 
     def display(self):
 
-        fund_list = pd.DataFrame(get_funds())
+        fund_list = pd.DataFrame(DataLoader().get_funds())
 
         st.title("Factor Analysis")
 
@@ -255,7 +246,7 @@ class FactorAnalysis:
 
         if submitted:
 
-            regression_response = factor_regression(regression_input)
+            regression_response = DataLoader().factor_regression(regression_input)
 
             self.summary_table(fund_list, regression_input, regression_response)
 

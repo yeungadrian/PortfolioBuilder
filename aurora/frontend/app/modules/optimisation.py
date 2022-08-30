@@ -3,8 +3,12 @@ from datetime import datetime
 import altair as alt
 import pandas as pd
 import streamlit as st
-from modules.funds import efficient_frontier, get_funds
+from modules.config import Config
+from modules.data_loader import DataLoader
 from pydantic import BaseModel
+
+column_map = Config().column_map()
+format_pct = Config().format_pct()
 
 
 class Optimisation(BaseModel):
@@ -66,7 +70,9 @@ class Optimisation(BaseModel):
         best["std"] = best_portfolio["std"]
         best["sharpe_ratio"] = best_portfolio["sharpe_ratio"]
 
-        st.dataframe(best)
+        best = best.rename(columns=column_map)
+
+        st.dataframe(best.style.format({**format_pct}))
 
     def efficient_frontier(self, efficient_portfolios, frontier_input):
 
@@ -76,22 +82,26 @@ class Optimisation(BaseModel):
         returns_min = round(efficient_portfolios["returns"].min(), 3) - 0.005
         returns_max = round(efficient_portfolios["returns"].max(), 3) + 0.005
 
+        efficient_portfolios = efficient_portfolios.rename(columns=column_map)
+
         frontier_chart = (
             alt.Chart(efficient_portfolios)
             .mark_circle()
             .encode(
                 x=alt.X(
-                    "std",
+                    "Monthly standard deviation",
                     axis=alt.Axis(format="%"),
                     scale=alt.Scale(domain=[std_min, std_max]),
                 ),
                 y=alt.Y(
-                    "returns",
+                    "Monthly arithmetic mean",
                     axis=alt.Axis(format="%"),
                     scale=alt.Scale(domain=[returns_min, returns_max]),
                 ),
                 tooltip=alt.Tooltip(
-                    ["returns", "std"] + frontier_input["funds"], format=".2%"
+                    ["Monthly arithmetic mean", "Monthly standard deviation"]
+                    + frontier_input["funds"],
+                    format=".2%",
                 ),
             )
         )
@@ -109,18 +119,20 @@ class Optimisation(BaseModel):
         std_min = transition["std"].min()
         std_max = transition["std"].max()
 
+        transition = transition.rename(columns=column_map)
+
         transition_chart = (
             alt.Chart(transition)
             .mark_area()
             .encode(
                 x=alt.X(
-                    "std",
+                    "Monthly standard deviation",
                     axis=alt.Axis(format="%"),
                     scale=alt.Scale(domain=[std_min, std_max]),
                 ),
                 y=alt.Y("Percentage:Q", stack="normalize", axis=alt.Axis(format="%")),
                 color="Ticker:N",
-                tooltip=["std", "Percentage", "Ticker"],
+                tooltip=["Monthly standard deviation", "Percentage", "Ticker"],
             )
         )
 
@@ -130,7 +142,7 @@ class Optimisation(BaseModel):
     def display(self):
 
         st.title("Portfolio Optimisation")
-        fund_list = pd.DataFrame(get_funds())
+        fund_list = pd.DataFrame(DataLoader().get_funds())
 
         with st.form("my_form"):
             with st.sidebar:
@@ -140,7 +152,9 @@ class Optimisation(BaseModel):
 
         if submitted:
 
-            efficient_portfolios = pd.DataFrame(efficient_frontier(frontier_input))
+            efficient_portfolios = pd.DataFrame(
+                DataLoader().efficient_frontier(frontier_input)
+            )
 
             self.best_sharpe_ratio(efficient_portfolios)
 

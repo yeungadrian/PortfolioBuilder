@@ -3,10 +3,9 @@ from typing import List
 
 import altair as alt
 import pandas as pd
-import requests
 import streamlit as st
 from modules.config import Config
-from modules.funds import get_funds
+from modules.data_loader import DataLoader
 from pydantic import BaseModel
 
 column_map = Config().column_map()
@@ -32,7 +31,7 @@ class Backtest(BaseModel):
             dict: Portfolio strategy inputs
         """
 
-        available_funds = pd.DataFrame(get_funds())
+        available_funds = pd.DataFrame(DataLoader().get_funds())
 
         st.sidebar.subheader("Portfolio inputs")
 
@@ -83,22 +82,6 @@ class Backtest(BaseModel):
             }
 
         return backtest_input
-
-    @st.cache()
-    def backtest_portfolio(self, input):
-        """Backtest portfolio strategy
-
-        Args:
-            input (dict): portfolio strategy
-
-        Returns:
-            dict: portfolio backtest
-        """
-
-        url_backtest = "http://localhost:8000/backtest/"
-        response = requests.post(url=url_backtest, json=input).json()
-
-        return response
 
     def portfolio_value(self, portfolio_projection):
         """Display portfolio value section
@@ -253,7 +236,7 @@ class Backtest(BaseModel):
 
         if len(backtest_input["portfolio"]):
 
-            portfolio_projection = self.backtest_portfolio(backtest_input)
+            portfolio_projection = DataLoader().backtest(backtest_input)
 
             self.portfolio_value(portfolio_projection)
             self.summary_metrics(portfolio_projection)

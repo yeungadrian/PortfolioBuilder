@@ -64,4 +64,12 @@ class Config:
             "upside_capture_ratio": "Upside capture ratio",
             "downside_capture_ratio": "Downside capture ratio",
             "capture_ratio": "Capture ratio",
+            "returns": "Monthly arithmetic mean",
+            "std": "Monthly standard deviation",
+            "Intercept": "Alpha (bps)",
+            "coefficient": "Coefficients",
+            "standard_errors": "Standard errors",
+            "pvalues": "P values",
+            "conf_lower": "Lower Confidence Level",
+            "conf_higher": "Higher Confidence Level",
         }
