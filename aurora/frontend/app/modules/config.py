@@ -1,12 +1,12 @@
 class Config:
     def colors(self):
-        return {
-            "first": "#ED254E",
-            "second": "#1E2019",
-            "third": "#361D2E",
-            "fourth": "#3C6997",
-            "fifth": "#EEE2DF",
-        }
+        return [
+            "#A3A380",
+            "#BB8588",
+            "#D6CE93",
+            "#D8A48F",
+            "#EFEBCE",
+        ]
 
     def format_pct(self):
         return {

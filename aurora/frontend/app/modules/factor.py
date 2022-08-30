@@ -7,6 +7,7 @@ from modules.config import Config
 from modules.data_loader import DataLoader
 
 column_map = Config().column_map()
+colors = Config().colors()
 
 
 class FactorAnalysis:
@@ -189,7 +190,7 @@ class FactorAnalysis:
                 .encode(
                     x="Date:T",
                     y="Residual",
-                    color="Ticker",
+                    color=alt.Color("Ticker", scale=alt.Scale(range=colors)),
                     tooltip=["Date:T", "Residual"],
                 )
             )
@@ -225,7 +226,7 @@ class FactorAnalysis:
                     .encode(
                         x="Date:T",
                         y="Coefficients",
-                        color="Factor",
+                        color=alt.Color("Factor", scale=alt.Scale(range=colors)),
                         tooltip=["Date:T", "Coefficients", "Factor"],
                     )
                 )

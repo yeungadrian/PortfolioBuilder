@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 column_map = Config().column_map()
 format_pct = Config().format_pct()
+colors = Config().colors()
 
 
 class Optimisation(BaseModel):
@@ -98,6 +99,7 @@ class Optimisation(BaseModel):
                     axis=alt.Axis(format="%"),
                     scale=alt.Scale(domain=[returns_min, returns_max]),
                 ),
+                color=alt.value(colors[0]),
                 tooltip=alt.Tooltip(
                     ["Monthly arithmetic mean", "Monthly standard deviation"]
                     + frontier_input["funds"],
@@ -131,7 +133,7 @@ class Optimisation(BaseModel):
                     scale=alt.Scale(domain=[std_min, std_max]),
                 ),
                 y=alt.Y("Percentage:Q", stack="normalize", axis=alt.Axis(format="%")),
-                color="Ticker:N",
+                color=alt.Color("Ticker", scale=alt.Scale(range=colors)),
                 tooltip=["Monthly standard deviation", "Percentage", "Ticker"],
             )
         )

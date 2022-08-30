@@ -105,7 +105,7 @@ class Backtest(BaseModel):
                 x="Date",
                 y="Portfolio Value ($)",
                 tooltip=["Date", "Portfolio Value ($)"],
-                color=alt.value(colors["fourth"]),
+                color=alt.value(colors[0]),
             )
         )
 
@@ -161,7 +161,7 @@ class Backtest(BaseModel):
                 x="Date:N",
                 y=alt.Y("Portfolio returns", axis=alt.Axis(format="%")),
                 tooltip=["Date:N", alt.Tooltip("Portfolio returns", format=".2%")],
-                color=alt.value(colors["fourth"]),
+                color=alt.value(colors[0]),
             )
         )
 
@@ -190,7 +190,7 @@ class Backtest(BaseModel):
                     x="Date:T",
                     y=alt.Y("Daily drawdown", axis=alt.Axis(format="%")),
                     tooltip=["Date:T", alt.Tooltip("Daily drawdown", format=".2%")],
-                    color=alt.value(colors["fourth"]),
+                    color=alt.value(colors[0]),
                 )
             )
 
