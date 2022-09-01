@@ -1,9 +1,7 @@
-import os
-
 import requests
 import streamlit as st
 
-host = st.secrets["db_username"]
+host = st.secrets["AURORA_URL"]
 
 urls = {
     "funds": f"{host}/funds/",
