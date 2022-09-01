@@ -2,11 +2,8 @@ import os
 
 import requests
 import streamlit as st
-from dotenv import load_dotenv
 
-load_dotenv()
-
-host = os.environ.get("AURORA_URL")
+host = st.secrets["db_username"]
 
 urls = {
     "funds": f"{host}/funds/",
