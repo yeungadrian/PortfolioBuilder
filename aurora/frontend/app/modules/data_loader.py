@@ -1,7 +1,12 @@
+import os
+
 import requests
 import streamlit as st
+from dotenv import load_dotenv
 
-host = "http://localhost:8000"
+load_dotenv()
+
+host = os.environ.get("AURORA_URL")
 
 urls = {
     "funds": f"{host}/funds/",

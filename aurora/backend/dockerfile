@@ -16,3 +16,5 @@ RUN set -eux \
     && rm -rf /root/.cache/pip
 
 COPY ./ /usr/src/aurora
+
+CMD exec uvicorn --bind :$PORT --workers 1 --threads 8 app.main:app

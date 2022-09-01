@@ -5,6 +5,7 @@ certifi
 chardet
 click
 fastapi
+gunicorn
 h11
 idna
 iniconfig

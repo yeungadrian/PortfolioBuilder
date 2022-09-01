@@ -1,1 +1,6 @@
+altair
+pandas
+pydantic
+python-dotenv
+requests
 streamlit
