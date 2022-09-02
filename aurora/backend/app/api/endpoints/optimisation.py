@@ -47,7 +47,8 @@ def efficient_frontier(item: schemas.optimisation):
         ticker = {}
         ticker["ticker"] = i
         ticker["returns"] = np.mean(historical_returns[i])
-        ticker["std"] = np.std(historical_returns[i])
+        ticker["std"] = historical_returns[i].std()
+
         ticker_summary.append(ticker)
 
     result["tickers"] = ticker_summary

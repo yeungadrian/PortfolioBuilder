@@ -10,7 +10,8 @@ PandasDataFrame = TypeVar("pandas.core.frame.DataFrame")
 
 
 def portfolio_std(weights, fund_covariance):
-    std = np.sqrt(np.dot(weights, np.dot(fund_covariance, weights)))
+    weights = np.array(weights)
+    std = np.sqrt(np.dot(weights.T, np.dot(fund_covariance, weights)))
     return std
 
 
