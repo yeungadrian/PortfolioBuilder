@@ -75,29 +75,23 @@ class Optimisation(BaseModel):
 
         st.dataframe(best.style.format({**format_pct}))
 
-    def efficient_frontier(self, efficient_portfolios, frontier_input):
-
-        std_min = round(efficient_portfolios["std"].min(), 3) - 0.005
-        std_max = round(efficient_portfolios["std"].max(), 3) + 0.005
-
-        returns_min = round(efficient_portfolios["returns"].min(), 3) - 0.005
-        returns_max = round(efficient_portfolios["returns"].max(), 3) + 0.005
+    def efficient_frontier(self, efficient_portfolios, frontier_input, ticker_input):
 
         efficient_portfolios = efficient_portfolios.rename(columns=column_map)
 
         frontier_chart = (
             alt.Chart(efficient_portfolios)
-            .mark_circle()
+            .mark_circle(size=80)
             .encode(
                 x=alt.X(
                     "Monthly standard deviation",
                     axis=alt.Axis(format="%"),
-                    scale=alt.Scale(domain=[std_min, std_max]),
+                    scale=alt.Scale(zero=False),
                 ),
                 y=alt.Y(
                     "Monthly arithmetic mean",
                     axis=alt.Axis(format="%"),
-                    scale=alt.Scale(domain=[returns_min, returns_max]),
+                    scale=alt.Scale(zero=False),
                 ),
                 color=alt.value(colors[0]),
                 tooltip=alt.Tooltip(
@@ -107,8 +101,38 @@ class Optimisation(BaseModel):
                 ),
             )
         )
+        ticker_input = ticker_input.rename(columns=column_map)
+
+        ticker_chart = (
+            alt.Chart(ticker_input)
+            .mark_circle(size=80)
+            .encode(
+                x=alt.X(
+                    "Monthly standard deviation",
+                    axis=alt.Axis(format="%"),
+                ),
+                y=alt.Y(
+                    "Monthly arithmetic mean",
+                    axis=alt.Axis(format="%"),
+                ),
+                color=alt.Color("Ticker", scale=alt.Scale(range=colors[1:])),
+                tooltip=[
+                    alt.Tooltip(
+                        "Monthly arithmetic mean:Q",
+                        format=".2%",
+                    ),
+                    alt.Tooltip(
+                        "Monthly standard deviation:Q",
+                        format=".2%",
+                    ),
+                    alt.Tooltip(
+                        "Ticker",
+                    ),
+                ],
+            )
+        )
         st.subheader("Efficient Frontier")
-        st.altair_chart(frontier_chart, use_container_width=True)
+        st.altair_chart(frontier_chart + ticker_chart, use_container_width=True)
 
     def efficient_frontier_transition(self, efficient_portfolios):
         transition = pd.melt(
@@ -134,7 +158,17 @@ class Optimisation(BaseModel):
                 ),
                 y=alt.Y("Percentage:Q", stack="normalize", axis=alt.Axis(format="%")),
                 color=alt.Color("Ticker", scale=alt.Scale(range=colors)),
-                tooltip=["Monthly standard deviation", "Percentage", "Ticker"],
+                tooltip=[
+                    alt.Tooltip(
+                        "Monthly standard deviation:Q",
+                        format=".2%",
+                    ),
+                    "Ticker",
+                    alt.Tooltip(
+                        "Percentage:Q",
+                        format=".2%",
+                    ),
+                ],
             )
         )
 
@@ -154,14 +188,18 @@ class Optimisation(BaseModel):
 
         if submitted:
 
-            efficient_portfolios = pd.DataFrame(
-                DataLoader().efficient_frontier(frontier_input)
-            )
+            frontier = DataLoader().efficient_frontier(frontier_input)
+
+            efficient_portfolios = pd.DataFrame(frontier["frontier"])
+
+            ticker_summary = pd.DataFrame(frontier["tickers"])
 
             self.best_sharpe_ratio(efficient_portfolios)
 
             efficient_portfolios = self.format_response(efficient_portfolios)
 
-            self.efficient_frontier(efficient_portfolios, frontier_input)
+            self.efficient_frontier(
+                efficient_portfolios, frontier_input, ticker_summary
+            )
 
             self.efficient_frontier_transition(efficient_portfolios)

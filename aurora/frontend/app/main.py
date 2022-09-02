@@ -9,8 +9,8 @@ st.sidebar.title("Aurora")
 
 options = {
     "Portfolio backtesting": Backtest().display,
-    "Factor analysis": FactorAnalysis().display,
     "Portfolio optimisation": Optimisation().display,
+    "Factor analysis": FactorAnalysis().display,
 }
 
 page = st.sidebar.selectbox("Page Navigation", options)

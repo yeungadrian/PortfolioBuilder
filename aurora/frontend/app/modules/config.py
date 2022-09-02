@@ -72,4 +72,5 @@ class Config:
             "pvalues": "P values",
             "conf_lower": "Lower Confidence Level",
             "conf_higher": "Higher Confidence Level",
+            "ticker": "Ticker",
         }
