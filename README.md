@@ -1,58 +1,22 @@
-# Portfolio Analysis
-<p>
-    <em>Understanding financial markets</em>
-</p>
+# Portfolio Builder
 
-### Portfolio Backtesting
-![](image/backtest.png)
+Construct, backtest and optimise portfolios
 
-## Factor Analysis
-![](image/factor.png)
+## Financial Analysis:
+- Portfolio Backtesting
+    - Backtest different asset allocations and compare historical performance
+- Factor Analysis
+    - Run regression analysis using French-Fama / other factor models
+- Portfolio Optimisation
+    - Generate efficient frontiers to explore risk return trade offs
 
-## Portfolio optimisation
-![](image/optimisation.png)
+## Get started:
 
+### Requirements:
+API needs to be setup from https://github.com/yeungadrian/PortfolioBuilderAPI
 
-### Supported features:
-- Backtesting portfolios
-    - Rebalancing strategies
-    - Annual growth rate
-    - Sharpe ratio
-    - Max drawdown
-- Factor Analysis:
-    - French Fama factor model
-- Mean variance portfolio optimisation
-
-### Installation:
-Quick and easy local deployments using docker-compose, simply run:
-```html
-docker-compose up --force-recreate --build -d
+Get started locally by creating a virtual environment via conda or venv and running:
 ```
-
-[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for interactive api docs
-
-[http://127.0.0.1:8501](http://127.0.0.1:8501) for streamlit application
-
-Automated testing of backend using pytest, run on docker instance
-```html
-pytest -p no:cacheprovider 
+pip install -r requirements.txt
+streamlit run src/main.py
 ```
-
-### Major Dependencies:
-**Fastapi:** https://github.com/tiangolo/fastapi
-
-**Streamlit:** https://github.com/streamlit/streamlit
-
-**Docker:** https://www.docker.com
-
-### Continous integration
-**Github Actions:** https://github.com/yeungadrian/aurora/actions
-- Lint: Black https://github.com/psf/black#github-actions
-- Integration tests using pytest: https://fastapi.tiangolo.com/tutorial/testing/
-
-
-### Roadmap of functionality:
-    - [ ] Add images of app to readme
-    - [ ] Refactor config styling, apis in front end
-    - [ ] Refactor metrics, transformation of returns
-
