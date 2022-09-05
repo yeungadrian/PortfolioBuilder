@@ -1,9 +1,7 @@
 # Portfolio Builder
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://yeungadrian-portfoliobuilder-srcmain-wdkrcb.streamlitapp.com/)
 
-Construct, backtest and optimise portfolios
-
-
+Portfolio analytics tools to help compare portfolios deployed on streamlit cloud
 
 ## Financial Analysis:
 - Portfolio Backtesting
@@ -13,7 +11,10 @@ Construct, backtest and optimise portfolios
 - Portfolio Optimisation
     - Generate efficient frontiers to explore risk return trade offs
 
-## Get started:
+![](image/backtest.png)
+![](image/optimisation.png)
+
+## Run locally:
 
 ### Requirements:
 API needs to be setup from https://github.com/yeungadrian/PortfolioBuilderAPI
