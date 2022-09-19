@@ -1,4 +1,4 @@
-FROM python:3.8.12-slim
+FROM python:3.9.14-slim
 
 WORKDIR /usr/src/aurora
 
