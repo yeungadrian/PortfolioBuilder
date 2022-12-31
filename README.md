@@ -1,5 +1,5 @@
 # Portfolio Builder
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://yeungadrian-portfoliobuilder-srcmain-wdkrcb.streamlitapp.com/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://portfolio-optimization.streamlit.app)
 
 Portfolio analytics tools to help compare portfolios deployed on streamlit cloud
 
