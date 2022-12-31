@@ -23,7 +23,7 @@ class FactorAnalysis:
         funds = st.multiselect(
             label="Fund selection",
             options=list(fund_list["Company"]),
-            default=["Apple Inc."],
+            default=["iShares UK Equity Index Fund"],
         )
 
         regression_factors = ["MktRF", "SMB", "HML", "RMW", "CMA"]

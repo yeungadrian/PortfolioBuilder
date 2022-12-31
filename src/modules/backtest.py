@@ -56,7 +56,7 @@ class Backtest(BaseModel):
         selected_funds = st.sidebar.multiselect(
             label="Fund selection",
             options=list(available_funds["Company"]),
-            default=["Apple Inc."],
+            default=["iShares UK Equity Index Fund"],
         )
         portfolio = []
         amounts = {}

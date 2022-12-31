@@ -27,7 +27,7 @@ class Optimisation(BaseModel):
         selected_funds = st.multiselect(
             label="Fund selection",
             options=list(fund_list["Company"]),
-            default=["Apple Inc.", "Amazon.com Inc."],
+            default=["iShares UK Equity Index Fund", "iShares Index Linked Gilt Index Fund"],
         )
 
         selected_fund_list = []
