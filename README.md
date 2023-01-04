@@ -13,14 +13,3 @@ Portfolio analytics tools to help compare portfolios deployed on streamlit cloud
 
 ![](image/backtest.png)
 ![](image/optimisation.png)
-
-## Run locally:
-
-### Requirements:
-API needs to be setup from https://github.com/yeungadrian/PortfolioBuilderAPI
-
-Get started locally by creating a virtual environment via conda or venv and running:
-```
-pip install -r requirements.txt
-streamlit run src/main.py
-```
