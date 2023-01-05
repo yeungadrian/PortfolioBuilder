@@ -3,6 +3,7 @@ from datetime import datetime
 import altair as alt
 import pandas as pd
 import streamlit as st
+
 from modules.config import Config
 from modules.data_loader import DataLoader
 

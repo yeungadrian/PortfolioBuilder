@@ -3,9 +3,10 @@ from datetime import datetime
 import altair as alt
 import pandas as pd
 import streamlit as st
+from pydantic import BaseModel
+
 from modules.config import Config
 from modules.data_loader import DataLoader
-from pydantic import BaseModel
 
 column_map = Config().column_map()
 format_pct = Config().format_pct()
@@ -27,7 +28,10 @@ class Optimisation(BaseModel):
         selected_funds = st.multiselect(
             label="Fund selection",
             options=list(fund_list["Company"]),
-            default=["iShares UK Equity Index Fund", "iShares Index Linked Gilt Index Fund"],
+            default=[
+                "iShares UK Equity Index Fund",
+                "iShares Index Linked Gilt Index Fund",
+            ],
         )
 
         selected_fund_list = []

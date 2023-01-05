@@ -4,9 +4,10 @@ from typing import List
 import altair as alt
 import pandas as pd
 import streamlit as st
+from pydantic import BaseModel
+
 from modules.config import Config
 from modules.data_loader import DataLoader
-from pydantic import BaseModel
 
 column_map = Config().column_map()
 format_pct = Config().format_pct()
