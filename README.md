@@ -1,7 +1,6 @@
 # PortfolioBuilder
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://portfolio-optimization.streamlit.app)
 
-Portfolio analytics tools to help compare portfolios deployed on streamlit cloud
+Work in progress
 
 ## Financial Analysis:
 - Portfolio Backtesting
@@ -11,5 +10,3 @@ Portfolio analytics tools to help compare portfolios deployed on streamlit cloud
 - Portfolio Optimisation
     - Generate efficient frontiers to explore risk return trade offs
 
-![](image/backtest.png)
-![](image/optimisation.png)
