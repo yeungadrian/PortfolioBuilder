@@ -17,7 +17,7 @@ async def get_funds() -> dict[str, list[str]]:
         List of funds
 
     """
-    funds = pl.read_parquet("data/interim/funds.pq")
+    funds = pl.read_parquet("data/processed/funds.pq")
     funds = funds.get_column("name").to_list()
     result = {"names": funds}
     return result

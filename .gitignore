@@ -64,3 +64,6 @@ dmypy.json
 
 # ruff
 .ruff_cache/
+
+# Local data
+/data
