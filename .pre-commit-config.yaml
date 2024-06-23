@@ -19,6 +19,11 @@ repos:
       - id: ruff-format
         types_or: [ python, pyi, jupyter ]
 
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+    -   id: mypy
+
   - repo: https://github.com/srstevenson/nb-clean
     rev: 3.3.0
     hooks:

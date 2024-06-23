@@ -9,4 +9,3 @@ Work in progress
     - Run regression analysis using French-Fama / other factor models
 - Portfolio Optimisation
     - Generate efficient frontiers to explore risk return trade offs
-
