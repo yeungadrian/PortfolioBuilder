@@ -1,5 +1,0 @@
-altair
-pandas
-pydantic
-requests
-streamlit
