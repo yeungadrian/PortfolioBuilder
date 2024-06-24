@@ -34,7 +34,7 @@ def override_load_fund_details() -> list[dict[str, str]]:
 app.dependency_overrides[load_fund_details] = override_load_fund_details
 
 
-def test_override_in_items(*, client: TestClient) -> None:
+def test_funds_ok(*, client: TestClient) -> None:
     response = client.get("/funds/")
     assert response.status_code == 200
     assert response.json()[0]["id"] == "vanguard-us-equity-index-fund-gbp-acc"
