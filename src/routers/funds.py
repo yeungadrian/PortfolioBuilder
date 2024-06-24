@@ -1,23 +1,40 @@
 from __future__ import annotations
 
-import polars as pl
-from fastapi import APIRouter
+import json
+from pathlib import Path
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+
+from src.schemas import FundDetails
 
 router = APIRouter()
 
 
-@router.get("/funds/")
-async def get_funds() -> dict[str, list[str]]:
+def load_fund_details() -> list[FundDetails]:
     """
-    Get available funds.
+    Load fund details from json.
 
     Returns
     -------
-    dict[str,list[str]]
-        List of funds
-
+    list[FundDetails]
+        List of available of funds with corresponding details
     """
-    funds = pl.read_parquet("data/processed/funds.pq")
-    funds = funds.get_column("name").to_list()
-    result = {"names": funds}
-    return result
+    with Path("data/processed/fund_details.json").open(mode="r") as f:
+        fund_details: list[FundDetails] = json.load(f)
+    return fund_details
+
+
+@router.get("/funds/")
+def get_available_funds(
+    fund_details: Annotated[list[FundDetails], Depends(load_fund_details)],
+) -> list[FundDetails]:
+    """
+    Get available funds with details.
+
+    Returns
+    -------
+    list[FundDetails]
+        List of available of funds with corresponding details
+    """
+    return fund_details

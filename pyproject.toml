@@ -50,7 +50,6 @@ select = [
   "D417", # Augment NumPy docstring convention: Missing argument descriptions
   "I", # isort
   "SIM", # flake8-simplify
-  "TCH", # flake8-type-checking
   "TID", # flake8-tidy-imports
   "UP", # pyupgrade
   "PT", # flake8-pytest-style
@@ -82,6 +81,7 @@ ignore = [
   "D105", # Missing docstring in magic method
   "D100", # Missing docstring in public module
   "D104", # Missing docstring in public package
+  "TCH", # flake8-type-checking. Fastapi uses pydantic type hints for openapi
   # flake8-todos
   "TD002", # Missing author in TODO
   "TD003", # Missing issue link on the line following this TODO
