@@ -61,7 +61,7 @@ jobs:
         run: poetry install --with dev
       - run: mkdir coverage
       - name: Test
-        run: coverage run -m pytest tests
+        run: poetry run coverage run -m pytest tests
         env:
           COVERAGE_FILE: coverage/.coverage
       - name: Store coverage files
