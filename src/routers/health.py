@@ -1,16 +1,15 @@
+from __future__ import annotations
+
 from fastapi import APIRouter
 
 router = APIRouter()
 
 
-@router.get("/ping/")
-def ping() -> str:
+@router.get("/healthz", status_code=200)
+async def healthz() -> dict[str, str]:
     """
-    Simple ping check.
+    Basic health check.
 
-    Returns
-    -------
-    str
-        pong
+    Returns a 200 OK response if the application is running.
     """
-    return "pong"
+    return {"status": "ok"}
