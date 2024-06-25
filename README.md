@@ -1,5 +1,12 @@
 # PortfolioBuilder
 
+<p align="center">
+<a href="https://github.com/yeungadrian/PortfolioBuilder/actions?query=branch%3Amain+event%3Apush+" target="_blank">
+    <img src="https://github.com/yeungadrian/PortfolioBuilder/actions/workflows/test.yml/badge.svg?branch=main&event=push" alt="Test">
+</a>
+</p>
+
+
 Work in progress
 
 ## Financial Analysis:
