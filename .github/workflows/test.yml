@@ -63,11 +63,11 @@ jobs:
       - name: Test
         run: poetry run coverage run -m pytest tests
         env:
-          COVERAGE_FILE: coverage/.coverage
+          COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py
       - name: Store coverage files
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
+          name: coverage-py
           path: coverage
 
   coverage-combine:
