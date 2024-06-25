@@ -26,8 +26,12 @@ jobs:
           # cache-dependency-path: pyproject.toml
       - name: Install pre-commit
         run: pip install pre-commit
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Lint
-        run: pre-commit run --all-files --verbose
+        run: pre-commit run --all-files --verbose --show-diff-on-failure
 
   test:
     runs-on: ubuntu-latest
