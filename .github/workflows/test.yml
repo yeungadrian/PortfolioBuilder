@@ -68,10 +68,10 @@ jobs:
         run: poetry run coverage run -m pytest tests
         env:
           COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py
-      - run: coverage report
+      - run: poetry run coverage report
         env:
           COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py
-      - run: coverage html --show-contexts --title "Coverage for ${{ github.sha }}"
+      - run: poetry run  coverage html --show-contexts --title "Coverage for ${{ github.sha }}"
       - name: Store coverage HTML
         uses: actions/upload-artifact@v4
         with:
