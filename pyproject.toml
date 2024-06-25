@@ -69,6 +69,7 @@ filterwarnings = [
 [tool.coverage.run]
 parallel = true
 source = [
+    "src",
     "tests",
 ]
 context = '${CONTEXT}'
