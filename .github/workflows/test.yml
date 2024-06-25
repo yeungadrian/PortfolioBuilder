@@ -48,7 +48,7 @@ jobs:
         run: pip install pipx
       - name: Install poetry
         run: pipx install poetry
-      - name: Setup a local virtual environment (if no poetry.toml file)
+      - name: Setup a local virtual environment
         run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
@@ -59,10 +59,11 @@ jobs:
           key: venv-${{ hashFiles('poetry.lock') }}
       - name: Install Dependencies
         run: poetry install --with dev
+      - run: mkdir coverage
       - name: Test
         run: coverage run -m pytest tests
         env:
-          COVERAGE_FILE: .coverage
+          COVERAGE_FILE: coverage/.coverage
       - name: Store coverage files
         uses: actions/upload-artifact@v4
         with:
