@@ -48,10 +48,8 @@ jobs:
           # Issue ref: https://github.com/actions/setup-python/issues/436
           # cache: "pip"
           # cache-dependency-path: pyproject.toml
-      - name: Install pipx
-        run: pip install pipx
       - name: Install poetry
-        run: pipx install poetry
+        run: pip install poetry
       - name: Setup a local virtual environment
         run: |
           poetry config virtualenvs.create true --local
