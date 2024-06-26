@@ -16,6 +16,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     environment: development
+    env:
+      pre-commit-version: ${{ env.PRE_COMMIT_VERSION }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -26,11 +28,11 @@ jobs:
           # cache: "pip"
           # cache-dependency-path: pyproject.toml
       - name: Install pre-commit
-        run: pip install pre-commit==$env.PRE_COMMIT_VERSION
+        run: pip install pre-commit==$pre-commit-version
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-${{ env.PRE_COMMIT_VERSION }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-${{ env.pre-commit-version }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Lint
         run: pre-commit run --all-files --verbose --show-diff-on-failure
 
