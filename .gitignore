@@ -67,3 +67,6 @@ dmypy.json
 
 # Local data
 /data
+
+# macOS
+.DS_Store
