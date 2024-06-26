@@ -15,6 +15,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -25,16 +26,17 @@ jobs:
           # cache: "pip"
           # cache-dependency-path: pyproject.toml
       - name: Install pre-commit
-        run: pip install pre-commit==3.7.1
+        run: pip install pre-commit==${{ env.PRE_COMMIT_VERSION }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-3.7.1|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-${{ env.PRE_COMMIT_VERSION }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Lint
         run: pre-commit run --all-files --verbose --show-diff-on-failure
 
   test:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: Dump GitHub context
         env:
@@ -49,7 +51,7 @@ jobs:
           # cache: "pip"
           # cache-dependency-path: pyproject.toml
       - name: Install poetry
-        run: pip install poetry
+        run: pip install poetry==1.8.3
       - name: Setup a local virtual environment
         run: |
           poetry config virtualenvs.create true --local
