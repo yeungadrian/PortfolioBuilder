@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     env:
-      pre-commit-version: ${{ env.PRE_COMMIT_VERSION }}
+      pre-commit-version: 3.7.1
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -28,7 +28,7 @@ jobs:
           # cache: "pip"
           # cache-dependency-path: pyproject.toml
       - name: Install pre-commit
-        run: pip install pre-commit==$pre-commit-version
+        run: pip install pre-commit==${{ env.pre-commit-version }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
