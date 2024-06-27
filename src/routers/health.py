@@ -3,10 +3,10 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get("/healthz", status_code=200)
-async def healthz() -> dict[str, str]:
+@router.get("/health", status_code=200)
+async def health() -> dict[str, str]:
     """
-    Basic health check.
+    Basic health check. Can't use healthz on google cloud.
 
     Returns a 200 OK response if the application is running.
     """
