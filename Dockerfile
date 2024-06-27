@@ -1,6 +1,6 @@
 FROM python:3.11-slim as build
 
-ENV PIP_DEFAULT_TIMEOUT=100 \
+ENV PIP_DEFAULT_TIMEOUT=60 \
     # Allow statements and log messages to immediately appear
     PYTHONUNBUFFERED=1 \
     # disable a pip version check to reduce run-time & log-spam
@@ -40,9 +40,9 @@ RUN set -ex \
 
 COPY ./src src
 
+# Set the user to run the application
+USER user
+
 EXPOSE 8000
 
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# Set the user to run the application
-USER user
