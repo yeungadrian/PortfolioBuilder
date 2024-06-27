@@ -1,13 +1,14 @@
 FROM python:3.11-slim as build
 
+
+ARG POETRY_VERSION="1.7.3"
 ENV PIP_DEFAULT_TIMEOUT=60 \
     # Allow statements and log messages to immediately appear
     PYTHONUNBUFFERED=1 \
     # disable a pip version check to reduce run-time & log-spam
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     # cache is useless in docker image, so disable to reduce image size
-    PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.8.3
+    PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 COPY pyproject.toml poetry.lock ./
