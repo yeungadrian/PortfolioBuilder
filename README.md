@@ -15,9 +15,6 @@ uvicorn src.main:app --reload --port 8000
 
 
 ## Financial Analysis:
+- Fund Screener
 - Portfolio Backtesting
     - Backtest different asset allocations and compare historical performance
-- Factor Analysis
-    - Run regression analysis using French-Fama / other factor models
-- Portfolio Optimisation
-    - Generate efficient frontiers to explore risk return trade offs
