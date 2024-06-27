@@ -9,6 +9,11 @@
 
 Work in progress
 
+```
+uvicorn src.main:app --reload --port 8000
+```
+
+
 ## Financial Analysis:
 - Portfolio Backtesting
     - Backtest different asset allocations and compare historical performance
