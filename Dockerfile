@@ -1,4 +1,4 @@
-FROM python:3.11-slim as build
+FROM python:3.11-slim-bullseye as build
 
 
 ARG POETRY_VERSION="1.7.3"
@@ -19,7 +19,7 @@ RUN pip install "poetry==$POETRY_VERSION" \
 
 
 ### Final stage
-FROM python:3.11-slim as final
+FROM python:3.11-slim-bullseye  as final
 
 WORKDIR /app
 
