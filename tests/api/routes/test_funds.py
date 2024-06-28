@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from src.main import app
-from src.routers.funds import load_fund_details
+from app.api.routes.funds import load_fund_details
+from app.main import app
 
 
 def override_load_fund_details() -> list[dict[str, str]]:

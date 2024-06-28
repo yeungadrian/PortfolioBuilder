@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from src.schemas import FundDetails
+from app.schemas import FundDetails
 
 router = APIRouter()
 
