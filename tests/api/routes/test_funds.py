@@ -2,15 +2,16 @@ from fastapi.testclient import TestClient
 
 from app.api.routes.funds import load_details
 from app.main import app
+from app.schemas import FundDetails
 
 
-def override_load_details() -> list[dict[str, str]]:
+def override_load_details() -> list[FundDetails]:
     """
-    Load fund details from json.
+    Create mock fund details.
 
     Returns
     -------
-    list[dict[str,str]]
+    FundDetails
         List of available of funds with corresponding details
     """
     fund_details = [
@@ -26,7 +27,7 @@ def override_load_details() -> list[dict[str, str]]:
         }
     ]
 
-    return fund_details
+    return [FundDetails(**i) for i in fund_details]
 
 
 app.dependency_overrides[load_details] = override_load_details

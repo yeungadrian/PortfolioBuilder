@@ -10,30 +10,24 @@ router = APIRouter()
 
 
 def load_details() -> list[FundDetails]:
-    """
-    Load fund details from json.
-
-    Returns
-    -------
-    list[FundDetails]
-        List of available of funds with corresponding details
-    """
+    """Load details for all funds."""
     _all_details = pl.read_parquet(data_settings.fund_details).to_dicts()
-    all_details = [FundDetails.model_validate(i) for i in _all_details]
+    all_details = [FundDetails(**i) for i in _all_details]
     return all_details
 
 
-@router.get("/all/", summary="Get all funds details")
+@router.get(
+    "/all/",
+    summary="Get details for all UK funds",
+    description="Get details for all supported UK funds.",
+)
 def get_all_details(
     all_details: Annotated[list[FundDetails], Depends(load_details)],
 ) -> list[FundDetails]:
     """
-    Get available funds with details.
+    Load details for all funds.
 
-    Returns
-    -------
-    list[FundDetails]
-        List of available of funds with corresponding details
+    Using Depends to allow overloading method in tests.
     """
     return all_details
 
