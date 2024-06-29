@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.get(
     "/all/",
-    summary="Get details for all UK funds",
+    summary="Get details for all funds",
     description="Get details for all supported UK funds.",
 )
 def get_all_details() -> list[FundDetails]:
