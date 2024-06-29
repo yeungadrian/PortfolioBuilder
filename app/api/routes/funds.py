@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
+from app.core.config import data_settings
 from app.schemas import FundDetails
 
 router = APIRouter()
@@ -18,7 +19,7 @@ def load_fund_details() -> list[FundDetails]:
     list[FundDetails]
         List of available of funds with corresponding details
     """
-    with Path("data/processed/fund_details.json").open(mode="r") as f:
+    with Path(data_settings.fund_details).open(mode="r") as f:
         fund_details: list[FundDetails] = json.load(f)
     return fund_details
 
