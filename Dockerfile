@@ -40,6 +40,7 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ./app app
+COPY ./data/processed data/processed
 
 # Set the user to run the application
 USER user
