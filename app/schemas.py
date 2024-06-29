@@ -1,24 +1,6 @@
 from pydantic import BaseModel
 
 
-class FundId(BaseModel):
-    """Fund Identifier & display name."""
-
-    id: str
-    name: str
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                {
-                    "id": "vanguard-us-equity-index-fund-gbp-acc",
-                    "name": "U.S. Equity Index Fund",
-                }
-            ]
-        }
-    }
-
-
 class FundDetails(BaseModel):
     """Fund details."""
 
@@ -28,7 +10,7 @@ class FundDetails(BaseModel):
     inception_date: str
     benchmark: str
     currency_code: str
-    sedol: str
+    sedol: str | None
     ocf: str
 
     model_config = {

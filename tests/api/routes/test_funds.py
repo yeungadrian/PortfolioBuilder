@@ -1,10 +1,10 @@
 from fastapi.testclient import TestClient
 
-from app.api.routes.funds import load_fund_details
+from app.api.routes.funds import load_details
 from app.main import app
 
 
-def override_load_fund_details() -> list[dict[str, str]]:
+def override_load_details() -> list[dict[str, str]]:
     """
     Load fund details from json.
 
@@ -29,7 +29,7 @@ def override_load_fund_details() -> list[dict[str, str]]:
     return fund_details
 
 
-app.dependency_overrides[load_fund_details] = override_load_fund_details
+app.dependency_overrides[load_details] = override_load_details
 
 
 def test_funds_ok(*, client: TestClient) -> None:
