@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
@@ -29,4 +28,4 @@ jobs:
             --no-cpu-boost \
             --region=${{ vars.REGION }} \
             --project=${{ vars.PROJECT_ID }} \
-            && gcloud run services update-traffic ${{ vars.SERVICE }} --to-latest
+            && gcloud run services update-traffic ${{ vars.SERVICE }} --to-latest --region=${{ vars.REGION }}
