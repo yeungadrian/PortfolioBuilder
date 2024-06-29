@@ -1,7 +1,5 @@
-from typing import Annotated
-
 import polars as pl
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from app.core.config import data_settings
 from app.schemas import FundDetails
@@ -9,26 +7,15 @@ from app.schemas import FundDetails
 router = APIRouter()
 
 
-def load_details() -> list[FundDetails]:
-    """Load details for all funds."""
-    _all_details = pl.read_parquet(data_settings.fund_details).to_dicts()
-    all_details = [FundDetails(**i) for i in _all_details]
-    return all_details
-
-
 @router.get(
     "/all/",
     summary="Get details for all UK funds",
     description="Get details for all supported UK funds.",
 )
-def get_all_details(
-    all_details: Annotated[list[FundDetails], Depends(load_details)],
-) -> list[FundDetails]:
-    """
-    Load details for all funds.
-
-    Using Depends to allow overloading method in tests.
-    """
+def get_all_details() -> list[FundDetails]:
+    """Load details for all funds."""
+    _all_details = pl.read_parquet(data_settings.fund_details).to_dicts()
+    all_details = [FundDetails(**i) for i in _all_details]
     return all_details
 
 
