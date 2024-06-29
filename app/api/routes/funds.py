@@ -1,7 +1,6 @@
-import json
-from pathlib import Path
 from typing import Annotated
 
+import polars as pl
 from fastapi import APIRouter, Depends
 
 from app.core.config import data_settings
@@ -19,8 +18,8 @@ def load_fund_details() -> list[FundDetails]:
     list[FundDetails]
         List of available of funds with corresponding details
     """
-    with Path(data_settings.fund_details).open(mode="r") as f:
-        fund_details: list[FundDetails] = json.load(f)
+    _fund_details = pl.read_parquet(data_settings.fund_details)
+    fund_details: list[FundDetails] = _fund_details.to_dicts()
     return fund_details
 
 
