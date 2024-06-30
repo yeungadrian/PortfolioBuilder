@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel
 
 
@@ -7,11 +9,15 @@ class FundDetails(BaseModel):
     id: str
     name: str
     asset_class: str
-    inception_date: str
+    inception_date: date
     benchmark: str
     currency_code: str
     sedol: str | None
     ocf: str
+    returns_ytd: float | None
+    returns_1yr: float | None
+    returns_3yr: float | None
+    returns_5yr: float | None
 
     model_config = {
         "json_schema_extra": {

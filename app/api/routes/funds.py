@@ -15,6 +15,7 @@ router = APIRouter()
 def get_all_details() -> list[FundDetails]:
     """Load details for all funds."""
     _all_details = pl.read_parquet(data_settings.fund_details).to_dicts()
+    print(_all_details)
     all_details = [FundDetails(**i) for i in _all_details]
     return all_details
 
