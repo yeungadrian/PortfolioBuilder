@@ -1,48 +1,29 @@
-from datetime import date
+from typing import Any
 
 import polars as pl
 from fastapi import APIRouter
-from pydantic import BaseModel
 
 from app.core.config import data_settings
+from app.schemas import BacktestScenario
 
 router = APIRouter()
 
 
-class Holding(BaseModel):
-    """Fund holding."""
-
-    id: str
-    amount: float
-
-
-class BacktestScenario(BaseModel):
-    """Backtest Settings."""
-
-    portfolio: list[Holding]
-    start_date: date
-    end_date: date
-
-    model_config = {
-        "json_schema_extra": {
-            "examples": [
-                {
-                    "portfolio": [
-                        {
-                            "id": "vanguard-us-equity-index-fund-gbp-acc",
-                            "amount": 1000.0,
-                        }
-                    ],
-                    "start_date": date(2020, 1, 1),
-                    "end_date": date(2024, 1, 1),
-                }
-            ]
-        }
-    }
-
-
 @router.post("/")
-def backtest_portfolio(config: BacktestScenario) -> dict[str, str]:
+def backtest_portfolio(backtest_scenario: BacktestScenario) -> Any:
     """Backtest portfolio."""
-    pl.scan_parquet(data_settings.fund_returns)
-    return {"status": "ok"}
+    ids = [holding["id"] for holding in backtest_scenario.dict()["portfolio"]]
+    _df = (
+        pl.scan_parquet(data_settings.fund_returns)
+        .filter(pl.col("id").is_in(ids))
+        .filter(
+            pl.col("date").is_between(
+                backtest_scenario.start_date, backtest_scenario.end_date
+            )
+        )
+        .collect()
+    )
+    _df = _df.with_columns(pl.col("monthly_return") + 1).with_columns(
+        pl.col("monthly_return").cum_prod().over("id").alias("cum_prod") - 1.0
+    )
+    return _df.to_dicts()

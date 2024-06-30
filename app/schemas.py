@@ -35,3 +35,39 @@ class FundDetails(BaseModel):
             ]
         }
     }
+
+
+class Holding(BaseModel):
+    """Fund holding."""
+
+    id: str
+    amount: float
+
+
+class BacktestScenario(BaseModel):
+    """Backtest Settings."""
+
+    portfolio: list[Holding]
+    start_date: date
+    end_date: date
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "portfolio": [
+                        {
+                            "id": "vanguard-us-equity-index-fund-gbp-acc",
+                            "amount": 100.0,
+                        },
+                        {
+                            "id": "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc",
+                            "amount": 100.0,
+                        },
+                    ],
+                    "start_date": date(2020, 1, 1),
+                    "end_date": date(2024, 1, 1),
+                }
+            ]
+        }
+    }
