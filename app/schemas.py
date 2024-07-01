@@ -65,8 +65,37 @@ class BacktestScenario(BaseModel):
                             "amount": 100.0,
                         },
                     ],
-                    "start_date": date(2020, 1, 1),
+                    "start_date": date(2023, 1, 1),
                     "end_date": date(2024, 1, 1),
+                }
+            ]
+        }
+    }
+
+
+class BacktestSummary(BaseModel):
+    """Backtest summary."""
+
+    date: date
+    portfolio_value: float
+    holdings: list[Holding]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "date": "2024-01-01",
+                    "portfolio": 200.0,
+                    "holdings": [
+                        {
+                            "id": "vanguard-us-equity-index-fund-gbp-acc",
+                            "amount": 100.0,
+                        },
+                        {
+                            "id": "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc",
+                            "amount": 100.0,
+                        },
+                    ],
                 }
             ]
         }
