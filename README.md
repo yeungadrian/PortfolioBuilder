@@ -12,13 +12,19 @@
 </a>
 </p>
 
-Work in progress
+Investment analytics app (FastAPI, Artifact Registry, Cloud Run) 
 
+
+## Quickstart
+Run locally with poetry
 ```
+poetry shell
+poetry install --with dev
 uvicorn src.main:app --reload --port 8000
 ```
+Run with docker
+```
+docker build -t portfoliobuilder . --build-arg="POETRY_VERSION=1.8.3"
+docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest 
+```
 
-## Financial Analysis:
-- Fund Screener
-- Portfolio Backtesting
-    - Backtest different asset allocations and compare historical performance
