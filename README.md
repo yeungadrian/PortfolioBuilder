@@ -49,5 +49,5 @@ docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 
 ## How to productionise
 - Migrate data to a proper source (s3 / cloud storage / postgresql equivalent) (it's only 25KB atm and another thing to configure)
-- Cloud run by default has no public access. (No dangerous operations, limits set way below cloud run free tier)
+- Cloud run by default has no public access / add actual authentication. (No dangerous operations, limits set way below cloud run free tier)
 - Turn on image scanning in wherever you host your images
