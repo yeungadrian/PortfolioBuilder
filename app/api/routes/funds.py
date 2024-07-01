@@ -1,5 +1,5 @@
 import polars as pl
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.schemas import FundDetails
@@ -28,5 +28,7 @@ def get_details_by_sedol(sedol: str) -> FundDetails:
         .collect()
         .to_dicts()
     )
+    if len(_fund_details) == 0:
+        raise HTTPException(status_code=404, detail="Fund not found")
     fund_details = FundDetails(**_fund_details[0])
     return fund_details

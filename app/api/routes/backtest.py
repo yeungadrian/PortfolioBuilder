@@ -1,10 +1,28 @@
 import polars as pl
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.schemas import BacktestScenario, BacktestSummary
 
 router = APIRouter()
+
+
+def validate_ids(ids: list[str]) -> None:
+    """Validate ids provided."""
+    avaliable_ids = (
+        pl.scan_parquet(data_settings.fund_details)
+        .filter(pl.col("id").is_in(ids))
+        .collect()["id"]
+        .to_list()
+    )
+
+    not_avaliable = [_id for _id in ids if _id not in avaliable_ids]
+
+    if len(not_avaliable) > 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Following funds are not avaliable: {not_avaliable}",
+        )
 
 
 @router.post("/")
@@ -16,6 +34,8 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
         for holding in backtest_scenario.model_dump()["portfolio"]
     }
     ids = list(holdings.keys())
+
+    validate_ids(ids)
 
     portfolio_returns = (
         pl.scan_parquet(data_settings.fund_returns)
