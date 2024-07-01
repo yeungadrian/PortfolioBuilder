@@ -41,6 +41,12 @@ docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 - [Google cloud free tier limits](https://cloud.google.com/free/docs/free-cloud-features#free-tier-usage-limits)
 
 
+## Managing GCP costs
+- Delete image before uploading new one (Each image is ~330MB so not small) (Switch to a cleanup policy, if some history matters to you)
+- Log retention policy
+- Set appropriate resource limits: CPU, MEMORY, MIN_INSTANCES, MAX_INSTANCES. App when idle uses 5% of CPU, ~128Mi memory.
+
+
 ## How to productionise
 - Migrate data to a proper source (s3 / cloud storage / postgresql equivalent) (it's only 25KB atm)
 - Cloud run by default has no pbulic access. (No dangerous operations, limits set way below cloud run free tier)
