@@ -10,10 +10,10 @@ class FundDetails(BaseModel):
     name: str
     asset_class: str
     inception_date: date
-    benchmark: str
+    benchmark: str | None
     currency_code: str
     sedol: str | None
-    ocf: str
+    ocf: str | None
     returns_ytd: float | None
     returns_1yr: float | None
     returns_3yr: float | None
