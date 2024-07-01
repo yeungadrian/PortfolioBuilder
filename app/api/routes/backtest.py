@@ -13,7 +13,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {
         holding["id"]: holding["amount"]
-        for holding in backtest_scenario.dict()["portfolio"]
+        for holding in backtest_scenario.model_dump()["portfolio"]
     }
     ids = list(holdings.keys())
 
