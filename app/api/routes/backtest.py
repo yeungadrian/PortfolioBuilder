@@ -17,7 +17,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
     }
     ids = list(holdings.keys())
 
-    fund_returns = (
+    portfolio_returns = (
         pl.scan_parquet(data_settings.fund_returns)
         .filter(pl.col("id").is_in(ids))
         .filter(
@@ -28,38 +28,40 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
         .collect()
     )
 
-    fund_returns = fund_returns.with_columns(
+    portfolio_returns = portfolio_returns.with_columns(
         pl.when(pl.col("date") == pl.col("date").min())
         .then(0)
         .otherwise(pl.col("monthly_return"))
         .alias("monthly_return")
     )
 
-    fund_returns = fund_returns.with_columns(pl.col("monthly_return") + 1).with_columns(
+    portfolio_returns = portfolio_returns.with_columns(
+        pl.col("monthly_return") + 1
+    ).with_columns(
         pl.col("monthly_return").cum_prod().over("id").alias("cum_prod") - 1.0
     )
 
-    summary = fund_returns.pivot(on="id", values="cum_prod", index="date")
-
-    summary = summary.with_columns(
+    _backtest_summary = portfolio_returns.pivot(
+        on="id", values="cum_prod", index="date"
+    )
+    _backtest_summary = _backtest_summary.with_columns(
         [((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()]
     )
-
-    summary = summary.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
-
-    _backtest_summary = summary.to_dicts()
+    _backtest_summary = _backtest_summary.with_columns(
+        pl.sum_horizontal(ids).alias("portfolio_value")
+    )
 
     backtest_summary = [
         {
-            "date": point["date"],
-            "portfolio_value": point["portfolio_value"],
+            "date": row["date"],
+            "portfolio_value": row["portfolio_value"],
             "holdings": [
                 {"id": _id, "amount": amount}
-                for _id, amount in point.items()
+                for _id, amount in row.items()
                 if _id not in ["date", "portfolio_value"]
             ],
         }
-        for point in _backtest_summary
+        for row in _backtest_summary.to_dicts()
     ]
 
     return backtest_summary  # type: ignore [return-value]
