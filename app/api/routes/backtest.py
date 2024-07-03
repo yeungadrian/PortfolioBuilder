@@ -72,16 +72,16 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
     )
 
     backtest_summary = [
-        {
-            "date": row["date"],
-            "portfolio_value": row["portfolio_value"],
-            "holdings": [
+        BacktestSummary(
+            date=row["date"],
+            portfolio_value=row["portfolio_value"],
+            holdings=[
                 {"id": _id, "amount": amount}
                 for _id, amount in row.items()
                 if _id not in ["date", "portfolio_value"]
             ],
-        }
+        )
         for row in _backtest_summary.to_dicts()
     ]
 
-    return backtest_summary  # type: ignore [return-value]
+    return backtest_summary
