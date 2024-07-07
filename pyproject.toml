@@ -58,7 +58,7 @@ source = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 118
 fix = true
 
 [tool.ruff.lint]
