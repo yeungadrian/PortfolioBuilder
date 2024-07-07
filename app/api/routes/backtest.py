@@ -2,7 +2,7 @@ import polars as pl
 from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
-from app.schemas import BacktestScenario, BacktestSummary
+from app.schemas import BacktestDetail, BacktestScenario
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ def validate_ids(ids: list[str]) -> None:
 
 
 @router.post("/")
-def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSummary]:
+def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestDetail]:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {
@@ -37,8 +37,8 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
 
     validate_ids(ids)
 
-    portfolio_returns = (
-        pl.scan_parquet(data_settings.fund_returns)
+    holding_returns = (
+        pl.scan_parquet(data_settings.holding_returns)
         .filter(pl.col("id").is_in(ids))
         .filter(
             pl.col("date").is_between(
@@ -48,22 +48,20 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
         .collect()
     )
 
-    portfolio_returns = portfolio_returns.with_columns(
+    holding_returns = holding_returns.with_columns(
         pl.when(pl.col("date") == pl.col("date").min())
         .then(0)
         .otherwise(pl.col("monthly_return"))
         .alias("monthly_return")
     )
 
-    portfolio_returns = portfolio_returns.with_columns(
+    holding_returns = holding_returns.with_columns(
         pl.col("monthly_return") + 1
     ).with_columns(
         pl.col("monthly_return").cum_prod().over("id").alias("cum_prod") - 1.0
     )
 
-    _backtest_summary = portfolio_returns.pivot(
-        on="id", values="cum_prod", index="date"
-    )
+    _backtest_summary = holding_returns.pivot(on="id", values="cum_prod", index="date")
     _backtest_summary = _backtest_summary.with_columns(
         [((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()]
     )
@@ -72,7 +70,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> list[BacktestSumm
     )
 
     backtest_summary = [
-        BacktestSummary(
+        BacktestDetail(
             date=row["date"],
             portfolio_value=row["portfolio_value"],
             holdings=[

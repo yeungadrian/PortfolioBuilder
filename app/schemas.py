@@ -73,8 +73,8 @@ class BacktestScenario(BaseModel):
     }
 
 
-class BacktestSummary(BaseModel):
-    """Backtest summary."""
+class BacktestDetail(BaseModel):
+    """Backtest details per date."""
 
     date: date
     portfolio_value: float
