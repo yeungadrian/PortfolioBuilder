@@ -22,12 +22,7 @@ def get_all_details() -> list[FundDetails]:
 @router.get("/{sedol}/", summary="Get fund details by sedol")
 def get_details_by_sedol(sedol: str) -> FundDetails:
     """Get details for single fund by sedol."""
-    _fund_details = (
-        pl.scan_parquet(data_settings.fund_details)
-        .filter(pl.col("sedol") == sedol)
-        .collect()
-        .to_dicts()
-    )
+    _fund_details = pl.scan_parquet(data_settings.fund_details).filter(pl.col("sedol") == sedol).collect().to_dicts()
     if len(_fund_details) == 0:
         raise HTTPException(status_code=404, detail="Fund not found")
     fund_details = FundDetails(**_fund_details[0])
