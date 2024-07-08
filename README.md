@@ -12,7 +12,7 @@
 </a>
 </p>
 
-Investment analytics demo (FastAPI, Artifact Registry, Cloud Run)
+Investment analytics (FastAPI, Artifact Registry, Cloud Run)
 
 ## Quickstart
 Run locally with poetry
@@ -31,4 +31,5 @@ docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 - [Folder structure: FastAPI full stack template](https://github.com/tiangolo/full-stack-fastapi-template)
 - [Ruff config: polars](https://github.com/pola-rs/polars/blob/main/py-polars/pyproject.toml)
 - [Github actions: FastAPI](https://github.com/tiangolo/fastapi/blob/master/.github/workflows/test.yml)
-- [Google cloud free tier limits so runs at $0.00 a month](https://cloud.google.com/free/docs/free-cloud-features#free-tier-usage-limits)
+- [Google cloud free tier limits](https://cloud.google.com/free/docs/free-cloud-features#free-tier-usage-limits)
+- [PyPortfolioOpt](https://pypi.org/project/pyportfolioopt/)
