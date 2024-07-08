@@ -100,3 +100,26 @@ class BacktestDetail(BaseModel):
             ]
         }
     }
+
+
+class OptimisationScenario(BaseModel):
+    """Settings for optimisation scenario."""
+
+    start_date: date
+    end_date: date
+    ids: list[str]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "start_date": date(2023, 1, 1),
+                    "end_date": date(2024, 1, 1),
+                    "ids": [
+                        "vanguard-us-equity-index-fund-gbp-acc",
+                        "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc",
+                    ],
+                }
+            ]
+        }
+    }
