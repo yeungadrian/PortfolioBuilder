@@ -113,13 +113,27 @@ class OptimisationScenario(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "start_date": date(2023, 1, 1),
+                    "start_date": date(2018, 1, 1),
                     "end_date": date(2024, 1, 1),
                     "ids": [
+                        "vanguard-ftse-100-index-unit-trust-gbp-acc",
                         "vanguard-us-equity-index-fund-gbp-acc",
-                        "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc",
+                        "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
                     ],
                 }
             ]
+        }
+    }
+
+
+class ExpectedReturn(BaseModel):
+    """Expected return for security."""
+
+    id: str
+    expected_return: float
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [{"id": "vanguard-us-equity-index-fund-gbp-acc", "expected_returns": 6.752961}]
         }
     }

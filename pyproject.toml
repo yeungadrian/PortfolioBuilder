@@ -38,6 +38,7 @@ disable_error_code = [
 disallow_subclassing_any = false
 disallow_untyped_decorators = false
 
+
 [tool.pytest.ini_options]
 addopts = [
   "--strict-config",
