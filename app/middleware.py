@@ -21,14 +21,14 @@ structlog.configure(
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
-    """TODO."""
+    """Structlog middleware."""
 
     def __init__(self, app: FastAPI) -> None:
         self._logger: structlog.BoundLogger = structlog.get_logger()
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
-        """TODO."""
+        """Middleware that logs on every request."""
         path: str = request.url.path
         if request.query_params:
             path += f"?{request.query_params}"
@@ -41,17 +41,16 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         if request.client is not None:
             client = f"{request.client.host}:{request.client.port}"
 
-        log: structlog.BoundLogger = self._logger.bind(
+        logger: structlog.BoundLogger = self._logger.bind(
             user_agent=user_agent,
             client=client,
             path=path,
             method=request.method,
             request_id=request_id,
-            log_time=str(datetime.now()),
             security=False,
         )
 
-        request.state.logger = log
+        request.state.logger = logger
 
         response = await call_next(request)
 
