@@ -1,6 +1,7 @@
 import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
+from app.api.routes.utils import load_returns
 from app.core.config import data_settings
 from app.schemas import BacktestDetail, BacktestScenario
 
@@ -31,29 +32,15 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
             detail=f"Following funds are not avaliable: {not_avaliable}",
         )
 
-    security_returns = (
-        pl.scan_parquet(data_settings.fund_returns)
-        .filter(pl.col("id").is_in(ids))
-        .filter(pl.col("date").is_between(backtest_scenario.start_date, backtest_scenario.end_date))
-        .collect()
-    )
+    security_returns = load_returns(ids, backtest_scenario.start_date, backtest_scenario.end_date)
 
     security_returns = security_returns.with_columns(
-        pl.when(pl.col("date") == pl.col("date").min())
-        .then(0)
-        .otherwise(pl.col("monthly_return"))
-        .alias("monthly_return")
+        [pl.when(pl.col("date") == pl.col("date").min()).then(0).otherwise(pl.col(_id)).alias(_id) for _id in ids]
     )
 
-    security_returns = security_returns.with_columns(pl.col("monthly_return") + 1).with_columns(
-        pl.col("monthly_return").cum_prod().over("id").alias("cum_prod") - 1.0
-    )
-
-    _backtest_summary = security_returns.pivot(on="id", values="cum_prod", index="date")
-    _backtest_summary = _backtest_summary.with_columns(
-        [((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()]
-    )
-    _backtest_summary = _backtest_summary.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
+    security_returns = security_returns.with_columns([(pl.col(_id) + 1.0).cum_prod().alias(_id) - 1.0 for _id in ids])
+    security_returns = security_returns.with_columns([((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()])
+    security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
 
     backtest_summary = [
         BacktestDetail(
@@ -63,7 +50,7 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
                 {"id": _id, "amount": amount} for _id, amount in row.items() if _id not in ["date", "portfolio_value"]
             ],
         )
-        for row in _backtest_summary.to_dicts()
+        for row in security_returns.to_dicts()
     ]
 
     return backtest_summary
