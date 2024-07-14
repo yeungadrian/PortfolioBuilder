@@ -1,8 +1,8 @@
 import polars as pl
 from fastapi import APIRouter
 
-from app.api.routes.utils import load_returns
 from app.schemas import ExpectedReturn, OptimisationScenario
+from app.utils import load_returns
 
 router = APIRouter()
 

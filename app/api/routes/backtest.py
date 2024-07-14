@@ -1,9 +1,9 @@
 import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
-from app.api.routes.utils import load_returns
 from app.core.config import data_settings
 from app.schemas import BacktestDetail, BacktestScenario
+from app.utils import load_returns
 
 router = APIRouter()
 

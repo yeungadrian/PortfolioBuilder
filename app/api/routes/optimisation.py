@@ -6,8 +6,8 @@ from scipy.optimize import minimize
 
 from app.api.routes.expected_returns import calculate_historical_expected_returns
 from app.api.routes.risk_models import calculate_sample_covariance
-from app.api.routes.utils import load_returns
 from app.schemas import Holding, OptimisationScenario
+from app.utils import load_returns
 
 router = APIRouter()
 
