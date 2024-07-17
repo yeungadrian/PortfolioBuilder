@@ -12,13 +12,13 @@ import {
 import { cx, focusRing } from "@/lib/utils"
 import {
   RiHome2Line,
-  RiLinkM,
   RiListCheck,
   RiMenuLine,
   RiSettings5Line,
 } from "@remixicon/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { ModeToggle } from "@/components/ui/navigation/Toggle"
 
 const navigation = [
   { name: "Overview", href: siteConfig.baseLinks.overview, icon: RiHome2Line },
@@ -89,6 +89,9 @@ export default function MobileSidebar() {
               </ul>
             </nav>
           </DrawerBody>
+          <div>
+          <ModeToggle/>
+          </div>
         </DrawerContent>
       </Drawer>
     </>
