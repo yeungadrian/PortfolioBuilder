@@ -3,7 +3,6 @@ import { siteConfig } from "@/app/siteConfig"
 import { cx, focusRing } from "@/lib/utils"
 import {
   RiHome2Line,
-  RiLinkM,
   RiListCheck,
   RiSettings5Line,
 } from "@remixicon/react"
