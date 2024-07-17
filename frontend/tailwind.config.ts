@@ -1,12 +1,8 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss"
 
 const config: Config = {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  darkMode: "selector",
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       keyframes: {
@@ -30,16 +26,6 @@ const config: Config = {
           from: { opacity: "0", transform: "translateX(-6px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
-        accordionOpen: {
-          from: { height: "0px" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        accordionClose: {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: { height: "0px" },
-        },
         dialogOverlayShow: {
           from: { opacity: "0" },
           to: { opacity: "1" },
@@ -52,36 +38,28 @@ const config: Config = {
           to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
         },
         drawerSlideLeftAndFade: {
-          from: { opacity: "0", transform: "translateX(100%)" },
+          from: { opacity: "0", transform: "translateX(50%)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
-        drawerSlideRightAndFade: {
-          from: { opacity: "1", transform: "translateX(0)" },
-          to: { opacity: "0", transform: "translateX(100%)" },
-        },
       },
-    },
-    animation: {
-      hide: "hide 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      slideDownAndFade: "slideDownAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      slideLeftAndFade: "slideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      slideUpAndFade: "slideUpAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      slideRightAndFade:
-        "slideRightAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      // Accordion
-      accordionOpen: "accordionOpen 150ms cubic-bezier(0.87, 0, 0.13, 1)",
-      accordionClose: "accordionClose 150ms cubic-bezier(0.87, 0, 0.13, 1)",
-      // Dialog
-      dialogOverlayShow:
-        "dialogOverlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      dialogContentShow:
-        "dialogContentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      // Drawer
-      drawerSlideLeftAndFade:
-        "drawerSlideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      drawerSlideRightAndFade: "drawerSlideRightAndFade 150ms ease-in",
+      animation: {
+        hide: "hide 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideDownAndFade:
+          "slideDownAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideLeftAndFade:
+          "slideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideUpAndFade: "slideUpAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        slideRightAndFade:
+          "slideRightAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        drawerSlideLeftAndFade:
+          "drawerSlideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        dialogOverlayShow:
+          "dialogOverlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        dialogContentShow:
+          "dialogContentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],
-};
-export default config;
+}
+export default config
