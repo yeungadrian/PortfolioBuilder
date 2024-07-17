@@ -19,6 +19,11 @@ const navigation = [
     href: siteConfig.baseLinks.settings,
     icon: RiSettings5Line,
   },
+  {
+    name: "Others",
+    href: siteConfig.baseLinks.others,
+    icon: RiSettings5Line,
+  },
 ] as const
 
 

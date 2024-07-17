@@ -7,6 +7,7 @@ export const siteConfig = {
     overview: "/overview",
     details: "/details",
     settings: "/settings",
+    others: "/others",
   },
   externalLink: {
     blocks: "https://blocks.tremor.so/templates#dashboard",
