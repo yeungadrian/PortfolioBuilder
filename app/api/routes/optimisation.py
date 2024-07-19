@@ -1,6 +1,7 @@
 from typing import Any, Callable
 
 import numpy as np
+import polars as pl
 from fastapi import APIRouter
 from scipy.optimize import minimize
 
@@ -58,6 +59,6 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
     """Run mean variance optimisation."""
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     expected_returns = calculate_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
-    sample_covariance = calculate_sample_covariance(security_returns, scenario.ids)
+    sample_covariance = calculate_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())
     min_vol_portfolio = min_volatility(expected_returns, sample_covariance)
     return [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio)]
