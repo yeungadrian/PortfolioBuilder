@@ -6,7 +6,7 @@ import httpx
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Ex-stream-ly Cool App", page_icon="🧊", layout="wide")
+st.set_page_config(page_title="Portfolio Builder", page_icon="📊", layout="wide")
 
 BASE_URL = "http://localhost:8000/"
 BACKTEST_EXAMPLE = [
