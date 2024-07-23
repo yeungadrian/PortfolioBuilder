@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 
 import altair as alt
@@ -8,7 +9,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Portfolio Builder", page_icon="📊", layout="wide")
 
-BASE_URL = "http://localhost:8000/"
+BASE_URL = os.getenv("BASE_API_URL", "http://localhost:8000/")
 BACKTEST_EXAMPLE = [
     {"amount": 100, "id": "vanguard-us-equity-index-fund-gbp-acc"},
     {"amount": 100, "id": "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc"},
