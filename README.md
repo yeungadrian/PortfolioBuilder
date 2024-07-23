@@ -14,6 +14,8 @@
 
 Investment analytics (FastAPI, Artifact Registry, Cloud Run)
 
+[View api docs](https://portfoliobuilder-jfv66mvjvq-ew.a.run.app/redoc)
+
 ## Quickstart
 Run locally with poetry
 ```
