@@ -13,6 +13,11 @@ BACKTEST_EXAMPLE = [
     {"amount": 100, "id": "vanguard-us-equity-index-fund-gbp-acc"},
     {"amount": 100, "id": "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc"},
 ]
+OPTIMISATION_IDS = [
+    "vanguard-ftse-100-index-unit-trust-gbp-acc",
+    "vanguard-us-equity-index-fund-gbp-acc",
+    "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
+]
 
 
 def screener_page() -> None:
@@ -28,7 +33,7 @@ def screener_page() -> None:
 
 def backtest_page() -> None:
     """Backtest page."""
-    start_date = st.sidebar.date_input("Start date", value=datetime(2022, 1, 1)).strftime("%Y-%m-%d")
+    start_date = st.sidebar.date_input("Start date", value=datetime(2018, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
     portfolio = st.sidebar.text_area("Portfolio setup", value=json.dumps(BACKTEST_EXAMPLE), height=400)
     r = httpx.post(
@@ -37,7 +42,7 @@ def backtest_page() -> None:
         json={"start_date": start_date, "end_date": end_date, "portfolio": json.loads(portfolio)},
     )
 
-    st.title("Portfolio backtesting")
+    st.title("Portfolio Backtesting")
 
     detailed_holdings = []
     for i in r.json():
@@ -52,13 +57,39 @@ def backtest_page() -> None:
         alt.Chart(df)
         .mark_area()
         .encode(
-            alt.X("date:T", axis=alt.Axis(format="%y %b", tickCount=12)),
+            alt.X("date:T", axis=alt.Axis(format="%b-%y ", tickCount=12)),
             y="amount",
             color="fund:N",
             tooltip=["date:T", "amount", "fund", "portfolio_value"],
         )
     )
     st.altair_chart(chart, use_container_width=True)
+
+
+def optimisation_page() -> None:
+    """Optimisation page."""
+    start_date = st.sidebar.date_input("Start date", value=datetime(2018, 1, 1)).strftime("%Y-%m-%d")
+    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
+    ids = st.sidebar.text_area("Funds", value=json.dumps(OPTIMISATION_IDS), height=400)
+    r = httpx.post(
+        f"{BASE_URL}optimisation/mean-variance",
+        headers={"Content-Type": "application/json"},
+        json={"start_date": start_date, "end_date": end_date, "ids": json.loads(ids)},
+    )
+
+    min_variance_portfolio = pd.DataFrame(r.json())
+    donut_chart = (
+        alt.Chart(min_variance_portfolio)
+        .mark_arc(innerRadius=50)
+        .encode(
+            theta=alt.Theta(field="amount", type="quantitative"),
+            color=alt.Color(field="id", type="nominal"),
+            tooltip=[alt.Tooltip("id", title="id"), alt.Tooltip("amount:Q", title="Percentage", format=".2%")],
+        )
+    )
+
+    st.title("Portfolio Optimisation")
+    st.altair_chart(donut_chart, use_container_width=True)
 
 
 def main() -> None:
@@ -70,6 +101,8 @@ def main() -> None:
             screener_page()
         case "Backtest":
             backtest_page()
+        case "Optimisation":
+            optimisation_page()
 
 
 if __name__ == "__main__":
