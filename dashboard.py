@@ -68,28 +68,52 @@ def backtest_page() -> None:
 
 def optimisation_page() -> None:
     """Optimisation page."""
+    n_portfolios = st.sidebar.number_input("Number of portfolios", min_value=30)
     start_date = st.sidebar.date_input("Start date", value=datetime(2018, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
     ids = st.sidebar.text_area("Funds", value=json.dumps(OPTIMISATION_IDS), height=400)
+
     r = httpx.post(
-        f"{BASE_URL}optimisation/mean-variance",
+        f"{BASE_URL}optimisation/efficient-frontier?n_portfolios={n_portfolios}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": json.loads(ids)},
     )
 
-    min_variance_portfolio = pd.DataFrame(r.json())
-    donut_chart = (
-        alt.Chart(min_variance_portfolio)
-        .mark_arc(innerRadius=50)
+    frontier = r.json()
+    return_variance = pd.DataFrame(
+        [
+            {"expected_return": portfolio["expected_return"], "variance": portfolio["variance"]}
+            for portfolio in frontier
+        ]
+    )
+    portfolios = pd.concat(
+        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in frontier]
+    ).reset_index(drop=True)
+    efficient_fronter = pd.concat([return_variance, portfolios], axis=1)
+
+    frontier_chart = (
+        alt.Chart(efficient_fronter)
+        .mark_circle(size=80)
         .encode(
-            theta=alt.Theta(field="amount", type="quantitative"),
-            color=alt.Color(field="id", type="nominal"),
-            tooltip=[alt.Tooltip("id", title="id"), alt.Tooltip("amount:Q", title="Percentage", format=".2%")],
+            x=alt.X(
+                "variance",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(zero=False),
+            ),
+            y=alt.Y(
+                "expected_return",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(zero=False),
+            ),
+            tooltip=alt.Tooltip(
+                efficient_fronter.columns.tolist(),
+                format=".2%",
+            ),
         )
     )
 
     st.title("Portfolio Optimisation")
-    st.altair_chart(donut_chart, use_container_width=True)
+    st.altair_chart(frontier_chart, use_container_width=True)
 
 
 def main() -> None:
