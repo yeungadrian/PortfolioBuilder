@@ -105,7 +105,10 @@ def optimisation_page() -> None:
     frontier = get_efficient_fronter(start_date, end_date, ids, n_portfolios)
     return_variance = pd.DataFrame(
         [
-            {"expected_return": portfolio["expected_return"], "variance": portfolio["variance"]}
+            {
+                "expected_return": portfolio["expected_return"],
+                "implied_standard_deviation": portfolio["implied_standard_deviation"],
+            }
             for portfolio in frontier
         ]
     )
@@ -119,7 +122,7 @@ def optimisation_page() -> None:
         .mark_circle(size=80)
         .encode(
             x=alt.X(
-                "variance",
+                "implied_standard_deviation",
                 axis=alt.Axis(format="%"),
                 scale=alt.Scale(zero=False),
             ),

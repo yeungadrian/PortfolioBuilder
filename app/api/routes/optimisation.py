@@ -77,7 +77,7 @@ def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) ->
         portfolio_summary = {
             "portfolio": [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio)],
             "expected_return": np.sum(expected_returns.T * min_vol_portfolio),
-            "variance": calculate_portfolio_std(min_vol_portfolio, sample_covariance),
+            "implied_standard_deviation": calculate_portfolio_std(min_vol_portfolio, sample_covariance),
         }
         efficient_portfolios.append(portfolio_summary)
     return efficient_portfolios

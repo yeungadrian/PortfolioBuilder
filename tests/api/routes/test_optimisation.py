@@ -89,9 +89,9 @@ def test_efficient_frontier(*, client: TestClient) -> None:
     assert response.json()[0]["portfolio"][0]["id"] == "vanguard-ftse-100-index-unit-trust-gbp-acc"
     assert response.json()[0]["portfolio"][0]["amount"] == pytest.approx(4.732899320939246e-13)
     assert response.json()[0]["expected_return"] == pytest.approx(-0.05346345590292251)
-    assert response.json()[0]["variance"] == pytest.approx(0.15403819424142662)
+    assert response.json()[0]["implied_standard_deviation"] == pytest.approx(0.15403819424142662)
 
     assert response.json()[1]["portfolio"][1]["id"] == "vanguard-us-equity-index-fund-gbp-acc"
     assert response.json()[1]["portfolio"][1]["amount"] == pytest.approx(0.2794289574642864)
     assert response.json()[1]["expected_return"] == pytest.approx(0.03387391520563446)
-    assert response.json()[1]["variance"] == pytest.approx(0.1066544373178886)
+    assert response.json()[1]["implied_standard_deviation"] == pytest.approx(0.1066544373178886)
