@@ -14,7 +14,6 @@ def test_expected_returns(*, client: TestClient) -> None:
     }
 
     response = client.post("/optimisation/expected-returns/", json=body)
-    print(response.json()[0]["id"])
     assert response.status_code == 200
     assert response.json()[0]["id"] == "vanguard-ftse-100-index-unit-trust-gbp-acc"
     assert response.json()[0]["expected_return"] == pytest.approx(0.03954420827759142)
