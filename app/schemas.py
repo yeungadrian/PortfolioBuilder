@@ -10,12 +10,10 @@ class FundDetails(BaseModel):
     name: str
     asset_class: str
     inception_date: date
-    benchmark: str | None
     currency_code: str
     sedol: str | None
     ocf: str | None
     returns_ytd: float | None
-    returns_1yr: float | None
     returns_3yr: float | None
     returns_5yr: float | None
 
@@ -27,7 +25,6 @@ class FundDetails(BaseModel):
                     "name": "U.S. Equity Index Fund",
                     "asset_class": "Equity",
                     "inception_date": "23 Jun 2009",
-                    "benchmark": "Standard and Poor&#8217;s Total Market Index",
                     "currency_code": "GBP",
                     "sedol": "B5B71Q7",
                     "ocf": "0.10%",
