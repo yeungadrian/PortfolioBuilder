@@ -10,16 +10,22 @@ import streamlit as st
 
 st.set_page_config(page_title="Portfolio Builder", page_icon="📊", layout="wide")
 
+
 BASE_URL = os.getenv("BASE_API_URL", "http://localhost:8000/")
 BACKTEST_EXAMPLE = [
     {"amount": 100, "id": "vanguard-us-equity-index-fund-gbp-acc"},
     {"amount": 100, "id": "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc"},
+    {"amount": 100, "id": "vanguard-uk-long-duration-gilt-index-fund-gbp-acc"},
+    {"amount": 100, "id": "vanguard-euro-government-bond-index-fund-gbp-hedged-acc"},
+    {
+        "amount": 100,
+        "id": "vanguard-ftse-100-index-unit-trust-gbp-acc",
+    },
+    {"amount": 100, "id": "vanguard-japan-government-bond-index-fund-gbp-hedged-acc"},
+    {"amount": 100, "id": "vanguard-japan-stock-index-fund-gbp-acc"},
+    {"amount": 100, "id": "vanguard-uk-government-bond-index-fund-gbp-acc"},
 ]
-OPTIMISATION_IDS = [
-    "vanguard-ftse-100-index-unit-trust-gbp-acc",
-    "vanguard-us-equity-index-fund-gbp-acc",
-    "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
-]
+OPTIMISATION_IDS = [i["id"] for i in BACKTEST_EXAMPLE]
 
 
 @st.cache_data(ttl="7d")
@@ -54,6 +60,7 @@ def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios
 def screener_page() -> None:
     """Screener page."""
     df = pd.DataFrame(get_funds())
+    df = df.drop(columns=["id"])
     return_cols = df.columns[df.columns.str.contains("returns")].tolist()
     df = df.style.format({i: "{:,.2%}".format for i in return_cols})
 
