@@ -51,18 +51,21 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         )
 
         request.state.logger = logger
-
-        response = await call_next(request)
-
-        status_code = response.status_code
-
-        await request.state.logger.ainfo(
-            "%s %s (%s)",
-            request.method,
-            path,
-            status_code,
-            complete_time=str(datetime.now()),
-            status_code=status_code,
-        )
+        status_code = 500
+        try:
+            response = await call_next(request)
+            status_code = response.status_code
+        except Exception:
+            request.state.logger.exception("Uncaught exception")
+            raise
+        finally:
+            await request.state.logger.ainfo(
+                "%s %s (%s)",
+                request.method,
+                path,
+                status_code,
+                complete_time=str(datetime.now()),
+                status_code=status_code,
+            )
 
         return response
