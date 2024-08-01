@@ -1,3 +1,5 @@
+from datetime import date
+
 import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
@@ -6,6 +8,12 @@ from app.schemas import BacktestDetails, BacktestProjection, BacktestScenario, P
 from app.utils import load_returns
 
 router = APIRouter()
+
+
+def month_diff(date1: date, date2: date) -> int:
+    """Calculate difference of two dates in months."""
+    diff_in_months = (date2.year - date1.year) * 12 + (date2.month - date1.month)
+    return diff_in_months
 
 
 def invalid_ids(ids: list[str]) -> list[str]:
@@ -59,10 +67,11 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
 
     start_value = security_returns["portfolio_value"].head(1)[0]
     end_value = security_returns["portfolio_value"].tail(1)[0]
+    n_years = month_diff(backtest_scenario.start_date, backtest_scenario.end_date) / 12
 
     metrics = {
         "portfolio_return": (end_value / start_value) - 1,
-        "cagr": (end_value / start_value) - 1,
+        "cagr": ((end_value / start_value) ** (1 / n_years)) - 1,
         "variance": security_returns["portfolio_return"].var(),
     }
 
