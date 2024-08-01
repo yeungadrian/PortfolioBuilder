@@ -17,12 +17,10 @@ def test_backtest(*, client: TestClient) -> None:
 
     response = client.post("/backtest/", json=body)
     assert response.status_code == 200
-    assert response.json()[0]["portfolio_value"] == pytest.approx(200.0)
-
-    assert response.json()[1]["date"] == "2023-12-31"
-    assert response.json()[1]["portfolio_value"] == pytest.approx(211.5677910878)
-
-    assert response.json()[2]["portfolio_value"] == pytest.approx(207.67257285005837)
+    assert response.json()["projection"][0]["portfolio_value"] == pytest.approx(200.0)
+    assert response.json()["projection"][1]["date"] == "2023-12-31"
+    assert response.json()["projection"][1]["portfolio_value"] == pytest.approx(211.5677910878)
+    assert response.json()["projection"][2]["portfolio_value"] == pytest.approx(207.67257285005837)
 
 
 def test_backtest_validation_error(*, client: TestClient) -> None:

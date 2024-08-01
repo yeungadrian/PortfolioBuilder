@@ -53,9 +53,17 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
         for row in security_returns.to_dicts()
     ]
 
+    security_returns = security_returns.with_columns(
+        (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")
+    )
+
+    start_value = security_returns["portfolio_value"].head(1)[0]
+    end_value = security_returns["portfolio_value"].tail(1)[0]
+
     metrics = {
-        "returns": 0.1,
-        "variance": 0.1,
+        "portfolio_return": (end_value / start_value) - 1,
+        "cagr": (end_value / start_value) - 1,
+        "variance": security_returns["portfolio_return"].var(),
     }
 
     return BacktestDetails(

@@ -102,7 +102,8 @@ class BacktestProjection(BaseModel):
 class PortfolioMetrics(BaseModel):
     """Common portfolio metrics."""
 
-    returns: float
+    portfolio_return: float
+    cagr: float
     variance: float
 
 
