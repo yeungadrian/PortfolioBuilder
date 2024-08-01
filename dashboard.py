@@ -126,7 +126,9 @@ def backtest_page() -> None:
     else:
         st.dataframe(df.pivot_table(index=["date", "portfolio_value"], columns=["fund"], values="amount"))
     st.subheader("Metrics")
-    st.write(pd.DataFrame(backtest_results["metrics"], index=[0]))
+    metrics = pd.DataFrame(backtest_results["metrics"], index=[0])
+    metrics = metrics.style.format("{:,.2%}")
+    st.write(metrics)
 
 
 def optimisation_page() -> None:
@@ -169,11 +171,20 @@ def optimisation_page() -> None:
                 axis=alt.Axis(format="%"),
                 scale=alt.Scale(zero=False),
             ),
-            # TODO: Fix tooltip formatting
-            tooltip=alt.Tooltip(
-                ["id:N", "expected_return:Q", "implied_standard_deviation:Q"],
-                format=".2%",
-            ),
+            tooltip=[
+                alt.Tooltip(
+                    "id:N",
+                ),
+                alt.Tooltip(
+                    "expected_return:Q",
+                    format=".2%",
+                ),
+                alt.Tooltip(
+                    "implied_standard_deviation:Q",
+                    format=".2%",
+                ),
+            ],
+            color="id",
         )
     )
 

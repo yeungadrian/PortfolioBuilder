@@ -104,7 +104,8 @@ class PortfolioMetrics(BaseModel):
 
     portfolio_return: float
     cagr: float
-    variance: float
+    standard_deviation: float
+    max_drawdown: float
 
 
 class BacktestDetails(BaseModel):

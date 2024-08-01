@@ -1,19 +1,12 @@
-from datetime import date
-
 import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
 from app.core.config import data_settings
+from app.portfolio_metrics import cagr, max_drawdown, portfolio_return
 from app.schemas import BacktestDetails, BacktestProjection, BacktestScenario, PortfolioMetrics
 from app.utils import load_returns
 
 router = APIRouter()
-
-
-def month_diff(date1: date, date2: date) -> int:
-    """Calculate difference of two dates in months."""
-    diff_in_months = (date2.year - date1.year) * 12 + (date2.month - date1.month)
-    return diff_in_months
 
 
 def invalid_ids(ids: list[str]) -> list[str]:
@@ -64,15 +57,14 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
     security_returns = security_returns.with_columns(
         (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")
     )
-
     start_value = security_returns["portfolio_value"].head(1)[0]
     end_value = security_returns["portfolio_value"].tail(1)[0]
-    n_years = month_diff(backtest_scenario.start_date, backtest_scenario.end_date) / 12
 
     metrics = {
-        "portfolio_return": (end_value / start_value) - 1,
-        "cagr": ((end_value / start_value) ** (1 / n_years)) - 1,
-        "variance": security_returns["portfolio_return"].var(),
+        "portfolio_return": portfolio_return(start_value, end_value),
+        "cagr": cagr(start_value, end_value, backtest_scenario.start_date, backtest_scenario.end_date),
+        "standard_deviation": security_returns["portfolio_return"].std(),
+        "max_drawdown": max_drawdown(security_returns.select("portfolio_value")),
     }
 
     return BacktestDetails(
