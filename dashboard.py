@@ -24,12 +24,13 @@ BACKTEST_EXAMPLE = [
     {"amount": 100, "id": "vanguard-uk-government-bond-index-fund-gbp-acc"},
 ]
 OPTIMISATION_IDS = [i["id"] for i in BACKTEST_EXAMPLE]
+TIMEOUT = 30
 
 
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get funds."""
-    r = httpx.get(f"{BASE_URL}funds/all/")
+    r = httpx.get(f"{BASE_URL}funds/all/", timeout=TIMEOUT)
     return r.json()
 
 
@@ -40,6 +41,7 @@ def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
         f"{BASE_URL}backtest/",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "portfolio": json.loads(portfolio)},
+        timeout=TIMEOUT,
     )
     return r.json()
 
@@ -51,6 +53,7 @@ def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
         f"{BASE_URL}optimisation/expected-returns",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": json.loads(ids)},
+        timeout=TIMEOUT,
     )
     return r.json()
 
@@ -62,6 +65,7 @@ def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
         f"{BASE_URL}optimisation/risk-model?method=sample_cov",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": json.loads(ids)},
+        timeout=TIMEOUT,
     )
     return r.json()
 
@@ -73,6 +77,7 @@ def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios
         f"{BASE_URL}optimisation/efficient-frontier?n_portfolios={n_portfolios}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": json.loads(ids)},
+        timeout=TIMEOUT,
     )
     return r.json()
 
@@ -210,9 +215,11 @@ def optimisation_page() -> None:
     )
 
     st.title("Portfolio Optimisation")
-    st.altair_chart(frontier_chart + individual_frontier_chart, use_container_width=True)
+    if st.checkbox("Include individual funds"):
+        frontier_chart = frontier_chart + individual_frontier_chart
+    st.altair_chart(frontier_chart, use_container_width=True)
 
-    with st.expander("Fund assumptions"):
+    with st.expander("Assumptions"):
         individual_funds = individual_funds.style.format(
             {i: "{:,.2%}".format for i in ["expected_return", "implied_standard_deviation"]}
         )
