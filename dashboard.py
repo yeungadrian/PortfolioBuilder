@@ -120,11 +120,12 @@ def backtest_page() -> None:
             tooltip=["date:T", "amount", "fund", "portfolio_value"],
         )
     )
+    st.subheader("Projection")
     if st.checkbox("Chart View", True):
         st.altair_chart(chart, use_container_width=True)
     else:
         st.dataframe(df.pivot_table(index=["date", "portfolio_value"], columns=["fund"], values="amount"))
-
+    st.subheader("Metrics")
     st.write(pd.DataFrame(backtest_results["metrics"], index=[0]))
 
 
