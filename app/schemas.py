@@ -70,7 +70,7 @@ class BacktestScenario(BaseModel):
     }
 
 
-class BacktestDetail(BaseModel):
+class BacktestProjection(BaseModel):
     """Backtest details per date."""
 
     date: date
@@ -97,6 +97,20 @@ class BacktestDetail(BaseModel):
             ]
         }
     }
+
+
+class PortfolioMetrics(BaseModel):
+    """Common portfolio metrics."""
+
+    returns: float
+    variance: float
+
+
+class BacktestDetails(BaseModel):
+    """Backtest details."""
+
+    metrics: PortfolioMetrics
+    projection: list[BacktestProjection]
 
 
 class OptimisationScenario(BaseModel):

@@ -2,7 +2,7 @@ import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
 from app.core.config import data_settings
-from app.schemas import BacktestDetail, BacktestScenario
+from app.schemas import BacktestDetails, BacktestProjection, BacktestScenario, PortfolioMetrics
 from app.utils import load_returns
 
 router = APIRouter()
@@ -18,7 +18,7 @@ def invalid_ids(ids: list[str]) -> list[str]:
 
 
 @router.post("/")
-def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) -> list[BacktestDetail]:
+def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) -> BacktestDetails:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {holding["id"]: holding["amount"] for holding in backtest_scenario.model_dump()["portfolio"]}
@@ -42,8 +42,8 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
     security_returns = security_returns.with_columns([((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()])
     security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
 
-    backtest_summary = [
-        BacktestDetail(
+    backtest_projection = [
+        BacktestProjection(
             date=row["date"],
             portfolio_value=row["portfolio_value"],
             holdings=[
@@ -53,4 +53,12 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
         for row in security_returns.to_dicts()
     ]
 
-    return backtest_summary
+    metrics = {
+        "returns": 0.1,
+        "variance": 0.1,
+    }
+
+    return BacktestDetails(
+        metrics=PortfolioMetrics.model_validate(metrics),
+        projection=backtest_projection,
+    )
