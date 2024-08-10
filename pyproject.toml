@@ -83,39 +83,16 @@ select = [
   "RUF", # Ruff-specific rules
   "PTH", # flake8-use-pathlib
   "PIE", # flake8-pie
-  "TD", # flake8-todos
   "TRY", # tryceratops
   "EM", # flake8-errmsg
   "FBT001", # flake8-boolean-trap
 ]
 
 ignore = [
-  # Line length regulated by formatter
-  "E501",
   # pydocstyle: http://www.pydocstyle.org/en/stable/error_codes.html
   "D401", # Relax NumPy docstring convention: First line should be in imperative mood
-  # flake8-pytest-style:
-  "PT011", # pytest.raises({exception}) is too broad, set the match parameter or use a more specific exception
-  # flake8-simplify
-  "SIM102", # Use a single `if` statement instead of nested `if` statements
-  "SIM108", # Use ternary operator
-  # ruff
-  "RUF005", # unpack-instead-of-concatenating-to-collection-literal
-  # pycodestyle
-  # TODO: Remove errors below to further improve docstring linting
-  # Ordered from most common to least common errors.
-  "D105", # Missing docstring in magic method
   "D100", # Missing docstring in public module
   "D104", # Missing docstring in public package
-  "TCH", # flake8-type-checking. Fastapi uses pydantic type hints for openapi
-  # flake8-todos
-  "TD002", # Missing author in TODO
-  "TD003", # Missing issue link on the line following this TODO
-  # tryceratops
-  "TRY003", # Avoid specifying long messages outside the exception class
-  # Lints below are turned off because of conflicts with the ruff formatter
-  "D206",
-  "W191",
 ]
 
 [tool.ruff.lint.per-file-ignores]
