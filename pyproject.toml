@@ -100,7 +100,7 @@ ignore = [
 "tests/**/*.py" = ["D100", "D102", "D103", "B018", "FBT001"]
 
 [tool.ruff.lint.pycodestyle]
-max-doc-length = 88
+max-doc-length = 118
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
