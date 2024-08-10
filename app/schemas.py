@@ -1,3 +1,17 @@
+"""
+Pydantic based schemas for data validation.
+
+This module provides:
+- FundDetails: fund details schema
+- Holding: single holding schema
+- BacktestScenario: setup for backtest schema
+- PortfolioValue: portfolio value at single point in time schema
+- PortfolioMetrics: common portfolio metrics schema
+- BacktestProjection: back test result schema
+- OptimisationScenario: setup for mean variance optimisation schema
+- ExpectedReturn: expected return for single fund schema
+"""
+
 from datetime import date
 
 from pydantic import BaseModel
@@ -70,7 +84,7 @@ class BacktestScenario(BaseModel):
     }
 
 
-class BacktestProjection(BaseModel):
+class PortfolioValue(BaseModel):
     """Backtest details per date."""
 
     date: date
@@ -108,11 +122,11 @@ class PortfolioMetrics(BaseModel):
     max_drawdown: float
 
 
-class BacktestDetails(BaseModel):
+class BacktestProjection(BaseModel):
     """Backtest details."""
 
     metrics: PortfolioMetrics
-    projection: list[BacktestProjection]
+    projection: list[PortfolioValue]
 
 
 class OptimisationScenario(BaseModel):

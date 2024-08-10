@@ -1,10 +1,17 @@
+"""
+Backtesting related endpoints.
+
+This module provides:
+- router: router with relevant backtesting endpoints
+"""
+
 import polars as pl
 from fastapi import APIRouter, HTTPException, Request
 
 from app.core.config import data_settings
+from app.data_loader import load_returns
 from app.portfolio_metrics import cagr, max_drawdown, portfolio_return
-from app.schemas import BacktestDetails, BacktestProjection, BacktestScenario, PortfolioMetrics
-from app.utils import load_returns
+from app.schemas import BacktestProjection, BacktestScenario, PortfolioMetrics, PortfolioValue
 
 router = APIRouter()
 
@@ -19,7 +26,7 @@ def invalid_ids(ids: list[str]) -> list[str]:
 
 
 @router.post("/")
-def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) -> BacktestDetails:
+def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) -> BacktestProjection:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {holding["id"]: holding["amount"] for holding in backtest_scenario.model_dump()["portfolio"]}
@@ -44,7 +51,7 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
     security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
 
     backtest_projection = [
-        BacktestProjection(
+        PortfolioValue(
             date=row["date"],
             portfolio_value=row["portfolio_value"],
             holdings=[
@@ -67,7 +74,7 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
         "max_drawdown": max_drawdown(security_returns.select("portfolio_value")),
     }
 
-    return BacktestDetails(
+    return BacktestProjection(
         metrics=PortfolioMetrics.model_validate(metrics),
         projection=backtest_projection,
     )

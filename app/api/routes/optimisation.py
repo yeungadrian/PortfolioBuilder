@@ -1,53 +1,48 @@
-from typing import Any, Callable
+from typing import Any, Literal
 
 import numpy as np
 import polars as pl
 from fastapi import APIRouter
-from scipy.optimize import minimize
 
-from app.api.routes.expected_returns import calculate_historical_expected_returns
-from app.api.routes.risk_models import calculate_sample_covariance
-from app.schemas import Holding, OptimisationScenario
-from app.utils import load_returns
+from app.data_loader import load_returns
+from app.expected_returns import calculate_historical_expected_returns
+from app.optimisation import calculate_portfolio_std, min_volatility
+from app.risk_models import calculate_sample_covariance, leodit_wolf_covariance
+from app.schemas import ExpectedReturn, Holding, OptimisationScenario
 
 router = APIRouter()
 
 
-def calculate_portfolio_std(weights: np.ndarray, fund_covariance: np.ndarray) -> float:
-    """Calculate portfolio standard deviation using covariance."""
-    weights = np.array(weights)
-    std = np.sqrt(np.dot(weights.T, np.dot(fund_covariance, weights)))
-    return float(std)
+@router.post("/expected-returns")
+def get_expected_returns(scenario: OptimisationScenario) -> list[ExpectedReturn]:
+    """Get expected returns based on historical returns."""
+    security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
+    _expected_returns = calculate_historical_expected_returns(security_returns, scenario.ids)
+    expected_returns: list[ExpectedReturn] = _expected_returns.unpivot(
+        value_name="expected_return", variable_name="id"
+    ).to_dicts()
+    return expected_returns
 
 
-def optimise(
-    func: Callable[..., float],
-    args: tuple[np.ndarray],
-    bounds: tuple[tuple[float, float], ...],
-    constraints: tuple[Any, ...],
-    initial_weights: np.ndarray,
-) -> list[float]:
-    """Scipy minimize."""
-    _result: list[float] = minimize(
-        func,
-        initial_weights,
-        args=args,
-        method="SLSQP",
-        bounds=bounds,
-        constraints=constraints,
-    ).x.tolist()
+@router.post("/risk-model")
+def get_risk_model(
+    scenario: OptimisationScenario, method: Literal["sample_cov", "ledoit_wolf"]
+) -> list[dict[str, str | float]]:
+    """Get expected returns based on historical returns."""
+    security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
+    _security_returns = security_returns.select(pl.col(scenario.ids)).to_numpy()
+    match method:
+        case "sample_cov":
+            sample_covariance = calculate_sample_covariance(_security_returns)
+        case "ledoit_wolf":
+            sample_covariance = leodit_wolf_covariance(_security_returns)
 
-    return _result
+    _risk_model = pl.from_numpy(sample_covariance, schema={i: pl.Float64 for i in scenario.ids})
 
-
-def min_volatility(expected_returns: np.ndarray, risk_model: np.ndarray, constraints: tuple[Any, ...]) -> list[float]:
-    """Use optimisation to find portfolio with minimum std for a given return."""
-    n_securities = expected_returns.shape[0]
-    args = risk_model
-    initial_weights = np.repeat(1.0 / n_securities, n_securities)
-    bounds = tuple((0.0, 1.0) for i in np.nditer(expected_returns))
-    _result = optimise(calculate_portfolio_std, args, bounds, constraints, initial_weights)
-    return _result
+    risk_model: list[dict[str, str | float]] = (
+        _risk_model.with_columns(pl.Series(scenario.ids).alias("id")).select(["id", *scenario.ids]).to_dicts()
+    )
+    return risk_model
 
 
 @router.post("/mean-variance")

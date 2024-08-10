@@ -1,3 +1,10 @@
+"""
+Middlewares to apply to FastAPI app.
+
+This module provides:
+- LoggingMiddleware: structlog based logging.
+"""
+
 from datetime import datetime
 from typing import Awaitable, Callable
 from uuid import uuid4

@@ -1,3 +1,10 @@
+"""
+Utility functions to load data.
+
+This module provides:
+- load_returns: load returns for given list of funds
+"""
+
 from datetime import date
 
 import polars as pl
