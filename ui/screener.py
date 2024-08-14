@@ -3,7 +3,8 @@ from typing import Any
 import httpx
 import pandas as pd
 import streamlit as st
-from dashboard.config import settings
+
+from ui.config import settings
 
 
 @st.cache_data(ttl="7d")

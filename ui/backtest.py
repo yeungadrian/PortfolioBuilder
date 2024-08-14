@@ -5,7 +5,8 @@ import altair as alt
 import httpx
 import pandas as pd
 import streamlit as st
-from dashboard.config import settings
+
+from ui.config import settings
 
 BACKTEST_IDS = [
     "vanguard-us-equity-index-fund-gbp-acc",
