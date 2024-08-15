@@ -64,34 +64,34 @@ def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios
     return r.json()
 
 
-def main() -> None:
-    """Optimisation page."""
-    available_funds = [i["id"] for i in get_funds()]
-    n_portfolios = st.sidebar.number_input("Number of portfolios", value=40, max_value=250)
-    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
-    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
-    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=OPTIMISATION_IDS, max_selections=30)
-
-    individual_funds = pd.DataFrame(get_expected_returns(start_date, end_date, ids))
-    risk_model = pd.DataFrame(get_risk_model(start_date, end_date, ids))
-    individual_funds["implied_standard_deviation"] = np.sqrt(np.diag(risk_model.drop(columns="id").to_numpy()))
-
-    frontier = get_efficient_fronter(start_date, end_date, ids, n_portfolios)
-    return_variance = pd.DataFrame(
-        [
-            {
-                "expected_return": portfolio["expected_return"],
-                "implied_standard_deviation": portfolio["implied_standard_deviation"],
-            }
-            for portfolio in frontier
-        ]
+def efficient_fronter_scatter_plot(efficient_fronter: pd.DataFrame) -> alt.Chart:
+    """Create efficient frontier scatter_plot."""
+    frontier_chart = (
+        alt.Chart(efficient_fronter)
+        .mark_circle(size=80, color="teal")
+        .encode(
+            x=alt.X(
+                "implied_standard_deviation",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(zero=False),
+            ),
+            y=alt.Y(
+                "expected_return",
+                axis=alt.Axis(format="%"),
+                scale=alt.Scale(zero=False),
+            ),
+            tooltip=alt.Tooltip(
+                efficient_fronter.columns.tolist(),
+                format=".2%",
+            ),
+        )
     )
-    portfolios = pd.concat(
-        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in frontier]
-    ).reset_index(drop=True)
-    efficient_fronter = pd.concat([return_variance, portfolios], axis=1)
+    return frontier_chart
 
-    individual_frontier_chart = (
+
+def individual_scatter_plot(individual_funds: pd.DataFrame) -> alt.Chart:
+    """Risk return plot for all individual funds."""
+    scatter_plot = (
         alt.Chart(individual_funds)
         .mark_circle(size=80)
         .encode(
@@ -121,30 +121,41 @@ def main() -> None:
             color=alt.Color("id").scale(scheme="accent"),
         )
     )
+    return scatter_plot
 
-    frontier_chart = (
-        alt.Chart(efficient_fronter)
-        .mark_circle(size=80, color="teal")
-        .encode(
-            x=alt.X(
-                "implied_standard_deviation",
-                axis=alt.Axis(format="%"),
-                scale=alt.Scale(zero=False),
-            ),
-            y=alt.Y(
-                "expected_return",
-                axis=alt.Axis(format="%"),
-                scale=alt.Scale(zero=False),
-            ),
-            tooltip=alt.Tooltip(
-                efficient_fronter.columns.tolist(),
-                format=".2%",
-            ),
-        )
+
+def main() -> None:
+    """Optimisation page."""
+    available_funds = [i["id"] for i in get_funds()]
+    n_portfolios = st.sidebar.number_input("Number of portfolios", value=40, max_value=250)
+    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
+    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
+    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=OPTIMISATION_IDS, max_selections=30)
+
+    individual_funds = pd.DataFrame(get_expected_returns(start_date, end_date, ids))
+    risk_model = pd.DataFrame(get_risk_model(start_date, end_date, ids))
+    individual_funds["implied_standard_deviation"] = np.sqrt(np.diag(risk_model.drop(columns="id").to_numpy()))
+
+    frontier = get_efficient_fronter(start_date, end_date, ids, n_portfolios)
+    return_variance = pd.DataFrame(
+        [
+            {
+                "expected_return": portfolio["expected_return"],
+                "implied_standard_deviation": portfolio["implied_standard_deviation"],
+            }
+            for portfolio in frontier
+        ]
     )
+    portfolios = pd.concat(
+        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in frontier]
+    ).reset_index(drop=True)
+    efficient_fronter = pd.concat([return_variance, portfolios], axis=1)
+
+    frontier_chart = efficient_fronter_scatter_plot(efficient_fronter)
 
     st.title("Portfolio Optimisation")
     if st.checkbox("Include individual funds"):
+        individual_frontier_chart = individual_scatter_plot(individual_funds)
         frontier_chart = frontier_chart + individual_frontier_chart
     st.altair_chart(frontier_chart, use_container_width=True)
 
