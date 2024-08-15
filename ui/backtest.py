@@ -18,7 +18,7 @@ BACKTEST_IDS = [
 
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
-    """Get funds."""
+    """Get available funds."""
     r = httpx.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
     return r.json()
 
@@ -35,18 +35,8 @@ def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
     return r.json()
 
 
-def main() -> None:
-    """Backtest page."""
-    available_funds = [i["id"] for i in get_funds()]
-    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
-    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
-    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30)
-    portfolio = [{"id": id, "amount": st.sidebar.number_input(label=id, value=100)} for id in ids]
-
-    backtest_results = backtest(start_date, end_date, portfolio)
-
-    st.title("Portfolio Backtesting")
-
+def convert_result_to_df(backtest_results: Any) -> pd.DataFrame:
+    """Convert backtest result to dataframe."""
     detailed_holdings = []
     for i in backtest_results["projection"]:
         _result = {}
@@ -58,8 +48,12 @@ def main() -> None:
         [pd.DataFrame(backtest_results["projection"])[["date", "portfolio_value"]], pd.DataFrame(detailed_holdings)],
         axis=1,
     )
-    df = df.melt(id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount")
+    return df
 
+
+def backtest_line_chart(df: pd.DataFrame) -> alt.Chart:
+    """Generate altair backtest line chart."""
+    df = df.melt(id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount")
     chart = (
         alt.Chart(df)
         .mark_area()
@@ -70,11 +64,29 @@ def main() -> None:
             tooltip=["date:T", "amount", "fund", "portfolio_value"],
         )
     )
+    return chart
+
+
+def main() -> None:
+    """Backtest streamlit page."""
+    available_funds = [i["id"] for i in get_funds()]
+    # Sidebar
+    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
+    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
+    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30)
+    portfolio = [{"id": id, "amount": st.sidebar.number_input(label=id, value=100)} for id in ids]
+
+    # Run backtest and format
+    backtest_results = backtest(start_date, end_date, portfolio)
+    df = convert_result_to_df(backtest_results)
+
+    # Main page
+    st.title("Portfolio Backtesting")
     st.subheader("Projection")
     if st.checkbox("Chart View", True):
-        st.altair_chart(chart, use_container_width=True)
+        st.altair_chart(backtest_line_chart(df), use_container_width=True)
     else:
-        st.dataframe(df.pivot_table(index=["date", "portfolio_value"], columns=["fund"], values="amount"))
+        st.dataframe(df)
     st.subheader("Metrics")
     metrics = pd.DataFrame(backtest_results["metrics"], index=[0])
     metrics = metrics.style.format("{:,.2%}")
