@@ -1,49 +1,28 @@
-FROM python:3.11.9-slim-bullseye as build
+FROM python:3.11-slim-bullseye
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
+ENV UV_SYSTEM_PYTHON=1
 
-ARG POETRY_VERSION="1.7.3"
-ENV PIP_DEFAULT_TIMEOUT=60 \
-    # Allow statements and log messages to immediately appear
-    PYTHONUNBUFFERED=1 \
-    # disable a pip version check to reduce run-time & log-spam
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # cache is useless in docker image, so disable to reduce image size
-    PIP_NO_CACHE_DIR=1
+# The installer requires curl (and certificates) to download the release archive
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
-WORKDIR /app
-COPY pyproject.toml poetry.lock ./
+# Download the latest installer
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
-RUN pip install "poetry==$POETRY_VERSION" \
-    && poetry install --no-root --no-ansi --no-interaction \
-    && poetry export -f requirements.txt -o requirements.txt
+# Run the installer then remove it
+RUN sh /uv-installer.sh && rm /uv-installer.sh
 
+# Ensure the installed binary is on the `PATH`
+ENV PATH="/root/.cargo/bin/:$PATH"
 
-### Final stage
-FROM python:3.11.9-slim-bullseye  as final
+# Sync the project into a new environment
+COPY pyproject.toml .
+RUN uv pip install -r pyproject.toml
 
 WORKDIR /app
-
-COPY --from=build /app/requirements.txt .
-
-RUN set -ex \
-    # Create a non-root user
-    && addgroup --system --gid 1001 appgroup \
-    && adduser --system --uid 1001 --gid 1001 --no-create-home user \
-    # Upgrade the package index and install security upgrades
-    && apt-get update \
-    && apt-get upgrade -y \
-    # Install dependencies
-    && pip install -r requirements.txt \
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY ./app app
 COPY ./data/processed data/processed
-
-# Set the user to run the application
-USER user
 
 EXPOSE 8000
 
