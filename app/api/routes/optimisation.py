@@ -53,7 +53,7 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
     sample_covariance = calculate_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())
     constraints = ({"type": "eq", "fun": lambda x: np.sum(x) - 1},)
     min_vol_portfolio = min_volatility(expected_returns, sample_covariance, constraints)
-    return [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio)]
+    return [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)]
 
 
 @router.post("/efficient-frontier")
@@ -70,7 +70,9 @@ def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) ->
         )
         min_vol_portfolio = min_volatility(expected_returns, sample_covariance, constraints)
         portfolio_summary = {
-            "portfolio": [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio)],
+            "portfolio": [
+                Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
+            ],
             "expected_return": np.sum(expected_returns.T * min_vol_portfolio),
             "implied_standard_deviation": calculate_portfolio_std(min_vol_portfolio, sample_covariance),
         }
