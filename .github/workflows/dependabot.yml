@@ -1,4 +1,7 @@
-# Set update schedule for GitHub Actions
+name: Github action upgrade scan
+
+on:
+  workflow_dispatch:
 
 version: 2
 updates:
