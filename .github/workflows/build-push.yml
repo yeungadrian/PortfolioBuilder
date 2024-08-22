@@ -9,13 +9,6 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          # Issue ref: https://github.com/actions/setup-python/issues/436
-          # cache: "pip"
-          # cache-dependency-path: pyproject.toml
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
