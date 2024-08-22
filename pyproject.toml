@@ -127,6 +127,7 @@ docstring-code-format = true
 # Required for streamlit
 [tool.poetry]
 name = "portfoliobuilder"
+packge = false
 
 [tool.poetry.dependencies]
 python = "3.11.*"
