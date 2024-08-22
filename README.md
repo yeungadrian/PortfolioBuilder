@@ -17,15 +17,12 @@ Investment analytics (FastAPI, Artifact Registry, Cloud Run)
 [View api docs](https://portfoliobuilder-jfv66mvjvq-ew.a.run.app/redoc)
 
 ## Quickstart
-Run locally with poetry
+Run locally with uv
 ```
-poetry shell
-poetry install --with dev
-uvicorn src.main:app --reload --port 8000
 ```
 Run with docker
 ```
-docker build -t portfoliobuilder . --build-arg="POETRY_VERSION=1.8.3"
+docker build -t portfoliobuilder .
 docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 ```
 
