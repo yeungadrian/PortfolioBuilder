@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-def test_backtest(*, client: TestClient) -> None:
+def test_backtest(client: TestClient) -> None:
     body = {
         "start_date": "2023-11-30",
         "end_date": "2024-01-31",
@@ -23,7 +23,7 @@ def test_backtest(*, client: TestClient) -> None:
     assert response.json()["projection"][2]["portfolio_value"] == pytest.approx(207.67257285005837)
 
 
-def test_backtest_validation_error(*, client: TestClient) -> None:
+def test_backtest_validation_error(client: TestClient) -> None:
     body = {
         "start_date": "2023-11-30",
         "end_date": "2024-01-31",
