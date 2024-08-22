@@ -59,11 +59,7 @@ addopts = [
 ]
 xfail_strict = true
 junit_family = "xunit2"
-filterwarnings = [
-    # see https://trio.readthedocs.io/en/stable/history.html#trio-0-22-0-2022-09-28
-    "ignore:You seem to already have a custom.*:RuntimeWarning:trio",
-    "ignore::trio.TrioDeprecationWarning",
-]
+
 
 [tool.coverage.run]
 source = [
