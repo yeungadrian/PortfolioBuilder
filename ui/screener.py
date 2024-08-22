@@ -1,7 +1,7 @@
 from typing import Any
 
-import httpx
 import pandas as pd
+import requests
 import streamlit as st
 
 from ui.config import settings
@@ -10,7 +10,7 @@ from ui.config import settings
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get funds."""
-    r = httpx.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
+    r = requests.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
     return r.json()
 
 

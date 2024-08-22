@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Any
 
 import altair as alt
-import httpx
 import pandas as pd
+import requests
 import streamlit as st
 
 from ui.config import settings
@@ -19,14 +19,14 @@ BACKTEST_IDS = [
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get available funds."""
-    r = httpx.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
+    r = requests.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
     return r.json()
 
 
 @st.cache_data(ttl="7d")
 def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
     """Backtest portfolio."""
-    r = httpx.post(
+    r = requests.post(
         f"{settings.base_url}backtest/",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "portfolio": portfolio},

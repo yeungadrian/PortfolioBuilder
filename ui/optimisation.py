@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Any
 
 import altair as alt
-import httpx
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
 
 from ui.config import settings
@@ -24,14 +24,14 @@ OPTIMISATION_IDS = [
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get funds."""
-    r = httpx.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
+    r = requests.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
     return r.json()
 
 
 @st.cache_data(ttl="7d")
 def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
     """Get expected returns."""
-    r = httpx.post(
+    r = requests.post(
         f"{settings.base_url}optimisation/expected-returns",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
@@ -43,7 +43,7 @@ def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
 @st.cache_data(ttl="7d")
 def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
     """Get risk model."""
-    r = httpx.post(
+    r = requests.post(
         f"{settings.base_url}optimisation/risk-model?method=sample_cov",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
@@ -55,7 +55,7 @@ def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
 @st.cache_data(ttl="7d")
 def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios: int) -> Any:
     """Get efficient frontier."""
-    r = httpx.post(
+    r = requests.post(
         f"{settings.base_url}optimisation/efficient-frontier?n_portfolios={n_portfolios}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
