@@ -2,9 +2,6 @@ FROM python:3.11-slim-bullseye
 
 ENV UV_SYSTEM_PYTHON=1
 
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.cargo/bin/:$PATH"
-
 # Sync the project into a new environment
 COPY pyproject.toml .
 RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
