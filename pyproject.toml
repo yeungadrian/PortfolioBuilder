@@ -3,7 +3,7 @@ name = "app"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.112.1",
     "uvicorn>=0.30.6",
@@ -125,6 +125,6 @@ name = "portfoliobuilder"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "3.11.*"
+python = "3.12.*"
 streamlit = "^1.37.1"
 pydantic-settings = "^2.4.0"
