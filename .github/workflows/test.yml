@@ -16,27 +16,6 @@ env:
   UV_SYSTEM_PYTHON: 1
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          # Issue ref: https://github.com/actions/setup-python/issues/436
-          # cache: "pip"
-          # cache-dependency-path: pyproject.toml
-      - name: Install pre-commit
-        run: pip install pre-commit==${{ vars.PRE_COMMIT_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ vars.PRE_COMMIT_VERSION }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
-      - name: Lint
-        run: pre-commit run --all-files --verbose --show-diff-on-failure
-
   test:
     runs-on: ubuntu-latest
     environment: development
@@ -63,10 +42,13 @@ jobs:
             uv-${{ runner.os }}
       - name: Install the project
         run: uv sync --dev
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ vars.PRE_COMMIT_VERSION }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run pre-commit
+        run: pre-commit run --all-files --verbose --show-diff-on-failure
       - name: Run tests
-        # For example, using `pytest`
-        run: uv run pytest tests
-      - name: Test
         run: uv run -- coverage run -m pytest tests
       - run: uv run -- coverage report
       - run: uv run -- coverage html --show-contexts --title "Coverage for ${{ github.sha }}"
