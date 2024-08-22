@@ -1,5 +1,4 @@
 FROM python:3.11-slim-bullseye
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 ENV UV_SYSTEM_PYTHON=1
 
@@ -8,7 +7,8 @@ ENV PATH="/root/.cargo/bin/:$PATH"
 
 # Sync the project into a new environment
 COPY pyproject.toml .
-RUN uv pip install -r pyproject.toml
+RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
+    uv pip install -r pyproject.toml
 
 WORKDIR /app
 
