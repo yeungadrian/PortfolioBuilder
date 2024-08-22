@@ -126,10 +126,6 @@ docstring-code-format = true
 # Required for streamlit
 [tool.poetry]
 name = "portfoliobuilder"
-version = "1.0.0"
-description = ""
-authors = ["yeungadrian <yeungadrian@gmail.com>"]
-readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
