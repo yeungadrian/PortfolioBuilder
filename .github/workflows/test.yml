@@ -47,7 +47,7 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ vars.PRE_COMMIT_VERSION }}|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit
-        run: pre-commit run --all-files --verbose --show-diff-on-failure
+        run: uv run -- pre-commit run --all-files --verbose --show-diff-on-failure
       - name: Run tests
         run: uv run -- coverage run -m pytest tests
       - run: uv run -- coverage report
