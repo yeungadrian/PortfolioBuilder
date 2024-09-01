@@ -6,7 +6,7 @@ This module provides:
 """
 
 import polars as pl
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.data_loader import load_returns
@@ -26,7 +26,7 @@ def invalid_ids(ids: list[str]) -> list[str]:
 
 
 @router.post("/")
-def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) -> BacktestProjection:
+def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestProjection:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {holding["id"]: holding["amount"] for holding in backtest_scenario.model_dump()["portfolio"]}
@@ -34,7 +34,6 @@ def backtest_portfolio(request: Request, backtest_scenario: BacktestScenario) ->
 
     not_avaliable = invalid_ids(ids)
     if len(not_avaliable):
-        request.state.logger.warning(f"Following funds are not avaliable: {not_avaliable}")
         raise HTTPException(
             status_code=404,
             detail=f"Following funds are not avaliable: {not_avaliable}",

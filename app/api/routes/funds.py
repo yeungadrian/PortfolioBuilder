@@ -1,5 +1,5 @@
 import polars as pl
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.schemas import FundDetails
@@ -20,11 +20,10 @@ def get_all_details() -> list[FundDetails]:
 
 
 @router.get("/{sedol}/", summary="Get fund details by sedol")
-def get_details_by_sedol(request: Request, sedol: str) -> FundDetails:
+def get_details_by_sedol(sedol: str) -> FundDetails:
     """Get details for single fund by sedol."""
     _fund_details = pl.scan_parquet(data_settings.fund_details).filter(pl.col("sedol") == sedol).collect().to_dicts()
     if len(_fund_details) == 0:
-        request.state.logger.exception(f"Sedol: {sedol} does not exist")
         raise HTTPException(status_code=404, detail=f"Sedol: {sedol} does not exist")
     fund_details = FundDetails(**_fund_details[0])
     return fund_details
