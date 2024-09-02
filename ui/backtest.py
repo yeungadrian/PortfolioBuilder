@@ -24,10 +24,10 @@ def get_funds() -> Any:
 
 
 @st.cache_data(ttl="7d")
-def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
+def backtest_portfolio(start_date: str, end_date: str, portfolio: str) -> Any:
     """Backtest a given portfolio."""
     r = requests.post(
-        f"{settings.base_url}{settings.backtest}",
+        f"{settings.base_url}{settings.backtest_path}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "portfolio": portfolio},
         timeout=settings.timeout,
@@ -35,7 +35,7 @@ def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
     return r.json()
 
 
-def convert_result_to_df(backtest_results: Any) -> pd.DataFrame:
+def convert_to_df(backtest_results: Any) -> pd.DataFrame:
     """Convert backtest result into dataframe."""
     detailed_holdings = []
     for i in backtest_results["projection"]:
@@ -51,16 +51,16 @@ def convert_result_to_df(backtest_results: Any) -> pd.DataFrame:
     return df
 
 
-def backtest_line_chart(df: pd.DataFrame) -> alt.Chart:
-    """Generate altair backtest line chart."""
-    df = df.melt(id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount")
+def line_chart(backtest_result: pd.DataFrame) -> alt.Chart:
+    """Generate altair line chart for backtest result."""
+    backtest_result = backtest_result.melt(id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount")
     chart = (
-        alt.Chart(df)
+        alt.Chart(backtest_result)
         .mark_area()
         .encode(
             alt.X("date:T", axis=alt.Axis(format="%b-%y ", tickCount=12)),
             y="amount",
-            color=alt.Color("fund:N").scale(scheme="teals"),
+            color=alt.Color("fund:N").scale(scheme=settings.color_scale),
             tooltip=["date:T", "amount", "fund", "portfolio_value"],
         )
     )
@@ -70,26 +70,28 @@ def backtest_line_chart(df: pd.DataFrame) -> alt.Chart:
 def main() -> None:
     """Backtest streamlit page."""
     available_funds = [i["id"] for i in get_funds()]
-    # Sidebar
+    # Sidebar for user to setup scenario
     start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
     ids = st.sidebar.multiselect("Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30)
     portfolio = [{"id": id, "amount": st.sidebar.number_input(label=id, value=100)} for id in ids]
 
     # Run backtest and format
-    backtest_results = backtest(start_date, end_date, portfolio)
-    df = convert_result_to_df(backtest_results)
+    _backtest_result = backtest_portfolio(start_date, end_date, portfolio)
+    backtest_result = convert_to_df(_backtest_result)
+
+    # Format metrics
+    metrics = pd.DataFrame(_backtest_result["metrics"], index=[0])
+    metrics = metrics.style.format("{:,.2%}")
 
     # Main page
     st.title("Portfolio Backtesting")
     st.subheader("Projection")
     if st.checkbox("Chart View", True):
-        st.altair_chart(backtest_line_chart(df), use_container_width=True)
+        st.altair_chart(line_chart(backtest_result), use_container_width=True)
     else:
-        st.dataframe(df)
+        st.dataframe(backtest_result)
     st.subheader("Metrics")
-    metrics = pd.DataFrame(backtest_results["metrics"], index=[0])
-    metrics = metrics.style.format("{:,.2%}")
     st.write(metrics)
 
 

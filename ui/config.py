@@ -10,6 +10,11 @@ class APISettings(BaseSettings):
     base_url: HttpUrl = "http://localhost:8000"
     funds_path: str = "/funds/all"
     backtest_path: str = "/backtest"
+    expected_return_path: str = "/optimisation/expected-returns"
+    risk_model_path: str = "/optimisation/risk-model?method=sample_cov"
+    efficient_fronter_path: str = "/optimisation/efficient-frontier"
+    color_primary: str = "teal"
+    color_scale: str = "teals"
 
 
 settings = APISettings()

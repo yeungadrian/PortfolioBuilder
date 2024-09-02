@@ -23,8 +23,8 @@ OPTIMISATION_IDS = [
 
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
-    """Get funds."""
-    r = requests.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
+    """Get available funds."""
+    r = requests.get(f"{settings.base_url}{settings.funds_path}", timeout=settings.timeout)
     return r.json()
 
 
@@ -32,7 +32,7 @@ def get_funds() -> Any:
 def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
     """Get expected returns."""
     r = requests.post(
-        f"{settings.base_url}optimisation/expected-returns",
+        f"{settings.base_url}{settings.expected_return_path}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
@@ -44,7 +44,7 @@ def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
 def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
     """Get risk model."""
     r = requests.post(
-        f"{settings.base_url}optimisation/risk-model?method=sample_cov",
+        f"{settings.base_url}{settings.risk_model_path}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
@@ -54,9 +54,9 @@ def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
 
 @st.cache_data(ttl="7d")
 def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios: int) -> Any:
-    """Get efficient frontier."""
+    """Get efficient frontier for set of funds."""
     r = requests.post(
-        f"{settings.base_url}optimisation/efficient-frontier?n_portfolios={n_portfolios}",
+        f"{settings.base_url}{settings.efficient_fronter_path}?n_portfolios={n_portfolios}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
@@ -64,11 +64,11 @@ def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios
     return r.json()
 
 
-def efficient_fronter_scatter_plot(efficient_fronter: pd.DataFrame) -> alt.Chart:
+def ef_scatter_plot(efficient_fronter: pd.DataFrame) -> alt.Chart:
     """Create efficient frontier scatter_plot."""
-    frontier_chart = (
+    return (
         alt.Chart(efficient_fronter)
-        .mark_circle(size=80, color="teal")
+        .mark_circle(size=80, color=settings.color_primary)
         .encode(
             x=alt.X(
                 "implied_standard_deviation",
@@ -86,12 +86,11 @@ def efficient_fronter_scatter_plot(efficient_fronter: pd.DataFrame) -> alt.Chart
             ),
         )
     )
-    return frontier_chart
 
 
-def individual_scatter_plot(individual_funds: pd.DataFrame) -> alt.Chart:
+def scatter_plot(individual_funds: pd.DataFrame) -> alt.Chart:
     """Risk return plot for all individual funds."""
-    scatter_plot = (
+    return (
         alt.Chart(individual_funds)
         .mark_circle(size=80)
         .encode(
@@ -121,49 +120,55 @@ def individual_scatter_plot(individual_funds: pd.DataFrame) -> alt.Chart:
             color=alt.Color("id").scale(scheme="accent"),
         )
     )
-    return scatter_plot
 
 
 def main() -> None:
     """Optimisation page."""
     available_funds = [i["id"] for i in get_funds()]
+
+    # Sidebar
     n_portfolios = st.sidebar.number_input("Number of portfolios", value=40, max_value=250)
     start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
     ids = st.sidebar.multiselect("Select funds", options=available_funds, default=OPTIMISATION_IDS, max_selections=30)
 
-    individual_funds = pd.DataFrame(get_expected_returns(start_date, end_date, ids))
+    # Returns & risk models for funds
+    fund_profiles = pd.DataFrame(get_expected_returns(start_date, end_date, ids))
     risk_model = pd.DataFrame(get_risk_model(start_date, end_date, ids))
-    individual_funds["implied_standard_deviation"] = np.sqrt(np.diag(risk_model.drop(columns="id").to_numpy()))
+    fund_profiles["implied_standard_deviation"] = np.sqrt(np.diag(risk_model.drop(columns="id").to_numpy()))
 
-    frontier = get_efficient_fronter(start_date, end_date, ids, n_portfolios)
-    return_variance = pd.DataFrame(
+    # Generate and format efficient frontier
+    _frontier_result = get_efficient_fronter(start_date, end_date, ids, n_portfolios)
+    risk_return = pd.DataFrame(
         [
             {
                 "expected_return": portfolio["expected_return"],
                 "implied_standard_deviation": portfolio["implied_standard_deviation"],
             }
-            for portfolio in frontier
+            for portfolio in _frontier_result
         ]
     )
-    portfolios = pd.concat(
-        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in frontier]
+    weights = pd.concat(
+        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in _frontier_result]
     ).reset_index(drop=True)
-    efficient_fronter = pd.concat([return_variance, portfolios], axis=1)
+    frontier_result = pd.concat([risk_return, weights], axis=1)
 
-    frontier_chart = efficient_fronter_scatter_plot(efficient_fronter)
+    # Plot frontier
+    frontier_chart = ef_scatter_plot(frontier_result)
 
+    # Main page
     st.title("Portfolio Optimisation")
     if st.checkbox("Include individual funds"):
-        individual_frontier_chart = individual_scatter_plot(individual_funds)
-        frontier_chart = frontier_chart + individual_frontier_chart
+        individual_scatter = scatter_plot(fund_profiles)
+        frontier_chart = frontier_chart + individual_scatter
     st.altair_chart(frontier_chart, use_container_width=True)
 
     with st.expander("Assumptions"):
-        individual_funds = individual_funds.style.format(
+        # Apply pandas styling
+        fund_profiles = fund_profiles.style.format(
             {i: "{:,.2%}".format for i in ["expected_return", "implied_standard_deviation"]}
         )
-        st.write(individual_funds)
+        st.write(fund_profiles)
 
 
 main()
