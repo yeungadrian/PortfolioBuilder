@@ -1,2 +1,2 @@
-streamlit == "1.37.1"
-pydantic-settings == "2.4.0"
+streamlit == 1.37.1
+pydantic-settings == 2.4.0
