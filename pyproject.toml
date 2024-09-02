@@ -112,13 +112,3 @@ strict = true
 
 [tool.ruff.format]
 docstring-code-format = true
-
-# Required for streamlit
-[tool.poetry]
-name = "portfoliobuilder"
-package-mode = false
-
-[tool.poetry.dependencies]
-python = "3.12.*"
-streamlit = "^1.37.1"
-pydantic-settings = "^2.4.0"

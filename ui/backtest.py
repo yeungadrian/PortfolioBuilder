@@ -19,15 +19,15 @@ BACKTEST_IDS = [
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get available funds."""
-    r = requests.get(f"{settings.base_url}funds/all/", timeout=settings.timeout)
+    r = requests.get(f"{settings.base_url}{settings.funds_path}", timeout=settings.timeout)
     return r.json()
 
 
 @st.cache_data(ttl="7d")
 def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
-    """Backtest portfolio."""
+    """Backtest a given portfolio."""
     r = requests.post(
-        f"{settings.base_url}backtest/",
+        f"{settings.base_url}{settings.backtest}",
         headers={"Content-Type": "application/json"},
         json={"start_date": start_date, "end_date": end_date, "portfolio": portfolio},
         timeout=settings.timeout,
@@ -36,7 +36,7 @@ def backtest(start_date: str, end_date: str, portfolio: str) -> Any:
 
 
 def convert_result_to_df(backtest_results: Any) -> pd.DataFrame:
-    """Convert backtest result to dataframe."""
+    """Convert backtest result into dataframe."""
     detailed_holdings = []
     for i in backtest_results["projection"]:
         _result = {}
