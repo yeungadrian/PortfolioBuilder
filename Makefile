@@ -1,4 +1,4 @@
-.PHONY: sync format test  help
+.PHONY: sync format test api help
 
 setup:
 	@uv sync --all-extras --dev
@@ -8,6 +8,9 @@ format:
 
 test:
 	@uv run -- coverage run -m pytest tests && uv run -- coverage report
+
+api:
+	@uv run -- uvicorn app.main:app --reload
 
 help:
 	@echo "Available targets:"
