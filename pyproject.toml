@@ -56,7 +56,6 @@ junit_family = "xunit2"
 
 
 [tool.coverage.run]
-parallel = true
 source = [
     "app",
     "tests",
