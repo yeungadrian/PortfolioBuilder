@@ -206,6 +206,21 @@ wheels = [
 ]
 
 [[package]]
+name = "fastexcel"
+version = "0.11.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyarrow" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/c7/375d8eab4129c4de94e411382d6bdb1ef5909b95a88a0b432fec2deb3475/fastexcel-0.11.6-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:0c2991ce5ca3c05adab22e00fbc4fffc697366deac8a555c9032a17b35024a43", size = 1067215 },
+    { url = "https://files.pythonhosted.org/packages/7e/cd/c15cef397286bac33eb98e945a26375e76bb3222584d111e2e22b0330954/fastexcel-0.11.6-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:c3f39d97d05f583c3b022707aa6109f7b004e94cf4bbb4a07ac4f55488700aac", size = 1047911 },
+    { url = "https://files.pythonhosted.org/packages/79/2d/e476d01e391bd8bd9c45077618a87fba1f684cbe825712282ff013243073/fastexcel-0.11.6-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b15b6725d18413fb256b7b183ecac92248f4cce9c814f6f857182329e7f2a159", size = 1190475 },
+    { url = "https://files.pythonhosted.org/packages/45/f1/f8803e74f3783e031e3c262a9ab60f2013cea82279301038052d54cb7c3c/fastexcel-0.11.6-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:51d186c7cfb4e5dcf222c5128bfae15f87b22b2aa7834e622c445ce03dd94a2e", size = 1172553 },
+    { url = "https://files.pythonhosted.org/packages/01/09/882cb7b8557a958e09c8ace62f0513ea83dbb8222b50ec1620270b2bd552/fastexcel-0.11.6-cp38-abi3-win_amd64.whl", hash = "sha256:cc60bc6dd86c95b1b0ab4cbde9e3e4ee47fe53a0341332b75cc981aef1062078", size = 918505 },
+]
+
+[[package]]
 name = "filelock"
 version = "3.15.4"
 source = { registry = "https://pypi.org/simple" }
@@ -553,6 +568,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "fastexcel" },
     { name = "httpx" },
     { name = "polars" },
     { name = "pydantic-settings" },
@@ -577,6 +593,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.114.2" },
+    { name = "fastexcel", specifier = ">=0.11.6" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "polars", specifier = ">=1.7.1" },
     { name = "pydantic-settings", specifier = ">=2.5.2" },
