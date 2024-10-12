@@ -23,10 +23,3 @@ repos:
     hooks:
     -   id: mypy
         additional_dependencies: [types-requests]
-
-  - repo: https://github.com/srstevenson/nb-clean
-    rev: 3.3.0
-    hooks:
-      - id: nb-clean
-        args:
-          - --remove-empty-cells
