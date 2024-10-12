@@ -68,7 +68,6 @@ class Vanguard:
         """Download all data."""
         for id in ids:
             response = self.request_data(self.base_url.format(id))
-
             self._fund_details.append(self.format_details(response))
             self._fund_returns.append(self.format_returns(response, id))
 
