@@ -114,7 +114,7 @@ class BacktestResult(BaseModel):
     """Backtest result."""
 
     metrics: PortfolioMetrics
-    projection: list[PortfolioValue]
+    portfolio_values: list[PortfolioValue]
 
 
 class OptimisationScenario(BaseModel):
@@ -152,3 +152,11 @@ class ExpectedReturn(BaseModel):
             "examples": [{"id": "vanguard-us-equity-index-fund-gbp-acc", "expected_returns": 6.752961}]
         }
     }
+
+
+class EfficientFrontierPortfolio(BaseModel):
+    """Efficient frontier portfolios."""
+
+    portfolio: list[Holding]
+    expected_return: float
+    implied_standard_deviation: float

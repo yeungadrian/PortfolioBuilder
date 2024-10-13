@@ -5,70 +5,61 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.data_loader import load_returns
-from app.portfolio_metrics import calculate_cagr, calculate_max_drawdown, calculate_portfolio_return
-from app.schemas import BacktestResult, BacktestScenario, PortfolioMetrics, PortfolioValue
+from app.portfolio_metrics import calculate_portfolio_metrics
+from app.schemas import BacktestResult, BacktestScenario, Holding, PortfolioValue
 
 router = APIRouter()
 
 
-def invalid_ids(ids: list[str]) -> list[str]:
+def get_invalid_ids(ids: list[str]) -> list[str]:
     """Validate ids provided."""
-    avaliable_ids = (
+    available_ids = (
         pl.scan_parquet(data_settings.security_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
     )
-    not_avaliable = [_id for _id in ids if _id not in avaliable_ids]
-    return not_avaliable
+    not_available = [_id for _id in ids if _id not in available_ids]
+    return not_available
+
+
+def run_backtesting(backtest_scenario: BacktestScenario) -> pl.DataFrame:
+    """Run backtesting."""
+    ids = [i.id for i in backtest_scenario.portfolio]
+    security_returns = load_returns(ids, backtest_scenario.start_date, backtest_scenario.end_date)
+    # Set return for day 0 to 0.
+    security_returns = security_returns.with_columns(
+        [pl.when(pl.col("date") == pl.col("date").min()).then(0).otherwise(pl.col(_id)).alias(_id) for _id in ids]
+    )
+    # Calculate monthly returns
+    security_returns = security_returns.with_columns([(pl.col(_id) + 1.0).cum_prod().alias(_id) - 1.0 for _id in ids])
+    security_returns = security_returns.with_columns(
+        [((pl.col(holding.id) + 1.0) * holding.amount).alias(holding.id) for holding in backtest_scenario.portfolio]
+    )
+    security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
+    return security_returns
 
 
 @router.post("/")
 def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
-    holdings = {holding["id"]: holding["amount"] for holding in backtest_scenario.model_dump()["portfolio"]}
-    ids = list(holdings.keys())
-
-    not_avaliable = invalid_ids(ids)
-    if len(not_avaliable):
+    not_available = get_invalid_ids([i.id for i in backtest_scenario.portfolio])
+    if len(not_available):
         raise HTTPException(
             status_code=404,
-            detail=f"Following securities are not avaliable: {not_avaliable}",
+            detail=f"Following securities are not available: {not_available}",
         )
-
-    security_returns = load_returns(ids, backtest_scenario.start_date, backtest_scenario.end_date)
-
-    security_returns = security_returns.with_columns(
-        [pl.when(pl.col("date") == pl.col("date").min()).then(0).otherwise(pl.col(_id)).alias(_id) for _id in ids]
-    )
-
-    security_returns = security_returns.with_columns([(pl.col(_id) + 1.0).cum_prod().alias(_id) - 1.0 for _id in ids])
-    security_returns = security_returns.with_columns([((pl.col(i) + 1.0) * j).alias(i) for i, j in holdings.items()])
-    security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
-
-    backtest_projection = [
+    _portfolio_values = run_backtesting(backtest_scenario)
+    portfolio_values = [
         PortfolioValue(
             date=row["date"],
             portfolio_value=row["portfolio_value"],
             holdings=[
-                {"id": _id, "amount": amount} for _id, amount in row.items() if _id not in ["date", "portfolio_value"]
+                Holding(id=id, amount=amount) for id, amount in row.items() if id not in ["date", "portfolio_value"]
             ],
         )
-        for row in security_returns.to_dicts()
+        for row in _portfolio_values.to_dicts()
     ]
-
-    security_returns = security_returns.with_columns(
-        (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")
-    )
-    start_value = security_returns["portfolio_value"].head(1)[0]
-    end_value = security_returns["portfolio_value"].tail(1)[0]
-
-    metrics = {
-        "portfolio_return": calculate_portfolio_return(start_value, end_value),
-        "cagr": calculate_cagr(start_value, end_value, backtest_scenario.start_date, backtest_scenario.end_date),
-        "standard_deviation": security_returns["portfolio_return"].std(),
-        "max_drawdown": calculate_max_drawdown(security_returns.select("portfolio_value")),
-    }
-
+    metrics = calculate_portfolio_metrics(_portfolio_values, backtest_scenario.start_date, backtest_scenario.end_date)
     return BacktestResult(
-        metrics=PortfolioMetrics.model_validate(metrics),
-        projection=backtest_projection,
+        metrics=metrics,
+        portfolio_values=portfolio_values,
     )

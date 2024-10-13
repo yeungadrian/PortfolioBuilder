@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 import polars as pl
@@ -9,7 +9,7 @@ from app.expected_returns import calculate_historical_expected_returns
 from app.optimisation import optimise_min_volatility
 from app.portfolio_metrics import calculate_portfolio_std
 from app.risk_models import calculate_leodit_wolf_covariance, calculate_sample_covariance
-from app.schemas import ExpectedReturn, Holding, OptimisationScenario
+from app.schemas import EfficientFrontierPortfolio, ExpectedReturn, Holding, OptimisationScenario
 
 router = APIRouter()
 
@@ -58,7 +58,7 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
 
 
 @router.post("/efficient-frontier")
-def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) -> Any:
+def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) -> list[EfficientFrontierPortfolio]:
     """Generate efficient frontier portfolios."""
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     expected_returns = calculate_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
@@ -70,12 +70,13 @@ def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) ->
             {"type": "eq", "fun": lambda x: np.sum(x) - 1},
         )
         min_vol_portfolio = optimise_min_volatility(expected_returns, sample_covariance, constraints)
-        portfolio_summary = {
-            "portfolio": [
-                Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
-            ],
-            "expected_return": np.sum(expected_returns.T * min_vol_portfolio),
-            "implied_standard_deviation": calculate_portfolio_std(min_vol_portfolio, sample_covariance),
-        }
-        efficient_portfolios.append(portfolio_summary)
+        efficient_portfolios.append(
+            EfficientFrontierPortfolio(
+                portfolio=[
+                    Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
+                ],
+                expected_return=np.sum(expected_returns.T * min_vol_portfolio),
+                implied_standard_deviation=calculate_portfolio_std(min_vol_portfolio, sample_covariance),
+            )
+        )
     return efficient_portfolios

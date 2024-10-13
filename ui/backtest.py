@@ -5,8 +5,7 @@ import altair as alt
 import pandas as pd
 import requests
 import streamlit as st
-
-from ui.config import settings
+from config import settings
 
 BACKTEST_IDS = [
     "vanguard-us-equity-index-fund-gbp-acc",
@@ -38,14 +37,17 @@ def backtest_portfolio(start_date: str, end_date: str, portfolio: str) -> Any:
 def convert_to_df(backtest_results: Any) -> pd.DataFrame:
     """Convert backtest result into dataframe."""
     detailed_holdings = []
-    for i in backtest_results["projection"]:
+    for i in backtest_results["portfolio_values"]:
         _result = {}
         for holding in i["holdings"]:
             _result[holding["id"]] = holding["amount"]
         detailed_holdings.append(_result)
 
     df = pd.concat(
-        [pd.DataFrame(backtest_results["projection"])[["date", "portfolio_value"]], pd.DataFrame(detailed_holdings)],
+        [
+            pd.DataFrame(backtest_results["portfolio_values"])[["date", "portfolio_value"]],
+            pd.DataFrame(detailed_holdings),
+        ],
         axis=1,
     )
     return df

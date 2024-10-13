@@ -6,8 +6,7 @@ import numpy as np
 import pandas as pd
 import requests
 import streamlit as st
-
-from ui.config import settings
+from config import settings
 
 OPTIMISATION_IDS = [
     "vanguard-us-equity-index-fund-gbp-acc",

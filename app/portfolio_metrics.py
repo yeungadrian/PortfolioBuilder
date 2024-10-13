@@ -5,6 +5,8 @@ from datetime import date
 import numpy as np
 import polars as pl
 
+from app.schemas import PortfolioMetrics
+
 
 def _diff_in_months(date1: date, date2: date) -> int:
     """Calculate difference of two dates in months."""
@@ -22,16 +24,16 @@ def calculate_cagr(start_value: float, end_value: float, start_date: date, end_d
     return float(((end_value / start_value) ** (1 / n_years)) - 1)
 
 
-def calculate_max_drawdown(security_returns: pl.DataFrame) -> float:
+def calculate_max_drawdown(portfolio_values: pl.DataFrame) -> float:
     """Calculate max drawdown."""
-    security_returns = security_returns.with_columns(
+    portfolio_values = portfolio_values.with_columns(
         pl.col("portfolio_value")
-        .rolling_max(window_size=security_returns.shape[0], min_periods=1)
+        .rolling_max(window_size=portfolio_values.shape[0], min_periods=1)
         .alias("portfolio_max")
     ).with_columns(
         ((pl.col("portfolio_max") - pl.col("portfolio_value")) / pl.col("portfolio_max")).alias("drawdown")
     )
-    return float(security_returns["drawdown"].max())
+    return float(portfolio_values["drawdown"].max())
 
 
 def calculate_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
@@ -39,3 +41,19 @@ def calculate_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> floa
     weights = np.array(weights)
     std = np.sqrt(np.dot(weights.T, np.dot(covariance, weights)))
     return float(std)
+
+
+def calculate_portfolio_metrics(portfolio_values: pl.DataFrame, start_date: date, end_date: date) -> PortfolioMetrics:
+    """Calculate common portfolio metrics."""
+    portfolio_values = portfolio_values.with_columns(
+        (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")
+    )
+    start_value = portfolio_values["portfolio_value"].head(1)[0]
+    end_value = portfolio_values["portfolio_value"].tail(1)[0]
+
+    return PortfolioMetrics(
+        portfolio_return=calculate_portfolio_return(start_value, end_value),
+        cagr=calculate_cagr(start_value, end_value, start_date, end_date),
+        standard_deviation=portfolio_values["portfolio_return"].std(),
+        max_drawdown=calculate_max_drawdown(portfolio_values.select("portfolio_value")),
+    )
