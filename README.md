@@ -52,7 +52,4 @@ architecture-beta
     artifact_registry:R -- L:cloud_run
 
     cloud_run{group}:R -- L:Streamlit{group}
-
-
-
 ```
