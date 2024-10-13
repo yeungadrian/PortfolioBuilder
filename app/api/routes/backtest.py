@@ -37,7 +37,7 @@ def run_backtesting(backtest_scenario: BacktestScenario) -> pl.DataFrame:
     return security_returns
 
 
-@router.post("/")
+@router.post("")
 def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
