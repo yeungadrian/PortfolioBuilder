@@ -12,10 +12,6 @@
 </a>
 </p>
 
-Investment analytics (FastAPI, Artifact Registry, Cloud Run)
-
-[View api docs](https://portfoliobuilder-jfv66mvjvq-ew.a.run.app/redoc)
-
 ## Quickstart
 Run locally with uv
 ```
@@ -23,14 +19,8 @@ uv sync --all-extras --dev
 uv run -- uvicorn app.main:app --reload
 uv run -- streamlit run streamlit_app.py
 ```
-Run with docker
+Run locally with docker
 ```
 docker build -t portfoliobuilder .
 docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 ```
-
-## Inspiration
-- [Folder structure: FastAPI full stack template](https://github.com/tiangolo/full-stack-fastapi-template)
-- [Github actions: FastAPI](https://github.com/tiangolo/fastapi/blob/master/.github/workflows/test.yml)
-- [Google cloud free tier limits](https://cloud.google.com/free/docs/free-cloud-features#free-tier-usage-limits)
-- [PyPortfolioOpt](https://pypi.org/project/pyportfolioopt/)
