@@ -34,7 +34,6 @@ docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 ```mermaid
 architecture-beta
     group github(cloud)[Github]
-    service code(disk)[Code] in github
     service github_action(cloud)[Github Actions] in github
     service docker(cloud)[Docker] in github
 
@@ -45,11 +44,11 @@ architecture-beta
     group StreamlitCloud(cloud)[Streamlit Cloud]
     service Streamlit(cloud)[Streamlit] in StreamlitCloud
 
-    code:R -- L:github_action
-    github_action:R -- L:docker
+    github_action:B --> T:docker
+    docker:R --> L:artifact_registry
+    github_action:R --> L:cloud_run
+    artifact_registry:T --> B:cloud_run
 
-    docker:R -- L:artifact_registry
-    artifact_registry:R -- L:cloud_run
-
-    cloud_run{group}:R -- L:Streamlit{group}
+    cloud_run:R --> L:Streamlit
 ```
+Note: Mermaid supported icons is very limited for now.
