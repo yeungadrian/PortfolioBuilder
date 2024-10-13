@@ -30,3 +30,6 @@ notebooks/
 
 #vscode
 .vscode/
+
+#uv
+.venv/
