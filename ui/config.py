@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class APISettings(BaseSettings):
     """Settings for streamlit dashboard."""
 
-    model_config = SettingsConfigDict(env_prefix="api_")
+    model_config = SettingsConfigDict(env_prefix="API_")
     timeout: float = 30
     base_url: HttpUrl = "http://localhost:8000"
     securities_path: str = "/securities/all/"
