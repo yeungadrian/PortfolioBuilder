@@ -11,7 +11,7 @@ class APISettings(BaseSettings):
     securities_path: str = "/securities/all/"
     backtest_path: str = "/backtest/"
     expected_return_path: str = "/optimisation/expected-returns/"
-    risk_model_path: str = "/optimisation/risk-model?method=sample_cov/"
+    risk_model_path: str = "/optimisation/risk-model?method=sample_cov"
     efficient_fronter_path: str = "/optimisation/efficient-frontier/"
     color_primary: str = "teal"
     color_scale: str = "teals"
