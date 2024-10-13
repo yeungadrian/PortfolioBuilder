@@ -502,7 +502,6 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
-    { name = "httpx" },
     { name = "polars" },
     { name = "pydantic-settings" },
     { name = "scikit-learn" },
@@ -518,6 +517,7 @@ streamlit = [
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
+    { name = "httpx" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "trio" },
@@ -526,7 +526,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115.2" },
-    { name = "httpx", specifier = ">=0.27.2" },
     { name = "polars", specifier = ">=1.9.0" },
     { name = "pydantic-settings", specifier = ">=2.5.2" },
     { name = "scikit-learn", specifier = ">=1.5.2" },
@@ -538,6 +537,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage", specifier = ">=7.6.1" },
+    { name = "httpx", specifier = ">=0.27.2" },
     { name = "pre-commit", specifier = ">=3.8.0" },
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "trio", specifier = ">=0.26.2" },
