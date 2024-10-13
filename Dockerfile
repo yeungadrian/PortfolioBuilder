@@ -9,7 +9,7 @@ RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
 WORKDIR /app
 
 COPY ./app app
-COPY ./data/processed data/processed
+COPY ./data data
 
 EXPOSE 8000
 

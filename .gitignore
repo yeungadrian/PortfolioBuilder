@@ -24,11 +24,6 @@ cover/
 
 # Local data
 notebooks/
-data
-!data/
-# Include processed data
-data/*
-!data/processed/
 
 # macOS
 .DS_Store
