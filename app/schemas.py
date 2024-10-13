@@ -85,7 +85,7 @@ class BacktestScenario(BaseModel):
 
 
 class PortfolioValue(BaseModel):
-    """Backtest details per date."""
+    """Portfolio value with breakdown per holding."""
 
     date: date
     portfolio_value: float
@@ -130,7 +130,7 @@ class BacktestResult(BaseModel):
 
 
 class OptimisationScenario(BaseModel):
-    """Settings for optimisation."""
+    """Optimisation settings."""
 
     start_date: date
     end_date: date
