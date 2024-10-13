@@ -1,16 +1,11 @@
-"""
-Backtesting related endpoints.
-
-This module provides:
-- router: router with relevant backtesting endpoints
-"""
+"""Backtesting related endpoints."""
 
 import polars as pl
 from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.data_loader import load_returns
-from app.portfolio_metrics import cagr, max_drawdown, portfolio_return
+from app.portfolio_metrics import calculate_cagr, calculate_max_drawdown, calculate_portfolio_return
 from app.schemas import BacktestResult, BacktestScenario, PortfolioMetrics, PortfolioValue
 
 router = APIRouter()
@@ -67,10 +62,10 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
     end_value = security_returns["portfolio_value"].tail(1)[0]
 
     metrics = {
-        "portfolio_return": portfolio_return(start_value, end_value),
-        "cagr": cagr(start_value, end_value, backtest_scenario.start_date, backtest_scenario.end_date),
+        "portfolio_return": calculate_portfolio_return(start_value, end_value),
+        "cagr": calculate_cagr(start_value, end_value, backtest_scenario.start_date, backtest_scenario.end_date),
         "standard_deviation": security_returns["portfolio_return"].std(),
-        "max_drawdown": max_drawdown(security_returns.select("portfolio_value")),
+        "max_drawdown": calculate_max_drawdown(security_returns.select("portfolio_value")),
     }
 
     return BacktestResult(

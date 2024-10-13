@@ -6,8 +6,9 @@ from fastapi import APIRouter
 
 from app.data_loader import load_returns
 from app.expected_returns import calculate_historical_expected_returns
-from app.optimisation import calculate_portfolio_std, min_volatility
-from app.risk_models import calculate_sample_covariance, leodit_wolf_covariance
+from app.optimisation import optimise_min_volatility
+from app.portfolio_metrics import calculate_portfolio_std
+from app.risk_models import calculate_leodit_wolf_covariance, calculate_sample_covariance
 from app.schemas import ExpectedReturn, Holding, OptimisationScenario
 
 router = APIRouter()
@@ -33,11 +34,11 @@ def get_risk_model(
     _security_returns = security_returns.select(pl.col(scenario.ids)).to_numpy()
     match method:
         case "sample_cov":
-            sample_covariance = calculate_sample_covariance(_security_returns)
+            covariance = calculate_sample_covariance(_security_returns)
         case "ledoit_wolf":
-            sample_covariance = leodit_wolf_covariance(_security_returns)
+            covariance = calculate_leodit_wolf_covariance(_security_returns)
 
-    _risk_model = pl.from_numpy(sample_covariance, schema={i: pl.Float64 for i in scenario.ids})
+    _risk_model = pl.from_numpy(covariance, schema={i: pl.Float64 for i in scenario.ids})
 
     risk_model: list[dict[str, str | float]] = (
         _risk_model.with_columns(pl.Series(scenario.ids).alias("id")).select(["id", *scenario.ids]).to_dicts()
@@ -52,7 +53,7 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
     expected_returns = calculate_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
     sample_covariance = calculate_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())
     constraints = ({"type": "eq", "fun": lambda x: np.sum(x) - 1},)
-    min_vol_portfolio = min_volatility(expected_returns, sample_covariance, constraints)
+    min_vol_portfolio = optimise_min_volatility(expected_returns, sample_covariance, constraints)
     return [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)]
 
 
@@ -68,7 +69,7 @@ def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) ->
             {"type": "eq", "fun": lambda x: np.sum(expected_returns.T * x) - target_return},  # noqa: B023
             {"type": "eq", "fun": lambda x: np.sum(x) - 1},
         )
-        min_vol_portfolio = min_volatility(expected_returns, sample_covariance, constraints)
+        min_vol_portfolio = optimise_min_volatility(expected_returns, sample_covariance, constraints)
         portfolio_summary = {
             "portfolio": [
                 Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)

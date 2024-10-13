@@ -11,7 +11,7 @@ def calculate_sample_covariance(security_returns: np.ndarray, frequency: int = 1
     return sample_covariance * frequency
 
 
-def leodit_wolf_covariance(security_returns: np.ndarray) -> np.ndarray:
+def calculate_leodit_wolf_covariance(security_returns: np.ndarray) -> np.ndarray:
     """_Calculate Ledoit-Wolf shrinkage estimate for a particular shrinkage target."""
     shrunk_cov, _ = ledoit_wolf(security_returns)
     return shrunk_cov

@@ -1,16 +1,4 @@
-"""
-Pydantic based schemas for data validation.
-
-This module provides:
-- SecurityDetails: security details schema
-- Holding: single holding schema
-- BacktestScenario: setup for backtest schema
-- PortfolioValue: portfolio value at single point in time schema
-- PortfolioMetrics: common portfolio metrics schema
-- BacktestResult: back test result schema
-- OptimisationScenario: setup for mean variance optimisation schema
-- ExpectedReturn: expected return for single security schema
-"""
+"""Pydantic based schemas for data validation."""
 
 from datetime import date
 

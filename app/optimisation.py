@@ -4,12 +4,7 @@ from typing import Any
 import numpy as np
 from scipy.optimize import minimize
 
-
-def calculate_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
-    """Calculate portfolio standard deviation using covariance."""
-    weights = np.array(weights)
-    std = np.sqrt(np.dot(weights.T, np.dot(covariance, weights)))
-    return float(std)
+from app.portfolio_metrics import calculate_portfolio_std
 
 
 def optimise(
@@ -32,7 +27,9 @@ def optimise(
     return _result
 
 
-def min_volatility(expected_returns: np.ndarray, risk_model: np.ndarray, constraints: tuple[Any, ...]) -> list[float]:
+def optimise_min_volatility(
+    expected_returns: np.ndarray, risk_model: np.ndarray, constraints: tuple[Any, ...]
+) -> list[float]:
     """Use optimisation to find portfolio with minimum std for a given return."""
     n_securities = expected_returns.shape[0]
     args = risk_model

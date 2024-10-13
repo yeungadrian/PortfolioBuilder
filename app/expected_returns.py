@@ -1,10 +1,3 @@
-"""
-Expected returns related endpoints.
-
-This module provides:
-- router: router with relevant expected returns endpoints
-"""
-
 import polars as pl
 
 
