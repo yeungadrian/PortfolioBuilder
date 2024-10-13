@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException
 from app.core.config import data_settings
 from app.data_loader import load_returns
 from app.portfolio_metrics import cagr, max_drawdown, portfolio_return
-from app.schemas import BacktestProjection, BacktestScenario, PortfolioMetrics, PortfolioValue
+from app.schemas import BacktestResult, BacktestScenario, PortfolioMetrics, PortfolioValue
 
 router = APIRouter()
 
@@ -19,14 +19,14 @@ router = APIRouter()
 def invalid_ids(ids: list[str]) -> list[str]:
     """Validate ids provided."""
     avaliable_ids = (
-        pl.scan_parquet(data_settings.fund_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
+        pl.scan_parquet(data_settings.security_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
     )
     not_avaliable = [_id for _id in ids if _id not in avaliable_ids]
     return not_avaliable
 
 
 @router.post("/")
-def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestProjection:
+def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
     """Backtest portfolio."""
     # TODO: start_date / end_date is assumed to be month_ends
     holdings = {holding["id"]: holding["amount"] for holding in backtest_scenario.model_dump()["portfolio"]}
@@ -36,7 +36,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestProjectio
     if len(not_avaliable):
         raise HTTPException(
             status_code=404,
-            detail=f"Following funds are not avaliable: {not_avaliable}",
+            detail=f"Following securities are not avaliable: {not_avaliable}",
         )
 
     security_returns = load_returns(ids, backtest_scenario.start_date, backtest_scenario.end_date)
@@ -73,7 +73,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestProjectio
         "max_drawdown": max_drawdown(security_returns.select("portfolio_value")),
     }
 
-    return BacktestProjection(
+    return BacktestResult(
         metrics=PortfolioMetrics.model_validate(metrics),
         projection=backtest_projection,
     )

@@ -42,8 +42,8 @@ class Vanguard:
             "Sec-Fetch-Site": "same-origin",
             "TE": "trailers",
         }
-        self._fund_details: list[dict[str, str]] = []
-        self._fund_returns: list[pl.DataFrame] = []
+        self._security_details: list[dict[str, str]] = []
+        self._security_returns: list[pl.DataFrame] = []
 
     def request_data(self, url: str) -> Any:
         """Request data form asset manager."""
@@ -68,11 +68,11 @@ class Vanguard:
         """Download all data."""
         for id in ids:
             response = self.request_data(self.base_url.format(id))
-            self._fund_details.append(self.format_details(response))
-            self._fund_returns.append(self.format_returns(response, id))
+            self._security_details.append(self.format_details(response))
+            self._security_returns.append(self.format_returns(response, id))
 
-        fund_details = pl.from_dicts(self._fund_details)
-        fund_details = fund_details.rename(self.fund_detail_mapping)
-        fund_returns = pl.concat(self._fund_returns)
+        security_details = pl.from_dicts(self._security_details)
+        security_details = security_details.rename(self.fund_detail_mapping)
+        security_returns = pl.concat(self._security_returns)
 
-        return fund_details, fund_returns
+        return security_details, security_returns

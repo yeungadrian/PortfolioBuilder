@@ -27,17 +27,17 @@ vg_funds = [
 
 def main() -> None:
     """Download fund data for all managers."""
-    fund_details = []
-    fund_returns = []
+    security_details = []
+    security_returns = []
     mapping = {Vanguard(): vg_funds}
 
     for manager, funds in mapping.items():
         _details, _returns = manager.download_all(funds)
-        fund_details.append(_details)
-        fund_returns.append(_returns)
+        security_details.append(_details)
+        security_returns.append(_returns)
 
-    pl.concat(fund_details).write_parquet("data/fund_details.pq")
-    pl.concat(fund_returns).write_parquet("data/fund_returns.pq")
+    pl.concat(security_details).write_parquet("data/security_details.pq")
+    pl.concat(security_returns).write_parquet("data/security_returns.pq")
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ BACKTEST_IDS = [
 @st.cache_data(ttl="7d")
 def get_funds() -> Any:
     """Get available funds."""
-    r = requests.get(f"{settings.base_url}{settings.funds_path}", timeout=settings.timeout)
+    r = requests.get(f"{settings.base_url}{settings.securities_path}", timeout=settings.timeout)
     return r.json()
 
 

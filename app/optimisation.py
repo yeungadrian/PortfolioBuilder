@@ -5,10 +5,10 @@ import numpy as np
 from scipy.optimize import minimize
 
 
-def calculate_portfolio_std(weights: np.ndarray, fund_covariance: np.ndarray) -> float:
+def calculate_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
     """Calculate portfolio standard deviation using covariance."""
     weights = np.array(weights)
-    std = np.sqrt(np.dot(weights.T, np.dot(fund_covariance, weights)))
+    std = np.sqrt(np.dot(weights.T, np.dot(covariance, weights)))
     return float(std)
 
 
