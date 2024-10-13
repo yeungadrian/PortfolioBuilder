@@ -36,6 +36,7 @@ def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
     )
+    r.raise_for_status()
     return r.json()
 
 
@@ -48,6 +49,7 @@ def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
     )
+    r.raise_for_status()
     return r.json()
 
 
@@ -60,6 +62,7 @@ def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios
         json={"start_date": start_date, "end_date": end_date, "ids": ids},
         timeout=settings.timeout,
     )
+    r.raise_for_status()
     return r.json()
 
 

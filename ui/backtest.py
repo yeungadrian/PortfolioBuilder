@@ -19,6 +19,7 @@ BACKTEST_IDS = [
 def get_funds() -> Any:
     """Get available funds."""
     r = requests.get(f"{settings.base_url}{settings.securities_path}", timeout=settings.timeout)
+    r.raise_for_status()
     return r.json()
 
 
@@ -31,6 +32,7 @@ def backtest_portfolio(start_date: str, end_date: str, portfolio: str) -> Any:
         json={"start_date": start_date, "end_date": end_date, "portfolio": portfolio},
         timeout=settings.timeout,
     )
+    r.raise_for_status()
     return r.json()
 
 
