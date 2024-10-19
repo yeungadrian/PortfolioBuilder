@@ -9,15 +9,7 @@ class Vanguard:
 
     def __init__(self) -> None:
         self.base_url = "https://www.vanguardinvestor.co.uk/api/funds/{}"
-        self.fund_detail_keys = [
-            "id",
-            "name",
-            "assetClass",
-            "inceptionDate",
-            "currencyCode",
-            "ticker",
-            "OCF",
-        ]
+        self.fund_detail_keys = ["id", "name", "assetClass", "inceptionDate", "currencyCode", "ticker", "OCF"]
         self.fund_detail_mapping = {
             "id": "id",
             "name": "name",
