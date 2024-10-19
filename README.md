@@ -15,7 +15,7 @@
 Goals:
 1. Best practices for FastAPI + Github Actions
 2. Exploring severless with Google Cloud (Artifact Regsitry, Cloud Run)
-3. Refresh portfolio optimisation techniques
+3. Refresh knowledge on portfolio optimisation
 
 ## Quickstart
 Run locally with uv
