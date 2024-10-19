@@ -12,7 +12,6 @@ dependencies = [
     "scikit-learn>=1.5.2",
     "scipy>=1.14.1",
     "uvicorn>=0.31.1",
-
 ]
 
 
@@ -27,10 +26,11 @@ package = false
 dev-dependencies = [
     "coverage>=7.6.1",
     "httpx>=0.27.2",
+    "ipykernel>=6.29.5",
     "pre-commit>=3.8.0",
     "pytest>=8.3.3",
+    "tqdm>=4.66.5",
     "trio>=0.26.2",
-
 ]
 
 
