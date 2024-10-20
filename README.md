@@ -12,6 +12,8 @@
 </a>
 </p>
 
+View live API docs @ https://portfoliobuilder-jfv66mvjvq-ew.a.run.app/redoc
+
 Goals:
 1. Minimalish but still effective FastAPI + Github Action setup
 2. Exploring severless with Google Cloud (Artifact Regsitry, Cloud Run)
