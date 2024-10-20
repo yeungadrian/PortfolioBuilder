@@ -5,6 +5,7 @@ import httpx
 import polars as pl
 from tqdm import tqdm
 
+from app.schemas import SecurityDetails
 from scripts.base import Manager
 
 
@@ -20,19 +21,18 @@ class Vanguard(Manager):
             "name",
             "assetClass",
             "inceptionDate",
-            "currencyCode",
-            "ticker",
-            "OCF",
+            "sedol",
+            "ocfValue",
             "managementType",
+            "shareClass",
         ]
         self.fund_detail_mapping = {
             "id": "id",
             "name": "name",
             "assetClass": "asset_class",
             "inceptionDate": "inception_date",
-            "currencyCode": "currency_code",
-            "ticker": "ticker",
-            "OCF": "ocf",
+            "sedol": "sedol",
+            "ocfValue": "ocf",
         }
         self.headers = {
             "Host": "www.vanguardinvestor.co.uk",
@@ -58,20 +58,24 @@ class Vanguard(Manager):
             r = client.get(url)
             return r.json()
 
-    def get_ids(self) -> list[Any]:
+    def get_fund_details(self) -> pl.DataFrame:
         """Get list of vanguard funds."""
         r = httpx.get(self.base_url + self.list_route, headers=self.headers)
         _fund_details = [{j: k for j, k in i.items() if j in self.fund_detail_keys} for i in r.json()]
         fund_details = pl.from_dicts(_fund_details)
-        fund_details = fund_details.with_columns(pl.col("inceptionDate").cast(pl.Date)).filter(
-            (pl.col("managementType") == "Index") & (pl.col("inceptionDate") <= self.min_inception_date)
+        fund_details = fund_details.rename(self.fund_detail_mapping)
+        fund_details = fund_details.cast({"inception_date": pl.Date, "ocf": str})
+        fund_details = fund_details.filter(
+            (pl.col("managementType") == "Index")
+            & (pl.col("inception_date") <= self.min_inception_date)
+            & (pl.col("shareClass") == "Accumulation")
         )
-        ids: list[Any] = fund_details.select(pl.col("id")).to_series().to_list()
-        return ids
+        return fund_details
 
-    def format_details(self, response: Any) -> dict[str, str]:
+    def format_details(self, fund_details: pl.DataFrame) -> Any:
         """Format fund details into dict."""
-        fund_detail = {key: response[key] for key in self.fund_detail_keys}
+        fund_detail = fund_details.to_dicts()[0]
+        SecurityDetails.model_validate(fund_detail)
         return fund_detail
 
     def format_returns(self, response: Any, id: str) -> pl.DataFrame:
@@ -80,17 +84,19 @@ class Vanguard(Manager):
         monthly_returns = pl.from_dicts(_monthly_returns)
         monthly_returns = monthly_returns.with_columns(pl.lit(id).alias("id"))
         monthly_returns = monthly_returns.rename({"asOfDate": "date", "monthPercent": "monthly_return"})
+        monthly_returns = monthly_returns.cast({"date": pl.Date, "monthly_return": pl.Float64})
+        monthly_returns = monthly_returns.sort(by="date")
+        monthly_returns = monthly_returns.with_columns(pl.col("monthly_return") / 100.0)
         return monthly_returns
 
     def download_all(self) -> tuple[pl.DataFrame, pl.DataFrame]:
         """Download all data."""
-        ids = self.get_ids()
+        fund_details = self.get_fund_details()
+        ids = fund_details.select(pl.col("id")).to_series().to_list()
         for id in tqdm(ids):
             response = self.request_data(self.base_url + self.detail_route.format(id))
-            self._security_details.append(self.format_details(response))
+            self._security_details.append(self.format_details(fund_details.filter(pl.col("id") == id)))
             self._security_returns.append(self.format_returns(response, id))
-
         security_details = pl.from_dicts(self._security_details)
-        security_details = security_details.rename(self.fund_detail_mapping)
         security_returns = pl.concat(self._security_returns)
         return security_details, security_returns

@@ -4,7 +4,7 @@ import polars as pl
 
 from scripts.vanguard import Vanguard
 
-MIN_INCEPTION_DATE = date(2012, 1, 1)
+MIN_INCEPTION_DATE = date(2015, 1, 1)
 
 
 def main() -> None:

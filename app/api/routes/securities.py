@@ -26,6 +26,6 @@ def get_details_by_sedol(sedol: str) -> SecurityDetails:
         pl.scan_parquet(data_settings.security_details).filter(pl.col("sedol") == sedol).collect().to_dicts()
     )
     if len(_security_details) == 0:
-        raise HTTPException(status_code=404, detail=f"Sedol: {sedol} does not exist")
+        raise HTTPException(status_code=404, detail=f"sedol: {sedol} does not exist")
     security_details = SecurityDetails(**_security_details[0])
     return security_details
