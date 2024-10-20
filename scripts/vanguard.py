@@ -70,6 +70,7 @@ class Vanguard(Manager):
             & (pl.col("inception_date") <= self.min_inception_date)
             & (pl.col("share_class") == "Accumulation")
         )
+        fund_details = fund_details.drop(["management_type", "share_class"])
         return fund_details
 
     def format_returns(self, response: Any, id: str) -> pl.DataFrame:

@@ -24,7 +24,7 @@ class SecurityDetails(BaseModel):
                     "asset_class": "Equity",
                     "inception_date": "2009-06-23",
                     "sedol": "B5B71Q7",
-                    "ocf": "0.1",
+                    "ocf": "0.10%",
                 }
             ]
         }
