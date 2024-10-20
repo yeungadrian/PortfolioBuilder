@@ -1,4 +1,4 @@
-name: Build & Push
+name: Docker Build & Artifact Registry Push
 
 on:
   workflow_dispatch:
