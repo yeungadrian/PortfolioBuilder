@@ -13,7 +13,7 @@
 </p>
 
 Goals:
-1. Best practices for FastAPI + Github Actions
+1. Minimalish but still effective FastAPI + Github Action setup
 2. Exploring severless with Google Cloud (Artifact Regsitry, Cloud Run)
 3. Refresh knowledge on portfolio optimisation
 
