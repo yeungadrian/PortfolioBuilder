@@ -33,3 +33,6 @@ notebooks/
 
 # uv
 .venv/
+
+# Local data
+data/
