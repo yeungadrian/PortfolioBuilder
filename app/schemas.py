@@ -22,9 +22,9 @@ class SecurityDetails(BaseModel):
                     "id": "vanguard-us-equity-index-fund-gbp-acc",
                     "name": "U.S. Equity Index Fund",
                     "asset_class": "Equity",
-                    "inception_date": "23 Jun 2009",
+                    "inception_date": "2009-06-23",
                     "sedol": "B5B71Q7",
-                    "ocf": "0.10%",
+                    "ocf": "0.1",
                 }
             ]
         }

@@ -35,7 +35,7 @@ docker run --rm -it -p 8000:8000/tcp portfoliobuilder:latest
 architecture-beta
     group github(cloud)[Github]
     service github_action(cloud)[Github Actions] in github
-    service docker(cloud)[Docker] in github
+
 
     group google_cloud(cloud)[Google Cloud]
     service artifact_registry(cloud)[Artifact Registry] in google_cloud
@@ -44,8 +44,7 @@ architecture-beta
     group StreamlitCloud(cloud)[Streamlit Cloud]
     service Streamlit(cloud)[Streamlit] in StreamlitCloud
 
-    github_action:B --> T:docker
-    docker:R --> L:artifact_registry
+    github_action:R --> L:artifact_registry
     github_action:R --> L:cloud_run
     artifact_registry:T --> B:cloud_run
 

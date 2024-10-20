@@ -14,12 +14,10 @@ dependencies = [
     "uvicorn>=0.31.1",
 ]
 
-
 [project.optional-dependencies]
 streamlit = [
     "streamlit>=1.39.0",
 ]
-
 
 [tool.uv]
 package = false
@@ -33,22 +31,6 @@ dev-dependencies = [
     "trio>=0.26.2",
 ]
 
-
-[tool.mypy]
-files = ["app"]
-strict = true
-enable_error_code = [
-  "redundant-expr",
-  "truthy-bool",
-  "ignore-without-code",
-]
-disable_error_code = [
-  "empty-body",
-]
-disallow_subclassing_any = false
-disallow_untyped_decorators = false
-
-
 [tool.pytest.ini_options]
 addopts = [
   "--strict-config",
@@ -57,6 +39,12 @@ addopts = [
 xfail_strict = true
 junit_family = "xunit2"
 
+[tool.coverage.html]
+show_contexts = true
+
+[tool.coverage.report]
+show_missing = true
+sort = "-Cover"
 
 [tool.coverage.run]
 source = [
@@ -64,17 +52,12 @@ source = [
     "tests",
 ]
 
-[tool.coverage.report]
-show_missing = true
-sort = "-Cover"
-
-[tool.coverage.html]
-show_contexts = true
-
-
 [tool.ruff]
 line-length = 118
 fix = true
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.ruff.lint]
 select = [
@@ -98,7 +81,6 @@ select = [
   "EM", # flake8-errmsg
   "FBT001", # flake8-boolean-trap
 ]
-
 ignore = [
   # pydocstyle: http://www.pydocstyle.org/en/stable/error_codes.html
   "D401", # Relax NumPy docstring convention: First line should be in imperative mood
@@ -121,5 +103,16 @@ ban-relative-imports = "all"
 [tool.ruff.lint.flake8-type-checking]
 strict = true
 
-[tool.ruff.format]
-docstring-code-format = true
+[tool.mypy]
+files = ["app"]
+strict = true
+enable_error_code = [
+  "redundant-expr",
+  "truthy-bool",
+  "ignore-without-code",
+]
+disable_error_code = [
+  "empty-body",
+]
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
