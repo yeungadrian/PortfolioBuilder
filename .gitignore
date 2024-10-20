@@ -28,8 +28,8 @@ notebooks/
 # macOS
 .DS_Store
 
-#vscode
+# VSCode
 .vscode/
 
-#uv
+# uv
 .venv/

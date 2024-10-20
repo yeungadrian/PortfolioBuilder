@@ -4,7 +4,9 @@ import polars as pl
 
 from scripts.vanguard import Vanguard
 
-MIN_INCEPTION_DATE = date(2015, 1, 1)
+MIN_INCEPTION_DATE = date(2020, 1, 1)
+DETAILS_PATH = "data/security_details.pq"
+RETURNS_PATH = "data/security_returns.pq"
 
 
 def main() -> None:
@@ -18,8 +20,8 @@ def main() -> None:
         security_details.append(_details)
         security_returns.append(_returns)
 
-    pl.concat(security_details).write_parquet("data/security_details.pq")
-    pl.concat(security_returns).write_parquet("data/security_returns.pq")
+    pl.concat(security_details).write_parquet(DETAILS_PATH)
+    pl.concat(security_returns).write_parquet(RETURNS_PATH)
 
 
 if __name__ == "__main__":
