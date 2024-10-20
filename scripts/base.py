@@ -11,5 +11,5 @@ class Manager(ABC):
 
     @abstractmethod
     def download_all(self) -> tuple[pl.DataFrame, pl.DataFrame]:
-        """Download all funds."""
+        """Return two dataframes : [fund_details, fund_returns]."""
         ...
