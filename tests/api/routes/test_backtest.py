@@ -1,5 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+
+from app.main import app
 
 
 def test_backtest(client: TestClient) -> None:
@@ -14,8 +17,7 @@ def test_backtest(client: TestClient) -> None:
             },
         ],
     }
-
-    response = client.post("/backtest/", json=body)
+    response = client.post("/backtest", json=body)
     assert response.status_code == 200
     assert response.json()["portfolio_values"][0]["portfolio_value"] == pytest.approx(200.0)
     assert response.json()["portfolio_values"][1]["date"] == "2023-12-31"
@@ -23,7 +25,8 @@ def test_backtest(client: TestClient) -> None:
     assert response.json()["portfolio_values"][2]["portfolio_value"] == pytest.approx(207.67257285005837)
 
 
-def test_backtest_validation_error(client: TestClient) -> None:
+@pytest.mark.anyio
+async def test_backtest_validation_error() -> None:
     body = {
         "start_date": "2023-11-30",
         "end_date": "2024-01-31",
@@ -35,6 +38,6 @@ def test_backtest_validation_error(client: TestClient) -> None:
             },
         ],
     }
-
-    response = client.post("/backtest/", json=body)
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        response = await ac.post("/backtest", json=body)
     assert response.status_code == 404
