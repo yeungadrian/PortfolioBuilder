@@ -126,7 +126,6 @@ class OptimisationScenario(BaseModel):
                     "start_date": date(2018, 1, 1).strftime("%Y-%m-%d"),
                     "end_date": date(2024, 1, 1).strftime("%Y-%m-%d"),
                     "ids": [
-                        "vanguard-ftse-100-index-unit-trust-gbp-acc",
                         "vanguard-us-equity-index-fund-gbp-acc",
                         "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
                     ],
