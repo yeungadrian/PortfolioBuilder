@@ -5,10 +5,8 @@ import httpx
 import polars as pl
 from tqdm import tqdm
 
-from scripts.base import Manager
 
-
-class Vanguard(Manager):
+class Vanguard:
     """Vanguard asset manager helper."""
 
     def __init__(self, min_inception_date: date) -> None:
