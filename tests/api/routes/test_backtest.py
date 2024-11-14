@@ -4,6 +4,7 @@ from httpx import AsyncClient
 
 @pytest.mark.anyio
 async def test_backtest(async_client: AsyncClient) -> None:
+    """Backtest with two valid securities."""
     body = {
         "start_date": "2023-11-30",
         "end_date": "2024-01-31",
@@ -25,6 +26,7 @@ async def test_backtest(async_client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_backtest_validation_error(async_client: AsyncClient) -> None:
+    """Backtest with invalid security."""
     body = {
         "start_date": "2023-11-30",
         "end_date": "2024-01-31",

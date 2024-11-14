@@ -4,6 +4,7 @@ from httpx import AsyncClient
 
 @pytest.mark.anyio
 async def test_expected_returns(async_client: AsyncClient) -> None:
+    """Test expected returns with three valid securities."""
     body = {
         "end_date": "2024-01-01",
         "ids": [
@@ -22,6 +23,7 @@ async def test_expected_returns(async_client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_risk_model_sample(async_client: AsyncClient) -> None:
+    """Test risk models with three valid securities using sample covariance."""
     body = {
         "end_date": "2024-01-01",
         "ids": [
@@ -40,6 +42,7 @@ async def test_risk_model_sample(async_client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_risk_model_leodit(async_client: AsyncClient) -> None:
+    """Test risk models with three valid securities using leodit wolf."""
     body = {
         "end_date": "2024-01-01",
         "ids": [
@@ -59,7 +62,8 @@ async def test_risk_model_leodit(async_client: AsyncClient) -> None:
 
 
 @pytest.mark.anyio
-async def test_min_vol(async_client: AsyncClient) -> None:
+async def test_mean_var_opt(async_client: AsyncClient) -> None:
+    """Test mean var optimisation with three valid securities."""
     body = {
         "end_date": "2024-01-01",
         "ids": [
@@ -78,6 +82,7 @@ async def test_min_vol(async_client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_efficient_frontier(async_client: AsyncClient) -> None:
+    """Test efficient portfolio generation with three valid securities."""
     body = {
         "end_date": "2024-01-01",
         "ids": [
