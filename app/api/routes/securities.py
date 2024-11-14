@@ -15,7 +15,7 @@ router = APIRouter()
 def get_all_details() -> list[SecurityDetails]:
     """Load details for all securities."""
     _all_details = pl.read_parquet(data_settings.security_details).to_dicts()
-    all_details = [SecurityDetails(**i) for i in _all_details]
+    all_details = [SecurityDetails.model_validate(i) for i in _all_details]
     return all_details
 
 
@@ -27,5 +27,4 @@ def get_details_by_sedol(sedol: str) -> SecurityDetails:
     )
     if len(_security_details) == 0:
         raise HTTPException(status_code=404, detail=f"sedol: {sedol} does not exist")
-    security_details = SecurityDetails(**_security_details[0])
-    return security_details
+    return SecurityDetails(**_security_details[0])
