@@ -1,11 +1,13 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings
 
 
-class DataSettings(BaseSettings):
-    """Paths for data."""
+class Settings(BaseSettings):
+    """Settings for application."""
 
-    security_details: str = "sample/security_details.pq"
-    security_returns: str = "sample/security_returns.pq"
+    security_details: Path = Path("sample/security_details.pq")
+    security_returns: Path = Path("sample/security_returns.pq")
 
 
-data_settings = DataSettings()
+settings = Settings()

@@ -3,7 +3,7 @@
 import polars as pl
 from fastapi import APIRouter, HTTPException
 
-from app.core.config import data_settings
+from app.core.config import settings
 from app.data_loader import load_returns
 from app.models import BacktestResult, BacktestScenario, Holding, PortfolioValue
 from app.portfolio_metrics import calculate_portfolio_metrics
@@ -14,7 +14,7 @@ router = APIRouter()
 def get_invalid_ids(ids: list[str]) -> list[str]:
     """Validate ids provided."""
     available_ids = (
-        pl.scan_parquet(data_settings.security_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
+        pl.scan_parquet(settings.security_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
     )
     not_available = [_id for _id in ids if _id not in available_ids]
     return not_available
