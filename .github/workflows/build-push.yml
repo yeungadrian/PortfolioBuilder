@@ -21,8 +21,9 @@ jobs:
         run: gcloud auth configure-docker ${{ vars.HOSTNAME_LIST }}
       - name: Delete previous image #Images are ~266MB, free tier hosting is 500MB
         run: yes Y | gcloud artifacts docker images delete ${{ vars.HOSTNAME_LIST }}/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.IMAGE }}:${{ vars.TAG }}
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: ${{ vars.HOSTNAME_LIST }}/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.IMAGE }}:${{ vars.TAG }}
+      - name: Build
+        run: docker build -t ${{ vars.IMAGE }}:${{ vars.TAG }} .
+      - name: Tag
+        run: docker tag ${{ vars.IMAGE }}:${{ vars.TAG }} ${{ vars.HOSTNAME_LIST }}/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.IMAGE }}:${{ vars.TAG }}
+      - name: Push image
+        run: docker push ${{ vars.HOSTNAME_LIST }}/${{ vars.PROJECT_ID }}/${{ vars.REPOSITORY }}/${{ vars.IMAGE }}:${{ vars.TAG }}
