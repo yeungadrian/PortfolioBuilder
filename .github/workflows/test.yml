@@ -33,11 +33,11 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Run pre-commit
-        run: uv run -- pre-commit run --all-files --verbose --show-diff-on-failure
+        run: uv run pre-commit run --all-files --verbose --show-diff-on-failure
       - name: Run tests
-        run: uv run -- coverage run -m pytest tests
-      - run: uv run -- coverage report
-      - run: uv run -- coverage html --title "Coverage for ${{ github.sha }}"
+        run: uv run coverage run -m pytest tests
+      - run: uv run coverage report
+      - run: uv run coverage html --title "Coverage for ${{ github.sha }}"
       - name: Store coverage HTML
         uses: actions/upload-artifact@v4
         with:
