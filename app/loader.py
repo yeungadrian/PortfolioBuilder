@@ -2,7 +2,7 @@ from datetime import date
 
 import polars as pl
 
-from app.core.config import settings
+from app.config import settings
 
 
 def load_returns(ids: list[str], start_date: date, end_date: date) -> pl.DataFrame:

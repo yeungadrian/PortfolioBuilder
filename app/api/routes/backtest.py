@@ -3,7 +3,7 @@
 import polars as pl
 from fastapi import APIRouter, HTTPException
 
-from app.core.config import settings
+from app.config import settings
 from app.loader import load_returns
 from app.models import BacktestResult, BacktestScenario, Holding, PortfolioValue
 from app.portfolio_analysis.metrics import get_portfolio_metrics

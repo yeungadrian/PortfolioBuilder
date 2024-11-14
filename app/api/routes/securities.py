@@ -1,7 +1,7 @@
 import polars as pl
 from fastapi import APIRouter, HTTPException
 
-from app.core.config import settings
+from app.config import settings
 from app.models import SecurityDetails
 
 router = APIRouter()
