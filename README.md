@@ -22,9 +22,9 @@ Goals:
 ## Quickstart
 Run locally with uv
 ```
-uv sync --all-extras --dev
-uv run -- uvicorn app.main:app --reload
-uv run -- streamlit run streamlit_app.py
+uv sync --all-extras
+uv run uvicorn app.main:app --reload
+uv run streamlit run streamlit_app.py
 ```
 Run locally with docker
 ```
