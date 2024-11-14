@@ -90,7 +90,7 @@ def main() -> None:
     # Main page
     st.title("Portfolio Backtesting")
     st.subheader("Projection")
-    if st.checkbox("Chart View", True):
+    if st.checkbox("Chart View", value=True):
         st.altair_chart(line_chart(backtest_result), use_container_width=True)
     else:
         st.dataframe(backtest_result)

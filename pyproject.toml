@@ -60,25 +60,24 @@ docstring-code-format = true
 
 [tool.ruff.lint]
 select = [
-  "E", # pycodestyle
-  "W", # pycodestyle
-  "F", # Pyflakes
   "B", # flake8-bugbear
   "C4", # flake8-comprehensions
-  "D", # flake8-docstrings
-  "D213", # Augment NumPy docstring convention: Multi-line docstring summary should start at the second line
-  "D417", # Augment NumPy docstring convention: Missing argument descriptions
+  "D", # pydocstyle
+  "D213", # Multi-line docstring summary should start at the second line
+  "D417", # Missing argument descriptions
+  "E", # pycodestyle
+  "EM", # flake8-errmsg
+  "F", # Pyflakes
+  "FBT", # flake8-boolean-trap
   "I", # isort
+  "PIE", # flake8-pie
+  "PT", # flake8-pytest-style
+  "PTH", # flake8-use-pathlib
   "SIM", # flake8-simplify
   "TID", # flake8-tidy-imports
-  "UP", # pyupgrade
-  "PT", # flake8-pytest-style
-  "RUF", # Ruff-specific rules
-  "PTH", # flake8-use-pathlib
-  "PIE", # flake8-pie
   "TRY", # tryceratops
-  "EM", # flake8-errmsg
-  "FBT001", # flake8-boolean-trap
+  "UP", # pyupgrade
+  "W", # pycodestyle
 ]
 ignore = [
   # pydocstyle: http://www.pydocstyle.org/en/stable/error_codes.html
@@ -87,17 +86,17 @@ ignore = [
   "D104", # Missing docstring in public package
 ]
 
-[tool.ruff.lint.pycodestyle]
-max-doc-length = 118
-
-[tool.ruff.lint.pydocstyle]
-convention = "numpy"
-
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
 [tool.ruff.lint.flake8-type-checking]
 strict = true
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 118
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.mypy]
 files = ["app"]
@@ -110,7 +109,6 @@ enable_error_code = [
 disallow_subclassing_any = false
 disallow_untyped_decorators = false
 plugins = "pydantic.mypy"
-
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
