@@ -12,9 +12,6 @@ OPTIMISATION_IDS = [
     "vanguard-us-equity-index-fund-gbp-acc",
     "vanguard-uk-inflation-linked-gilt-index-fund-gbp-acc",
     "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
-    "vanguard-euro-government-bond-index-fund-gbp-hedged-acc",
-    "vanguard-ftse-100-index-unit-trust-gbp-acc",
-    "vanguard-japan-government-bond-index-fund-gbp-hedged-acc",
     "vanguard-japan-stock-index-fund-gbp-acc",
     "vanguard-uk-government-bond-index-fund-gbp-acc",
 ]

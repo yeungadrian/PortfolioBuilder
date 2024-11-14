@@ -10,7 +10,6 @@ from config import settings
 BACKTEST_IDS = [
     "vanguard-us-equity-index-fund-gbp-acc",
     "vanguard-uk-long-duration-gilt-index-fund-gbp-acc",
-    "vanguard-ftse-100-index-unit-trust-gbp-acc",
     "vanguard-japan-stock-index-fund-gbp-acc",
 ]
 
