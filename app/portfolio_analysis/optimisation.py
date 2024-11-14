@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 from scipy.optimize import minimize
 
-from app.portfolio_metrics import calculate_portfolio_std
+from app.portfolio_analysis.metrics import get_portfolio_std
 
 
 def optimise(
@@ -27,7 +27,7 @@ def optimise(
     return _result
 
 
-def optimise_min_volatility(
+def get_min_vol_portfolio(
     expected_returns: np.ndarray, risk_model: np.ndarray, constraints: tuple[Any, ...]
 ) -> list[float]:
     """Use optimisation to find portfolio with minimum std for a given return."""
@@ -35,5 +35,5 @@ def optimise_min_volatility(
     args = risk_model
     initial_weights = np.repeat(1.0 / n_securities, n_securities)
     bounds = tuple((0.0, 1.0) for i in np.nditer(expected_returns))
-    _result = optimise(calculate_portfolio_std, args, bounds, constraints, initial_weights)
+    _result = optimise(get_portfolio_std, args, bounds, constraints, initial_weights)
     return _result

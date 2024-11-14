@@ -4,9 +4,9 @@ import polars as pl
 from fastapi import APIRouter, HTTPException
 
 from app.core.config import settings
-from app.data_loader import load_returns
+from app.loader import load_returns
 from app.models import BacktestResult, BacktestScenario, Holding, PortfolioValue
-from app.portfolio_metrics import calculate_portfolio_metrics
+from app.portfolio_analysis.metrics import get_portfolio_metrics
 
 router = APIRouter()
 
@@ -58,7 +58,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
         )
         for row in _portfolio_values.to_dicts()
     ]
-    metrics = calculate_portfolio_metrics(_portfolio_values, backtest_scenario.start_date, backtest_scenario.end_date)
+    metrics = get_portfolio_metrics(_portfolio_values, backtest_scenario.start_date, backtest_scenario.end_date)
     return BacktestResult(
         metrics=metrics,
         portfolio_values=portfolio_values,

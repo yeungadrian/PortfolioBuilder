@@ -1,4 +1,4 @@
-"""Functions to calculate metrics for a give portfolio."""
+"""Functions to get metrics for a give portfolio."""
 
 from datetime import date
 
@@ -13,18 +13,18 @@ def _diff_in_months(date1: date, date2: date) -> int:
     return (date2.year - date1.year) * 12 + (date2.month - date1.month)
 
 
-def calculate_portfolio_return(start_value: float, end_value: float) -> float:
+def get_portfolio_return(start_value: float, end_value: float) -> float:
     """Calculate portfolio return."""
     return (end_value / start_value) - 1
 
 
-def calculate_cagr(start_value: float, end_value: float, start_date: date, end_date: date) -> float:
+def get_cagr(start_value: float, end_value: float, start_date: date, end_date: date) -> float:
     """Compound annnual growth rate."""
     n_years = _diff_in_months(start_date, end_date) / 12
     return float(((end_value / start_value) ** (1 / n_years)) - 1)
 
 
-def calculate_max_drawdown(portfolio_values: pl.DataFrame) -> float:
+def get_max_drawdown(portfolio_values: pl.DataFrame) -> float:
     """Calculate max drawdown."""
     portfolio_values = portfolio_values.with_columns(
         pl.col("portfolio_value")
@@ -36,14 +36,14 @@ def calculate_max_drawdown(portfolio_values: pl.DataFrame) -> float:
     return float(portfolio_values["drawdown"].max())
 
 
-def calculate_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
+def get_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
     """Calculate portfolio standard deviation using covariance."""
     weights = np.array(weights)
     std = np.sqrt(np.dot(weights.T, np.dot(covariance, weights)))
     return float(std)
 
 
-def calculate_portfolio_metrics(portfolio_values: pl.DataFrame, start_date: date, end_date: date) -> PortfolioMetrics:
+def get_portfolio_metrics(portfolio_values: pl.DataFrame, start_date: date, end_date: date) -> PortfolioMetrics:
     """Calculate common portfolio metrics."""
     portfolio_values = portfolio_values.with_columns(
         (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")
@@ -52,8 +52,8 @@ def calculate_portfolio_metrics(portfolio_values: pl.DataFrame, start_date: date
     end_value = portfolio_values["portfolio_value"].tail(1)[0]
 
     return PortfolioMetrics(
-        portfolio_return=calculate_portfolio_return(start_value, end_value),
-        cagr=calculate_cagr(start_value, end_value, start_date, end_date),
+        portfolio_return=get_portfolio_return(start_value, end_value),
+        cagr=get_cagr(start_value, end_value, start_date, end_date),
         standard_deviation=portfolio_values["portfolio_return"].std(),
-        max_drawdown=calculate_max_drawdown(portfolio_values.select("portfolio_value")),
+        max_drawdown=get_max_drawdown(portfolio_values.select("portfolio_value")),
     )
