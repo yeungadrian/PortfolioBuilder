@@ -6,10 +6,10 @@ from fastapi import APIRouter
 
 from app.data_loader import load_returns
 from app.expected_returns import calculate_historical_expected_returns
+from app.models import EfficientFrontierPortfolio, ExpectedReturn, Holding, OptimisationScenario
 from app.optimisation import optimise_min_volatility
 from app.portfolio_metrics import calculate_portfolio_std
 from app.risk_models import calculate_leodit_wolf_covariance, calculate_sample_covariance
-from app.schemas import EfficientFrontierPortfolio, ExpectedReturn, Holding, OptimisationScenario
 
 router = APIRouter()
 

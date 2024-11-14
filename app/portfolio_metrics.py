@@ -5,7 +5,7 @@ from datetime import date
 import numpy as np
 import polars as pl
 
-from app.schemas import PortfolioMetrics
+from app.models import PortfolioMetrics
 
 
 def _diff_in_months(date1: date, date2: date) -> int:

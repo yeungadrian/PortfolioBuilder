@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.config import data_settings
 from app.data_loader import load_returns
+from app.models import BacktestResult, BacktestScenario, Holding, PortfolioValue
 from app.portfolio_metrics import calculate_portfolio_metrics
-from app.schemas import BacktestResult, BacktestScenario, Holding, PortfolioValue
 
 router = APIRouter()
 
