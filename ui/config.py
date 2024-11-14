@@ -7,7 +7,7 @@ class APISettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="API_")
     timeout: float = 30
-    base_url: HttpUrl = "http://localhost:8000"
+    base_url: HttpUrl = HttpUrl("http://localhost:8000")
     securities_path: str = "/securities/all"
     backtest_path: str = "/backtest"
     expected_return_path: str = "/optimisation/expected-returns"

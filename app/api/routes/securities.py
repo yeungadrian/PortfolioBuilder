@@ -27,4 +27,4 @@ def get_details_by_sedol(sedol: str) -> SecurityDetails:
     )
     if len(_security_details) == 0:
         raise HTTPException(status_code=404, detail=f"sedol: {sedol} does not exist")
-    return SecurityDetails(**_security_details[0])
+    return SecurityDetails.model_validate(_security_details[0])

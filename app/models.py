@@ -59,8 +59,8 @@ class BacktestScenario(BaseModel):
                             "amount": 100.0,
                         },
                     ],
-                    "start_date": date(2023, 1, 1),
-                    "end_date": date(2024, 1, 1),
+                    "start_date": date(2023, 1, 1).strftime("%Y-%m-%d"),
+                    "end_date": date(2024, 1, 1).strftime("%Y-%m-%d"),
                 }
             ]
         }
@@ -123,8 +123,8 @@ class OptimisationScenario(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "start_date": date(2018, 1, 1),
-                    "end_date": date(2024, 1, 1),
+                    "start_date": date(2018, 1, 1).strftime("%Y-%m-%d"),
+                    "end_date": date(2024, 1, 1).strftime("%Y-%m-%d"),
                     "ids": [
                         "vanguard-ftse-100-index-unit-trust-gbp-acc",
                         "vanguard-us-equity-index-fund-gbp-acc",
