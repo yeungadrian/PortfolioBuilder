@@ -2,7 +2,7 @@ from pydantic import HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class APISettings(BaseSettings):
+class StreamlitSettings(BaseSettings):
     """Settings for streamlit dashboard."""
 
     model_config = SettingsConfigDict(env_prefix="API_")
@@ -17,4 +17,4 @@ class APISettings(BaseSettings):
     color_scale: str = "teals"
 
 
-settings = APISettings()
+settings = StreamlitSettings()
