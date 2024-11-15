@@ -52,7 +52,7 @@ source = [
 ]
 
 [tool.ruff]
-line-length = 118
+line-length = 108
 fix = true
 
 [tool.ruff.format]
@@ -93,7 +93,7 @@ ban-relative-imports = "all"
 strict = true
 
 [tool.ruff.lint.pycodestyle]
-max-doc-length = 118
+max-doc-length = 108
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

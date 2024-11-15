@@ -56,7 +56,9 @@ def convert_to_df(backtest_results: Any) -> pd.DataFrame:
 
 def line_chart(backtest_result: pd.DataFrame) -> alt.Chart:
     """Generate altair line chart for backtest result."""
-    backtest_result = backtest_result.melt(id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount")
+    backtest_result = backtest_result.melt(
+        id_vars=["date", "portfolio_value"], var_name="fund", value_name="amount"
+    )
     chart = (
         alt.Chart(backtest_result)
         .mark_area()
@@ -76,7 +78,9 @@ def main() -> None:
     # Sidebar for user to setup scenario
     start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
-    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30)
+    ids = st.sidebar.multiselect(
+        "Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30
+    )
     portfolio = [{"id": id, "amount": st.sidebar.number_input(label=id, value=100)} for id in ids]
 
     # Run backtest and format

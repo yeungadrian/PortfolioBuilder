@@ -5,11 +5,19 @@ import polars as pl
 from fastapi import APIRouter
 
 from app.loader import load_returns
-from app.models import EfficientFrontierPortfolio, ExpectedReturn, Holding, OptimisationScenario
+from app.models import (
+    EfficientFrontierPortfolio,
+    ExpectedReturn,
+    Holding,
+    OptimisationScenario,
+)
 from app.portfolio_analysis.expected_returns import get_historical_expected_returns
 from app.portfolio_analysis.metrics import get_portfolio_std
 from app.portfolio_analysis.optimisation import get_min_vol_portfolio
-from app.portfolio_analysis.risk_models import get_leodit_wolf_covariance, get_sample_covariance
+from app.portfolio_analysis.risk_models import (
+    get_leodit_wolf_covariance,
+    get_sample_covariance,
+)
 
 router = APIRouter()
 
@@ -41,7 +49,9 @@ def get_risk_model(
     _risk_model = pl.from_numpy(covariance, schema={i: pl.Float64 for i in scenario.ids})
 
     risk_model: list[dict[str, str | float]] = (
-        _risk_model.with_columns(pl.Series(scenario.ids).alias("id")).select(["id", *scenario.ids]).to_dicts()
+        _risk_model.with_columns(pl.Series(scenario.ids).alias("id"))
+        .select(["id", *scenario.ids])
+        .to_dicts()
     )
     return risk_model
 
@@ -54,11 +64,15 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
     sample_covariance = get_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())
     constraints = ({"type": "eq", "fun": lambda x: np.sum(x) - 1},)
     min_vol_portfolio = get_min_vol_portfolio(expected_returns, sample_covariance, constraints)
-    return [Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)]
+    return [
+        Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
+    ]
 
 
 @router.post("/efficient-frontier")
-def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) -> list[EfficientFrontierPortfolio]:
+def efficient_frontier(
+    scenario: OptimisationScenario, n_portfolios: int = 5
+) -> list[EfficientFrontierPortfolio]:
     """Generate efficient frontier portfolios."""
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     expected_returns = get_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
@@ -66,14 +80,18 @@ def efficient_frontier(scenario: OptimisationScenario, n_portfolios: int = 5) ->
     efficient_portfolios = []
     for target_return in np.linspace(min(expected_returns), max(expected_returns), n_portfolios):
         constraints = (
-            {"type": "eq", "fun": lambda x: np.sum(expected_returns.T * x) - target_return},  # noqa: B023
+            {
+                "type": "eq",
+                "fun": lambda x: np.sum(expected_returns.T * x) - target_return,  # noqa: B023
+            },
             {"type": "eq", "fun": lambda x: np.sum(x) - 1},
         )
         min_vol_portfolio = get_min_vol_portfolio(expected_returns, sample_covariance, constraints)
         efficient_portfolios.append(
             EfficientFrontierPortfolio(
                 portfolio=[
-                    Holding(id=id, amount=ratio) for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
+                    Holding(id=id, amount=ratio)
+                    for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
                 ],
                 expected_return=np.sum(expected_returns.T * min_vol_portfolio),
                 implied_standard_deviation=get_portfolio_std(min_vol_portfolio, sample_covariance),

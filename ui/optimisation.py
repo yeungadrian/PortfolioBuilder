@@ -129,7 +129,12 @@ def main() -> None:
     n_portfolios = st.sidebar.number_input("Number of portfolios", value=40, max_value=250)
     start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
     end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
-    ids = st.sidebar.multiselect("Select funds", options=available_funds, default=OPTIMISATION_IDS, max_selections=30)
+    ids = st.sidebar.multiselect(
+        "Select funds",
+        options=available_funds,
+        default=OPTIMISATION_IDS,
+        max_selections=30,
+    )
 
     # Returns & risk models for funds
     fund_profiles = pd.DataFrame(get_expected_returns(start_date, end_date, ids))
@@ -148,7 +153,10 @@ def main() -> None:
         ]
     )
     weights = pd.concat(
-        [pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose() for portfolio in _frontier_result]
+        [
+            pd.json_normalize(portfolio["portfolio"]).set_index("id").transpose()
+            for portfolio in _frontier_result
+        ]
     ).reset_index(drop=True)
     frontier_result = pd.concat([risk_return, weights], axis=1)
 

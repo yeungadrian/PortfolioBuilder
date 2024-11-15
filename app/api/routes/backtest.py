@@ -36,12 +36,16 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
             date=row["date"],
             portfolio_value=row["portfolio_value"],
             holdings=[
-                Holding(id=id, amount=amount) for id, amount in row.items() if id not in ["date", "portfolio_value"]
+                Holding(id=id, amount=amount)
+                for id, amount in row.items()
+                if id not in ["date", "portfolio_value"]
             ],
         )
         for row in _portfolio_values.to_dicts()
     ]
-    metrics = get_portfolio_metrics(_portfolio_values, backtest_scenario.start_date, backtest_scenario.end_date)
+    metrics = get_portfolio_metrics(
+        _portfolio_values, backtest_scenario.start_date, backtest_scenario.end_date
+    )
     return BacktestResult(
         metrics=metrics,
         portfolio_values=portfolio_values,

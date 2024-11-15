@@ -37,7 +37,9 @@ async def test_risk_model_sample(async_client: AsyncClient) -> None:
     response = await async_client.post("/optimisation/risk-model?method=sample_cov", json=body)
     assert response.status_code == 200
     assert response.json()[0]["id"] == "vanguard-japan-stock-index-fund-gbp-acc"
-    assert response.json()[0]["vanguard-japan-stock-index-fund-gbp-acc"] == pytest.approx(0.014459938441312102)
+    assert response.json()[0]["vanguard-japan-stock-index-fund-gbp-acc"] == pytest.approx(
+        0.014459938441312102
+    )
 
 
 @pytest.mark.anyio
@@ -57,8 +59,12 @@ async def test_risk_model_leodit(async_client: AsyncClient) -> None:
     assert response.status_code == 200
     assert response.json()[0]["id"] == "vanguard-japan-stock-index-fund-gbp-acc"
 
-    assert response.json()[0]["vanguard-japan-stock-index-fund-gbp-acc"] == pytest.approx(0.001263457066564247)
-    assert response.json()[0]["vanguard-us-equity-index-fund-gbp-acc"] == pytest.approx(0.0008445335820348165)
+    assert response.json()[0]["vanguard-japan-stock-index-fund-gbp-acc"] == pytest.approx(
+        0.001263457066564247
+    )
+    assert response.json()[0]["vanguard-us-equity-index-fund-gbp-acc"] == pytest.approx(
+        0.0008445335820348165
+    )
 
 
 @pytest.mark.anyio

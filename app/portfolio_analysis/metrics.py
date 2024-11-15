@@ -43,7 +43,9 @@ def get_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
     return float(std)
 
 
-def get_portfolio_metrics(portfolio_values: pl.DataFrame, start_date: date, end_date: date) -> PortfolioMetrics:
+def get_portfolio_metrics(
+    portfolio_values: pl.DataFrame, start_date: date, end_date: date
+) -> PortfolioMetrics:
     """Calculate common portfolio metrics."""
     portfolio_values = portfolio_values.with_columns(
         (pl.col("portfolio_value") / pl.col("portfolio_value").shift() - 1).alias("portfolio_return")

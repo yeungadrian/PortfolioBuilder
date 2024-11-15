@@ -143,7 +143,12 @@ class ExpectedReturn(BaseModel):
 
     model_config = {
         "json_schema_extra": {
-            "examples": [{"id": "vanguard-us-equity-index-fund-gbp-acc", "expected_returns": 6.752961}]
+            "examples": [
+                {
+                    "id": "vanguard-us-equity-index-fund-gbp-acc",
+                    "expected_returns": 6.752961,
+                }
+            ]
         }
     }
 
