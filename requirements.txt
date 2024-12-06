@@ -1,2 +1,2 @@
-streamlit == 1.39.0
-pydantic-settings == 2.5.2
+streamlit
+pydantic-settings
