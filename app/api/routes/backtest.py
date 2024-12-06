@@ -23,7 +23,7 @@ def get_invalid_ids(ids: list[str]) -> list[str]:
 @router.post("")
 def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
     """Backtest portfolio."""
-    # TODO: start_date / end_date is assumed to be month_ends
+    # Start_date / end_date is assumed to be month_ends
     not_available = get_invalid_ids([i.id for i in backtest_scenario.portfolio])
     if len(not_available):
         raise HTTPException(
