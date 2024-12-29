@@ -9,7 +9,7 @@ from app.portfolio_analysis.metrics import get_portfolio_std
 
 def optimise(
     func: Callable[..., float],
-    args: tuple[np.ndarray],
+    args: np.ndarray,
     bounds: tuple[tuple[float, float], ...],
     constraints: tuple[Any, ...],
     initial_weights: np.ndarray,
@@ -32,8 +32,7 @@ def get_min_vol_portfolio(
 ) -> list[float]:
     """Use optimisation to find portfolio with minimum std for a given return."""
     n_securities = expected_returns.shape[0]
-    args = risk_model
     initial_weights = np.repeat(1.0 / n_securities, n_securities)
     bounds = tuple((0.0, 1.0) for i in np.nditer(expected_returns))
-    _result = optimise(get_portfolio_std, args, bounds, constraints, initial_weights)
+    _result = optimise(get_portfolio_std, risk_model, bounds, constraints, initial_weights)
     return _result
