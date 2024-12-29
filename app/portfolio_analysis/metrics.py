@@ -33,7 +33,7 @@ def get_max_drawdown(portfolio_values: pl.DataFrame) -> float:
     ).with_columns(
         ((pl.col("portfolio_max") - pl.col("portfolio_value")) / pl.col("portfolio_max")).alias("drawdown")
     )
-    return float(portfolio_values["drawdown"].max())
+    return float(portfolio_values["drawdown"].max())  # type: ignore
 
 
 def get_portfolio_std(weights: np.ndarray, covariance: np.ndarray) -> float:
@@ -56,6 +56,6 @@ def get_portfolio_metrics(
     return PortfolioMetrics(
         portfolio_return=get_portfolio_return(start_value, end_value),
         cagr=get_cagr(start_value, end_value, start_date, end_date),
-        standard_deviation=portfolio_values["portfolio_return"].std(),
+        standard_deviation=portfolio_values["portfolio_return"].std(),  # type: ignore
         max_drawdown=get_max_drawdown(portfolio_values.select("portfolio_value")),
     )

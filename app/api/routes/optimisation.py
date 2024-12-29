@@ -27,9 +27,10 @@ def get_expected_returns(scenario: OptimisationScenario) -> list[ExpectedReturn]
     """Get expected returns based on historical returns."""
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     _expected_returns = get_historical_expected_returns(security_returns, scenario.ids)
-    expected_returns: list[ExpectedReturn] = _expected_returns.unpivot(
+    expected_returns = _expected_returns.unpivot(
         value_name="expected_return", variable_name="id"
     ).to_dicts()
+    expected_returns = [ExpectedReturn.model_validate(i) for i in expected_returns]
     return expected_returns
 
 
@@ -93,8 +94,10 @@ def efficient_frontier(
                     Holding(id=id, amount=ratio)
                     for id, ratio in zip(scenario.ids, min_vol_portfolio, strict=False)
                 ],
-                expected_return=np.sum(expected_returns.T * min_vol_portfolio),
-                implied_standard_deviation=get_portfolio_std(min_vol_portfolio, sample_covariance),
+                expected_return=np.sum(expected_returns.T * np.array(min_vol_portfolio)),
+                implied_standard_deviation=get_portfolio_std(
+                    np.array(min_vol_portfolio), sample_covariance
+                ),
             )
         )
     return efficient_portfolios
