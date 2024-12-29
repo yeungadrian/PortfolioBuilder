@@ -1,3 +1,5 @@
+"""Module for calculating expected returns."""
+
 import polars as pl
 
 

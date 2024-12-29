@@ -1,3 +1,5 @@
+"""Module for backtesting portfolio."""
+
 import polars as pl
 
 from app.loader import load_returns

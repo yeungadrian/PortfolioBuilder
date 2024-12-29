@@ -1,4 +1,4 @@
-"""Functions to get metrics for a give portfolio."""
+"""Module for calculating portfolio metrics."""
 
 from datetime import date
 
