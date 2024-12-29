@@ -1,3 +1,5 @@
+"""Data loader for app."""
+
 from datetime import date
 
 import polars as pl

@@ -1,4 +1,6 @@
-from datetime import datetime
+"""Module for optimisation page."""
+
+from datetime import date
 from typing import Any
 
 import altair as alt
@@ -25,7 +27,7 @@ def get_funds() -> Any:
 
 
 @st.cache_data(ttl="7d")
-def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
+def get_expected_returns(start_date: str, end_date: str, ids: list[str]) -> Any:
     """Get expected returns."""
     r = requests.post(
         f"{settings.base_url}{settings.expected_return_path}",
@@ -38,7 +40,7 @@ def get_expected_returns(start_date: str, end_date: str, ids: str) -> Any:
 
 
 @st.cache_data(ttl="7d")
-def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
+def get_risk_model(start_date: str, end_date: str, ids: list[str]) -> Any:
     """Get risk model."""
     r = requests.post(
         f"{settings.base_url}{settings.risk_model_path}",
@@ -51,7 +53,7 @@ def get_risk_model(start_date: str, end_date: str, ids: str) -> Any:
 
 
 @st.cache_data(ttl="7d")
-def get_efficient_fronter(start_date: str, end_date: str, ids: str, n_portfolios: int) -> Any:
+def get_efficient_fronter(start_date: str, end_date: str, ids: list[str], n_portfolios: int) -> Any:
     """Get efficient frontier for set of funds."""
     r = requests.post(
         f"{settings.base_url}{settings.efficient_fronter_path}?n_portfolios={n_portfolios}",
@@ -127,8 +129,17 @@ def main() -> None:
 
     # Sidebar
     n_portfolios = st.sidebar.number_input("Number of portfolios", value=40, max_value=250)
-    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
-    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
+    _start_date = st.sidebar.date_input("Start date", value=date(2017, 1, 1))
+    if isinstance(_start_date, date):
+        start_date = _start_date.strftime("%Y-%m-%d")
+    else:
+        raise ValueError()
+    _end_date = st.sidebar.date_input("End date", value=date(2024, 1, 1))
+    if isinstance(_end_date, date):
+        end_date = _end_date.strftime("%Y-%m-%d")
+    else:
+        raise ValueError()
+
     ids = st.sidebar.multiselect(
         "Select funds",
         options=available_funds,
@@ -168,7 +179,7 @@ def main() -> None:
     if st.checkbox("Include individual funds"):
         individual_scatter = scatter_plot(fund_profiles)
         frontier_chart = frontier_chart + individual_scatter
-    st.altair_chart(frontier_chart, use_container_width=True)
+    st.altair_chart(frontier_chart, use_container_width=True)  # type: ignore
 
     with st.expander("Assumptions"):
         # Apply pandas styling

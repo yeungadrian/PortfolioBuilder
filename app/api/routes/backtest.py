@@ -1,4 +1,4 @@
-"""Backtesting related endpoints."""
+"""Backtesting APIRouter."""
 
 import polars as pl
 from fastapi import APIRouter, HTTPException

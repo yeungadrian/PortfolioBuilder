@@ -16,7 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 ui = [
-    "streamlit>=1.40.2",
+    "streamlit>=1.41.1",
 ]
 
 [tool.uv]
@@ -55,8 +55,6 @@ ignore = [
   "D401",   # non-imperative-mood
   "D105",   # undocumented-magic-method
   "D107",   # undocumented-public-init,
-  "D100",   # undocumented-public-module
-  "D104",   # undocumented-public-package
 ]
 pydocstyle = { convention = "numpy" }
 pycodestyle = { max-doc-length = 108 }
@@ -78,5 +76,4 @@ source = [
 ]
 
 [tool.pyright]
-include=["app"]
 enableExperimentalFeatures = true

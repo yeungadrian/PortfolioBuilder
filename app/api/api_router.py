@@ -1,3 +1,5 @@
+"""FastAPI routers."""
+
 from fastapi import APIRouter
 
 from app.api.routes import backtest, health, optimisation, securities

@@ -15,5 +15,8 @@ wheels/
 # VSCode
 .vscode/
 
+# Coverage
+.coverage
+
 # Local data
 data/

@@ -1,3 +1,5 @@
+"""FastAPI app."""
+
 from fastapi import FastAPI
 
 from app.api.api_router import api_router

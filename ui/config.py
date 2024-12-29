@@ -1,3 +1,5 @@
+"""Module for streamlit settings."""
+
 from pydantic import HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

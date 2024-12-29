@@ -1,3 +1,5 @@
+"""Module to run optimisation."""
+
 from collections.abc import Callable
 from typing import Any
 

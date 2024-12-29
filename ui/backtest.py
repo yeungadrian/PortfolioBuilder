@@ -1,4 +1,6 @@
-from datetime import datetime
+"""Module for backtesting page."""
+
+from datetime import date
 from typing import Any
 
 import altair as alt
@@ -23,7 +25,7 @@ def get_funds() -> Any:
 
 
 @st.cache_data(ttl="7d")
-def backtest_portfolio(start_date: str, end_date: str, portfolio: str) -> Any:
+def backtest_portfolio(start_date: str, end_date: str, portfolio: list[dict[str, str | int]]) -> Any:
     """Backtest a given portfolio."""
     r = requests.post(
         f"{settings.base_url}{settings.backtest_path}",
@@ -65,7 +67,7 @@ def line_chart(backtest_result: pd.DataFrame) -> alt.Chart:
         .encode(
             alt.X("date:T", axis=alt.Axis(format="%b-%y ", tickCount=12)),
             y="amount",
-            color=alt.Color("fund:N").scale(scheme=settings.color_scale),
+            color=alt.Color("fund:N").scale(scheme=settings.color_scale),  # type: ignore
             tooltip=["date:T", "amount", "fund", "portfolio_value"],
         )
     )
@@ -76,8 +78,16 @@ def main() -> None:
     """Backtest streamlit page."""
     available_funds = [i["id"] for i in get_funds()]
     # Sidebar for user to setup scenario
-    start_date = st.sidebar.date_input("Start date", value=datetime(2017, 1, 1)).strftime("%Y-%m-%d")
-    end_date = st.sidebar.date_input("End date", value=datetime(2024, 1, 1)).strftime("%Y-%m-%d")
+    _start_date = st.sidebar.date_input("Start date", value=date(2017, 1, 1))
+    if isinstance(_start_date, date):
+        start_date = _start_date.strftime("%Y-%m-%d")
+    else:
+        raise ValueError()
+    _end_date = st.sidebar.date_input("End date", value=date(2024, 1, 1))
+    if isinstance(_end_date, date):
+        end_date = _end_date.strftime("%Y-%m-%d")
+    else:
+        raise ValueError()
     ids = st.sidebar.multiselect(
         "Select funds", options=available_funds, default=BACKTEST_IDS, max_selections=30
     )
@@ -88,7 +98,7 @@ def main() -> None:
     backtest_result = convert_to_df(_backtest_result)
 
     # Format metrics
-    metrics = pd.DataFrame(_backtest_result["metrics"], index=[0])
+    metrics = pd.DataFrame(_backtest_result["metrics"], index=pd.Index([0]))
     metrics = metrics.style.format("{:,.2%}")
 
     # Main page

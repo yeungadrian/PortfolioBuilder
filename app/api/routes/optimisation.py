@@ -1,3 +1,5 @@
+"""Optimisation APIRouter."""
+
 from typing import Literal
 
 import numpy as np

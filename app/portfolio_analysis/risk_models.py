@@ -1,3 +1,5 @@
+"""Module for calculating risk models."""
+
 import numpy as np
 from sklearn.covariance import ledoit_wolf
 

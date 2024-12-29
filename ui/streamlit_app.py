@@ -1,3 +1,5 @@
+"""Streamlit dashboard entrypoint."""
+
 import streamlit as st
 
 st.set_page_config(page_title="Portfolio Builder", page_icon="📊", layout="wide")
