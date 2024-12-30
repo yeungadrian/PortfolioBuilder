@@ -1,5 +1,5 @@
 # Install uv
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 # Improve startup time with bytebode
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
@@ -15,7 +15,7 @@ RUN --mount=from=ghcr.io/astral-sh/uv,source=/uv,target=/bin/uv \
     uv sync --frozen --no-install-project --no-editable --no-dev
 
 # Image without uv
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Copy the environment
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
