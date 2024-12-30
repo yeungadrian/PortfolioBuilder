@@ -17,6 +17,3 @@ wheels/
 
 # Coverage
 .coverage
-
-# Local data
-data/
