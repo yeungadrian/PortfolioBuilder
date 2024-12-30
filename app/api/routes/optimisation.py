@@ -26,7 +26,18 @@ router = APIRouter()
 
 @router.post("/expected-returns")
 def get_expected_returns(scenario: OptimisationScenario) -> list[ExpectedReturn]:
-    """Get expected returns based on historical returns."""
+    """Get expected returns based on historical returns.
+
+    Parameters
+    ----------
+    scenario : OptimisationScenario
+        optimisation settings
+
+    Returns
+    -------
+    list[ExpectedReturn]
+        expected returns for each security
+    """
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     _expected_returns = get_historical_expected_returns(security_returns, scenario.ids)
     expected_returns = _expected_returns.unpivot(
@@ -40,7 +51,21 @@ def get_expected_returns(scenario: OptimisationScenario) -> list[ExpectedReturn]
 def get_risk_model(
     scenario: OptimisationScenario, method: Literal["sample_cov", "ledoit_wolf"]
 ) -> list[dict[str, str | float]]:
-    """Get expected returns based on historical returns."""
+    """Get risk models for securities.
+
+    Parameters
+    ----------
+    scenario : OptimisationScenario
+        optimisation settings
+    method : Literal["sample_cov", "ledoit_wolf"]
+        - sample_cov: sample covariance
+        - leodit_wolf: leodit wolf shrink covariance
+
+    Returns
+    -------
+    list[dict[str, str | float]]
+        covariance matrix
+    """
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     _security_returns = security_returns.select(pl.col(scenario.ids)).to_numpy()
     match method:
@@ -61,7 +86,18 @@ def get_risk_model(
 
 @router.post("/mean-variance")
 def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
-    """Run mean variance optimisation."""
+    """Run mean variance optimisation.
+
+    Parameters
+    ----------
+    scenario : OptimisationScenario
+        optimisation settings
+
+    Returns
+    -------
+    list[Holding]
+        list of holdings for mean variance portfolio
+    """
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     expected_returns = get_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
     sample_covariance = get_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())
@@ -76,7 +112,20 @@ def mean_variance_optimisation(scenario: OptimisationScenario) -> list[Holding]:
 def efficient_frontier(
     scenario: OptimisationScenario, n_portfolios: int = 5
 ) -> list[EfficientFrontierPortfolio]:
-    """Generate efficient frontier portfolios."""
+    """Generate efficient frontier portfolios.
+
+    Parameters
+    ----------
+    scenario : OptimisationScenario
+        optimisation settings
+    n_portfolios : int, optional
+        number of portfolios to generate, by default 5
+
+    Returns
+    -------
+    list[EfficientFrontierPortfolio]
+        list of portfolios lying on efficient frontier
+    """
     security_returns = load_returns(scenario.ids, scenario.start_date, scenario.end_date)
     expected_returns = get_historical_expected_returns(security_returns, scenario.ids).to_numpy().T
     sample_covariance = get_sample_covariance(security_returns.select(pl.col(scenario.ids)).to_numpy())

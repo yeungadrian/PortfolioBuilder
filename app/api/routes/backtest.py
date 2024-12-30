@@ -12,7 +12,18 @@ router = APIRouter()
 
 
 def get_invalid_ids(ids: list[str]) -> list[str]:
-    """Validate ids provided."""
+    """Validate ids provided.
+
+    Parameters
+    ----------
+    ids : list[str]
+        ids to validate
+
+    Returns
+    -------
+    list[str]
+        list of invalid ids
+    """
     available_ids = (
         pl.scan_parquet(settings.security_details).filter(pl.col("id").is_in(ids)).collect()["id"].to_list()
     )
@@ -22,7 +33,23 @@ def get_invalid_ids(ids: list[str]) -> list[str]:
 
 @router.post("")
 def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
-    """Backtest portfolio."""
+    """Backtest portfolio.
+
+    Parameters
+    ----------
+    backtest_scenario : BacktestScenario
+        backtest settings
+
+    Returns
+    -------
+    BacktestResult
+        backtest result
+
+    Raises
+    ------
+    HTTPException
+        Exception if invalid ids are provided.
+    """
     # Start_date / end_date is assumed to be month_ends
     not_available = get_invalid_ids([i.id for i in backtest_scenario.portfolio])
     if len(not_available):
