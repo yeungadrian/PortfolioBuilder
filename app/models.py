@@ -39,7 +39,7 @@ class Holding(BaseModel):
 
 
 class BacktestScenario(BaseModel):
-    """Backtest Settings."""
+    """Backtest settings."""
 
     portfolio: list[Holding]
     start_date: date
@@ -68,7 +68,7 @@ class BacktestScenario(BaseModel):
 
 
 class PortfolioValue(BaseModel):
-    """Portfolio value with breakdown per holding."""
+    """Portfolio value with holding breakdown."""
 
     date: date
     portfolio_value: float
@@ -97,7 +97,7 @@ class PortfolioValue(BaseModel):
 
 
 class PortfolioMetrics(BaseModel):
-    """Common portfolio metrics."""
+    """Portfolio metrics."""
 
     portfolio_return: float
     cagr: float
