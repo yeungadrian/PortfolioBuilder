@@ -525,11 +525,6 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
-[package.optional-dependencies]
-ui = [
-    { name = "streamlit" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
@@ -537,6 +532,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pyright" },
     { name = "pytest" },
+    { name = "streamlit" },
     { name = "tqdm" },
     { name = "trio" },
 ]
@@ -549,7 +545,6 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.6.2" },
     { name = "scikit-learn", specifier = ">=1.6.0" },
     { name = "scipy", specifier = ">=1.14.1" },
-    { name = "streamlit", marker = "extra == 'ui'", specifier = ">=1.41.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0" },
 ]
 
@@ -560,6 +555,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "pyright", specifier = ">=1.1.391" },
     { name = "pytest", specifier = ">=8.3.4" },
+    { name = "streamlit", specifier = ">=1.41.1" },
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "trio", specifier = ">=0.28.0" },
 ]

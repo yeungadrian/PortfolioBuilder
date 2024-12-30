@@ -6,8 +6,19 @@ from app.loader import load_returns
 from app.models import BacktestScenario
 
 
-def run_backtesting(backtest_scenario: BacktestScenario) -> pl.DataFrame:
-    """Run backtesting."""
+def backtest(backtest_scenario: BacktestScenario) -> pl.DataFrame:
+    """Run backtest on porfolio.
+
+    Parameters
+    ----------
+    backtest_scenario : BacktestScenario
+        Backtest settings
+
+    Returns
+    -------
+    pl.DataFrame
+        Dataframe with individual securities and portfolio value per month.
+    """
     ids = [i.id for i in backtest_scenario.portfolio]
     security_returns = load_returns(ids, backtest_scenario.start_date, backtest_scenario.end_date)
     # Set return for day 0 to 0.
@@ -27,5 +38,6 @@ def run_backtesting(backtest_scenario: BacktestScenario) -> pl.DataFrame:
             for holding in backtest_scenario.portfolio
         ]
     )
+    # Sum each holding to get monthly portfolio value
     security_returns = security_returns.with_columns(pl.sum_horizontal(ids).alias("portfolio_value"))
     return security_returns

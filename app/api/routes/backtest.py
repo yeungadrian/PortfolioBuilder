@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.config import settings
 from app.models import BacktestResult, BacktestScenario, Holding, PortfolioValue
-from app.portfolio_analysis.backtest import run_backtesting
+from app.portfolio_analysis.backtest import backtest
 from app.portfolio_analysis.metrics import get_portfolio_metrics
 
 router = APIRouter()
@@ -30,7 +30,7 @@ def backtest_portfolio(backtest_scenario: BacktestScenario) -> BacktestResult:
             status_code=404,
             detail=f"Following securities are not available: {not_available}",
         )
-    _portfolio_values = run_backtesting(backtest_scenario)
+    _portfolio_values = backtest(backtest_scenario)
     portfolio_values = [
         PortfolioValue(
             date=row["date"],

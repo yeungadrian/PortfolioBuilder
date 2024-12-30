@@ -1,4 +1,4 @@
-"""FastAPI app."""
+"""FastAPI app entrypoint."""
 
 from fastapi import FastAPI
 

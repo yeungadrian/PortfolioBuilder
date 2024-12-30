@@ -8,7 +8,22 @@ from app.config import settings
 
 
 def load_returns(ids: list[str], start_date: date, end_date: date) -> pl.DataFrame:
-    """Load returns for securities."""
+    """Load monthly returns for securities.
+
+    Parameters
+    ----------
+    ids : list[str]
+        securities to load
+    start_date : date
+        start date to load
+    end_date : date
+        end date to load
+
+    Returns
+    -------
+    pl.DataFrame
+        monthly returns for specified securities and time range
+    """
     security_returns = (
         pl.scan_parquet(settings.security_returns)
         .filter(pl.col("id").is_in(ids))
