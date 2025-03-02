@@ -12,6 +12,8 @@
 </a>
 </p>
 
+![](assets/backtest.png)
+
 View live API docs @ https://portfoliobuilder-jfv66mvjvq-ew.a.run.app/redoc
 
 Goals:
