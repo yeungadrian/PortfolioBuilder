@@ -86,7 +86,7 @@ def get_max_drawdown(portfolio_values: pl.DataFrame) -> float:
     """
     portfolio_values = portfolio_values.with_columns(
         pl.col("portfolio_value")
-        .rolling_max(window_size=portfolio_values.shape[0], min_periods=1)
+        .rolling_max(window_size=portfolio_values.shape[0], min_samples=1)
         .alias("portfolio_max")
     ).with_columns(
         ((pl.col("portfolio_max") - pl.col("portfolio_value")) / pl.col("portfolio_max")).alias("drawdown")
