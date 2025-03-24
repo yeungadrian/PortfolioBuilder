@@ -74,7 +74,7 @@ def get_risk_model(
         case "ledoit_wolf":
             covariance = get_leodit_wolf_covariance(_security_returns)
 
-    _risk_model = pl.from_numpy(covariance, schema={i: pl.Float64 for i in scenario.ids})
+    _risk_model = pl.from_numpy(covariance, schema=dict.fromkeys(scenario.ids, pl.Float64))
 
     risk_model: list[dict[str, str | float]] = (
         _risk_model.with_columns(pl.Series(scenario.ids).alias("id"))

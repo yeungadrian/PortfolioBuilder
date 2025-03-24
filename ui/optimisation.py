@@ -184,7 +184,7 @@ def main() -> None:
     with st.expander("Assumptions"):
         # Apply pandas styling
         fund_profiles = fund_profiles.style.format(
-            {i: "{:,.2%}".format for i in ["expected_return", "implied_standard_deviation"]}
+            dict.fromkeys(["expected_return", "implied_standard_deviation"], "{:,.2%}".format)
         )
         st.write(fund_profiles)
 
