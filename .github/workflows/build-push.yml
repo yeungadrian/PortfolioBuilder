@@ -16,7 +16,7 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v3'
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: gcloud docker config
         run: gcloud auth configure-docker ${{ vars.HOSTNAME_LIST }}
       - name: Delete previous image #Images are ~266MB, free tier hosting is 500MB
